@@ -15,6 +15,7 @@ import {
   annulerFinJournee,
   reprendreJournee,
 } from '@/actions/pointage'
+import { terminerIntervention } from '@/actions/interventions'
 import type { EtatJournee } from '@/lib/etat-journee'
 import { formatHeure, formatDuree } from '@/lib/temps'
 import { dureePausesMinutes } from '@/lib/calculs'
@@ -302,7 +303,7 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
           <>
             {btnPrimaire('JE SUIS ARRIVÉ', handleArriver, 'var(--vert)')}
             <div style={{ display: 'flex', gap: 12, padding: '0 16px' }}>
-              {btnSecondaire("Démarrer une intervention", () => router.push('/interventions/nouvelle'), 'var(--cuivre)')}
+              {btnSecondaire("Démarrer une intervention", () => router.push('/intervention/nouvelle'), 'var(--cuivre)')}
               {btnSecondaire("J'ai oublié de pointer", () => router.push('/oubli'))}
             </div>
           </>
@@ -310,7 +311,7 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
         {etat === 'AU_TRAVAIL' && (
           <>
-            {btnPrimaire("DÉMARRER UNE INTERVENTION", () => router.push('/interventions/nouvelle'), 'var(--cuivre)')}
+            {btnPrimaire("DÉMARRER UNE INTERVENTION", () => router.push('/intervention/nouvelle'), 'var(--cuivre)')}
             <div style={{ display: 'flex', gap: 12, padding: '0 16px' }}>
               {btnSecondaire('Pause déjeuner', handlePauseDejeuner, 'var(--ambre)')}
               {btnSecondaire('Faire une pause', handlePauseCourte, 'var(--ambre)')}
@@ -329,7 +330,18 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
         {etat === 'EN_INTERVENTION' && (
           <>
-            {btnPrimaire('TERMINER L\'INTERVENTION', () => router.push('/interventions/terminer'), 'var(--cuivre)')}
+            {btnPrimaire('TERMINER L\'INTERVENTION', async () => {
+              if (!interventionEnCours) return
+              vibrer()
+              setLoading(true)
+              const result = await terminerIntervention(interventionEnCours.id)
+              setLoading(false)
+              if (result.ok) {
+                router.push(`/intervention/${interventionEnCours.id}/fin`)
+              } else {
+                setErreur((result as { ok: false; error: string }).error)
+              }
+            }, 'var(--cuivre)')}
             <div style={{ padding: '0 16px' }}>
               {btnSecondaire('Faire une pause', handlePauseCourte, 'var(--ambre)')}
             </div>
