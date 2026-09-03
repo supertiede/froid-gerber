@@ -1,9 +1,9 @@
 'use client'
 
-import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
+import { BrandLogo } from '@/components/BrandLogo'
 
 type Props = {
   user: { name: string; username: string }
@@ -22,14 +22,7 @@ export function SettingsView({ user }: Props) {
   return (
     <div style={{ padding: '24px 16px 0', maxWidth: 480, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-        <Image
-          src="/foird-gerber-logo.jpg"
-          alt="Froid Climatisation Gerber"
-          width={180}
-          height={64}
-          unoptimized
-          style={{ objectFit: 'contain' }}
-        />
+        <BrandLogo width={180} height={64} marginBottom={0} />
       </div>
 
       {/* Profil */}

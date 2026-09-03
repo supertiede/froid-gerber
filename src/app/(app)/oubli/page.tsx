@@ -102,7 +102,7 @@ export default function OubliPage() {
               onChange={e => setStartTime(e.target.value)}
               required
               aria-required="true"
-              style={{ height: 56, fontSize: 16 }}
+              style={{ height: 52, fontSize: 16, padding: '0 16px' }}
             />
           </div>
 
@@ -117,7 +117,7 @@ export default function OubliPage() {
                   onChange={e => setEndTime(e.target.value)}
                   required
                   aria-required="true"
-                  style={{ height: 56, fontSize: 16 }}
+                  style={{ height: 52, fontSize: 16, padding: '0 16px' }}
                 />
               </div>
 
