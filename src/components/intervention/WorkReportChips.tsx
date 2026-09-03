@@ -13,15 +13,15 @@ const CHIPS = [
   'Dépannage électrique',
 ]
 
-export function ChipsCompteRendu({
-  valeurInitiale,
-  onSauvegarder,
+export function WorkReportChips({
+  initialValue,
+  onSave,
 }: {
-  valeurInitiale: string
-  onSauvegarder: (val: string) => void
+  initialValue: string
+  onSave: (val: string) => void
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [texte, setTexte] = useState(valeurInitiale)
+  const [text, setText] = useState(initialValue)
 
   function toggle(chip: string) {
     setSelected(prev => {
@@ -34,8 +34,8 @@ export function ChipsCompteRendu({
   function handleSave() {
     const parts: string[] = []
     if (selected.size > 0) parts.push([...selected].join(', '))
-    if (texte.trim()) parts.push(texte.trim())
-    onSauvegarder(parts.join(' — '))
+    if (text.trim()) parts.push(text.trim())
+    onSave(parts.join(' — '))
   }
 
   return (
@@ -60,8 +60,8 @@ export function ChipsCompteRendu({
         ))}
       </div>
       <textarea
-        value={texte}
-        onChange={e => setTexte(e.target.value)}
+        value={text}
+        onChange={e => setText(e.target.value)}
         placeholder="Détails supplémentaires…"
         rows={3}
         style={{

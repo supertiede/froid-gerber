@@ -3,38 +3,41 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { modifierIntervention, supprimerIntervention } from '@/actions/interventions'
-import { ChipsCompteRendu } from './ChipsCompteRendu'
-import { formatDuree } from '@/lib/temps'
-import { tempsInterventionMinutes } from '@/lib/calculs'
+import { updateIntervention } from '@/actions/intervention/updateIntervention'
+import { deleteIntervention } from '@/actions/intervention/deleteIntervention'
+import { WorkReportChips } from './WorkReportChips'
+import { formatDuration } from '@/lib/time/formatDuration'
+import { interventionMinutes } from '@/lib/calculations/interventionMinutes'
+import { EditTimeSheet } from './EditTimeSheet'
+import { EditTrajetSheet } from './EditTrajetSheet'
 
 type ClientSer = {
   id: string
-  nom: string
-  nomNormalise: string
-  actif: boolean
+  name: string
+  normalizedName: string
+  active: boolean
   createdAt: string
-  creeParId: string | null
+  createdById: string | null
 }
 
 type InterventionSer = {
   id: string
-  type: 'CLIENT' | 'ATELIER'
+  type: 'CLIENT' | 'WORKSHOP'
   client: ClientSer | null
-  debutAt: string
-  finAt: string | null
-  trajetMinutes: number
-  compteRendu: string | null
-  origine: string
+  startAt: string
+  endAt: string | null
+  travelMinutes: number
+  workReport: string | null
+  origin: string
   createdAt: string
   updatedAt: string
 }
 
-type ModifSer = {
+type AuditLogSer = {
   id: string
-  champ: string
-  ancienne: string | null
-  nouvelle: string | null
+  field: string
+  oldValue: string | null
+  newValue: string | null
   at: string
 }
 
@@ -48,10 +51,10 @@ function formatHM(iso: string) {
 
 export function InterventionDetail({
   intervention,
-  modifications,
+  auditLogs,
 }: {
   intervention: InterventionSer
-  modifications: ModifSer[]
+  auditLogs: AuditLogSer[]
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -59,31 +62,31 @@ export function InterventionDetail({
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [error, setError] = useState('')
 
-  const nomClient =
-    intervention.type === 'ATELIER' ? 'Atelier' : intervention.client?.nom ?? '—'
+  const clientName =
+    intervention.type === 'WORKSHOP' ? 'Atelier' : intervention.client?.name ?? '—'
 
-  const dureeMinutes = intervention.finAt
+  const dureeMinutes = intervention.endAt
     ? Math.floor(
-        (new Date(intervention.finAt).getTime() - new Date(intervention.debutAt).getTime()) /
+        (new Date(intervention.endAt).getTime() - new Date(intervention.startAt).getTime()) /
           60000,
       )
     : null
 
-  const total = intervention.finAt
-    ? tempsInterventionMinutes({
-        debutAt: new Date(intervention.debutAt),
-        finAt: new Date(intervention.finAt),
-        trajetMinutes: intervention.trajetMinutes,
+  const total = intervention.endAt
+    ? interventionMinutes({
+        startAt: new Date(intervention.startAt),
+        endAt: new Date(intervention.endAt),
+        travelMinutes: intervention.travelMinutes,
       })
     : null
 
-  function save(champ: string, valeur: string) {
+  function save(field: string, value: string) {
     setError('')
     startTransition(async () => {
-      const result = await modifierIntervention(
+      const result = await updateIntervention(
         intervention.id,
-        champ as Parameters<typeof modifierIntervention>[1],
-        valeur,
+        field as Parameters<typeof updateIntervention>[1],
+        value,
       )
       if (result.ok) {
         setSheet(null)
@@ -96,21 +99,21 @@ export function InterventionDetail({
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await supprimerIntervention(intervention.id)
+      const result = await deleteIntervention(intervention.id)
       if (result.ok) router.push('/interventions')
       else setError(result.error ?? 'Erreur')
     })
   }
 
-  const rows: { champ: string; label: string; valeur: string }[] = [
-    { champ: 'debutAt', label: 'Début', valeur: formatHM(intervention.debutAt) },
+  const rows: { field: string; label: string; value: string }[] = [
+    { field: 'startAt', label: 'Début', value: formatHM(intervention.startAt) },
     {
-      champ: 'finAt',
+      field: 'endAt',
       label: 'Fin',
-      valeur: intervention.finAt ? formatHM(intervention.finAt) : '—',
+      value: intervention.endAt ? formatHM(intervention.endAt) : '—',
     },
-    { champ: 'trajetMinutes', label: 'Trajet aller', valeur: `${intervention.trajetMinutes} min` },
-    { champ: 'compteRendu', label: 'Compte rendu', valeur: intervention.compteRendu ?? '—' },
+    { field: 'travelMinutes', label: 'Trajet aller', value: `${intervention.travelMinutes} min` },
+    { field: 'workReport', label: 'Compte rendu', value: intervention.workReport ?? '—' },
   ]
 
   return (
@@ -139,10 +142,10 @@ export function InterventionDetail({
           ←
         </button>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>{nomClient}</h1>
-          {modifications.length > 0 && (
+          <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>{clientName}</h1>
+          {auditLogs.length > 0 && (
             <p style={{ fontSize: 13, color: 'var(--encre-douce)' }}>
-              Modifié {new Date(modifications[0].at).toLocaleDateString('fr-FR')}
+              Modifié {new Date(auditLogs[0].at).toLocaleDateString('fr-FR')}
             </p>
           )}
         </div>
@@ -158,19 +161,19 @@ export function InterventionDetail({
             color: 'var(--encre-douce)',
           }}
         >
-          {formatHM(intervention.debutAt)} →{' '}
-          {intervention.finAt ? formatHM(intervention.finAt) : '…'} ·{' '}
-          {dureeMinutes !== null ? formatDuree(dureeMinutes) : ''} +{' '}
-          {formatDuree(intervention.trajetMinutes * 2)} trajet ={' '}
-          <strong>{formatDuree(total)}</strong>
+          {formatHM(intervention.startAt)} →{' '}
+          {intervention.endAt ? formatHM(intervention.endAt) : '…'} ·{' '}
+          {dureeMinutes !== null ? formatDuration(dureeMinutes) : ''} +{' '}
+          {formatDuration(intervention.travelMinutes * 2)} trajet ={' '}
+          <strong>{formatDuration(total)}</strong>
         </div>
       )}
 
       {/* Editable rows */}
       {rows.map(row => (
         <button
-          key={row.champ}
-          onClick={() => setSheet(row.champ)}
+          key={row.field}
+          onClick={() => setSheet(row.field)}
           style={{
             width: '100%',
             display: 'flex',
@@ -198,9 +201,9 @@ export function InterventionDetail({
                 whiteSpace: 'nowrap',
               }}
             >
-              {row.champ === 'compteRendu' && row.valeur.length > 30
-                ? row.valeur.slice(0, 30) + '…'
-                : row.valeur}
+              {row.field === 'workReport' && row.value.length > 30
+                ? row.value.slice(0, 30) + '…'
+                : row.value}
             </span>
             <span style={{ color: 'var(--encre-douce)' }}>›</span>
           </div>
@@ -263,15 +266,15 @@ export function InterventionDetail({
         )}
       </div>
 
-      {/* Modifications history */}
-      {modifications.length > 0 && (
+      {/* Audit log history */}
+      {auditLogs.length > 0 && (
         <div style={{ padding: '24px 16px 0' }}>
           <h3
             style={{ fontSize: 15, fontWeight: 600, color: 'var(--encre-douce)', marginBottom: 8 }}
           >
             Historique
           </h3>
-          {modifications.map(m => (
+          {auditLogs.map(m => (
             <div
               key={m.id}
               style={{
@@ -281,7 +284,7 @@ export function InterventionDetail({
                 borderBottom: '1px solid var(--trait)',
               }}
             >
-              {m.champ} : {m.ancienne ?? '—'} → {m.nouvelle ?? '—'} ·{' '}
+              {m.field} : {m.oldValue ?? '—'} → {m.newValue ?? '—'} ·{' '}
               {new Date(m.at).toLocaleString('fr-FR')}
             </div>
           ))}
@@ -290,48 +293,48 @@ export function InterventionDetail({
 
       {/* --- Sheets --- */}
 
-      {/* debutAt */}
-      <Sheet open={sheet === 'debutAt'} onOpenChange={o => !o && setSheet(null)}>
+      {/* startAt */}
+      <Sheet open={sheet === 'startAt'} onOpenChange={o => !o && setSheet(null)}>
         <SheetContent side="bottom" style={{ padding: 24 }}>
           <SheetHeader>
             <SheetTitle>Heure de début</SheetTitle>
           </SheetHeader>
           <EditTimeSheet
-            defaultTime={intervention.debutAt.slice(11, 16)}
-            dateRef={intervention.debutAt.slice(0, 10)}
-            onSave={val => save('debutAt', val)}
+            defaultTime={intervention.startAt.slice(11, 16)}
+            dateRef={intervention.startAt.slice(0, 10)}
+            onSave={val => save('startAt', val)}
             isPending={isPending}
           />
         </SheetContent>
       </Sheet>
 
-      {/* finAt */}
-      <Sheet open={sheet === 'finAt'} onOpenChange={o => !o && setSheet(null)}>
+      {/* endAt */}
+      <Sheet open={sheet === 'endAt'} onOpenChange={o => !o && setSheet(null)}>
         <SheetContent side="bottom" style={{ padding: 24 }}>
           <SheetHeader>
             <SheetTitle>Heure de fin</SheetTitle>
           </SheetHeader>
           <EditTimeSheet
-            defaultTime={intervention.finAt?.slice(11, 16) ?? ''}
-            dateRef={intervention.debutAt.slice(0, 10)}
-            onSave={val => save('finAt', val)}
+            defaultTime={intervention.endAt?.slice(11, 16) ?? ''}
+            dateRef={intervention.startAt.slice(0, 10)}
+            onSave={val => save('endAt', val)}
             isPending={isPending}
           />
         </SheetContent>
       </Sheet>
 
-      {/* trajetMinutes */}
-      <Sheet open={sheet === 'trajetMinutes'} onOpenChange={o => !o && setSheet(null)}>
+      {/* travelMinutes */}
+      <Sheet open={sheet === 'travelMinutes'} onOpenChange={o => !o && setSheet(null)}>
         <SheetContent side="bottom" style={{ padding: 24 }}>
           <SheetHeader>
             <SheetTitle>Trajet aller (min)</SheetTitle>
           </SheetHeader>
-          <EditTrajetSheet onSave={val => save('trajetMinutes', val)} isPending={isPending} />
+          <EditTrajetSheet onSave={val => save('travelMinutes', val)} isPending={isPending} />
         </SheetContent>
       </Sheet>
 
-      {/* compteRendu */}
-      <Sheet open={sheet === 'compteRendu'} onOpenChange={o => !o && setSheet(null)}>
+      {/* workReport */}
+      <Sheet open={sheet === 'workReport'} onOpenChange={o => !o && setSheet(null)}>
         <SheetContent
           side="bottom"
           style={{ padding: 24, maxHeight: '85vh', overflowY: 'auto' }}
@@ -339,132 +342,12 @@ export function InterventionDetail({
           <SheetHeader>
             <SheetTitle>Compte rendu</SheetTitle>
           </SheetHeader>
-          <ChipsCompteRendu
-            valeurInitiale={intervention.compteRendu ?? ''}
-            onSauvegarder={val => save('compteRendu', val)}
+          <WorkReportChips
+            initialValue={intervention.workReport ?? ''}
+            onSave={val => save('workReport', val)}
           />
         </SheetContent>
       </Sheet>
-    </div>
-  )
-}
-
-function EditTimeSheet({
-  defaultTime,
-  dateRef,
-  onSave,
-  isPending,
-}: {
-  defaultTime: string
-  dateRef: string
-  onSave: (iso: string) => void
-  isPending: boolean
-}) {
-  const [time, setTime] = useState(defaultTime)
-  return (
-    <div style={{ marginTop: 16 }}>
-      <input
-        type="time"
-        value={time}
-        onChange={e => setTime(e.target.value)}
-        style={{
-          width: '100%',
-          height: 64,
-          fontSize: 24,
-          border: '1px solid var(--trait)',
-          borderRadius: 8,
-          padding: '0 16px',
-        }}
-      />
-      <button
-        onClick={() => {
-          const iso = `${dateRef}T${time}:00.000Z`
-          onSave(iso)
-        }}
-        disabled={isPending || !time}
-        style={{
-          width: '100%',
-          height: 64,
-          marginTop: 16,
-          background: 'var(--acier)',
-          color: '#fff',
-          borderRadius: 12,
-          fontSize: 18,
-          fontWeight: 600,
-          border: 'none',
-        }}
-      >
-        Enregistrer
-      </button>
-    </div>
-  )
-}
-
-function EditTrajetSheet({
-  onSave,
-  isPending,
-}: {
-  onSave: (val: string) => void
-  isPending: boolean
-}) {
-  const [custom, setCustom] = useState('')
-  return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-        {[0, 5, 10, 15, 20, 30].map(p => (
-          <button
-            key={p}
-            onClick={() => onSave(String(p))}
-            disabled={isPending}
-            style={{
-              flex: '1 1 calc(33% - 8px)',
-              height: 64,
-              border: '2px solid var(--trait)',
-              borderRadius: 8,
-              background: 'var(--surface)',
-              fontSize: 18,
-              fontWeight: 600,
-              color: 'var(--encre)',
-            }}
-          >
-            {p} min
-          </button>
-        ))}
-      </div>
-      <input
-        type="number"
-        inputMode="numeric"
-        placeholder="Autre…"
-        value={custom}
-        onChange={e => setCustom(e.target.value)}
-        style={{
-          width: '100%',
-          height: 56,
-          border: '1px solid var(--trait)',
-          borderRadius: 8,
-          padding: '0 16px',
-          fontSize: 18,
-          marginBottom: 12,
-        }}
-      />
-      {custom && (
-        <button
-          onClick={() => onSave(custom)}
-          disabled={isPending}
-          style={{
-            width: '100%',
-            height: 64,
-            background: 'var(--acier)',
-            color: '#fff',
-            borderRadius: 12,
-            fontSize: 18,
-            fontWeight: 600,
-            border: 'none',
-          }}
-        >
-          Enregistrer {custom} min
-        </button>
-      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useOfflineSync } from '@/hooks/useOfflineSync'
 
-export function BandeauHorsLigne() {
+export function OfflineBanner() {
   const { pendingCount, isOnline } = useOfflineSync()
 
   if (isOnline && pendingCount === 0) return null

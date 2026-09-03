@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react'
 
 type Props = {
   message: string
-  onAnnuler: () => void
+  onCancel: () => void
   onExpire: () => void
 }
 
-export function BandeauAnnulation({ message, onAnnuler, onExpire }: Props) {
-  const [restant, setRestant] = useState(60)
+export function CancellationBanner({ message, onCancel, onExpire }: Props) {
+  const [remaining, setRemaining] = useState(60)
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setRestant(r => {
+      setRemaining(r => {
         if (r <= 1) { onExpire(); return 0 }
         return r - 1
       })
@@ -36,9 +36,9 @@ export function BandeauAnnulation({ message, onAnnuler, onExpire }: Props) {
       alignItems: 'center',
       zIndex: 50,
     }}>
-      <span style={{ fontSize: 15 }}>{message} ({restant}s)</span>
+      <span style={{ fontSize: 15 }}>{message} ({remaining}s)</span>
       <button
-        onClick={onAnnuler}
+        onClick={onCancel}
         style={{
           color: '#fff',
           fontWeight: 600,

@@ -9,7 +9,7 @@ type Props = {
   user: { name: string; username: string }
 }
 
-export function ReglagesView({ user }: Props) {
+export function SettingsView({ user }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 

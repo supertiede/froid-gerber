@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import Fuse from 'fuse.js'
-import { creerClient } from '@/actions/clients'
+import { createClient } from '@/actions/client/createClient'
 
-type Client = { id: string; nom: string; nomNormalise: string }
+type Client = { id: string; name: string; normalizedName: string }
 
 type Props = {
   clients: Client[]
-  onSelect: (client: Client | 'ATELIER') => void
+  onSelect: (client: Client | 'WORKSHOP') => void
   onClose: () => void
 }
 
@@ -20,7 +20,7 @@ function normaliser(s: string): string {
     .trim()
 }
 
-export function RechercheClientModal({ clients, onSelect, onClose }: Props) {
+export function ClientSearchModal({ clients, onSelect, onClose }: Props) {
   const [query, setQuery] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -36,10 +36,10 @@ export function RechercheClientModal({ clients, onSelect, onClose }: Props) {
     const clientsNormalises = clients.map(c => ({
       ...c,
       // Add normalized version for better matching
-      _nom: normaliser(c.nom),
+      _name: normaliser(c.name),
     }))
     return new Fuse(clientsNormalises, {
-      keys: ['nom', '_nom'],
+      keys: ['name', '_name'],
       threshold: 0.4,        // tolerates ~2 char differences
       ignoreLocation: true,  // finds substring anywhere in the string
       includeScore: true,
@@ -53,19 +53,19 @@ export function RechercheClientModal({ clients, onSelect, onClose }: Props) {
     const normQuery = normaliser(query)
     // Search both original query and normalized query
     const results = fuse.search(normQuery.length >= 2 ? normQuery : query)
-    return results.map(r => ({ id: r.item.id, nom: r.item.nom, nomNormalise: r.item.nomNormalise }))
+    return results.map(r => ({ id: r.item.id, name: r.item.name, normalizedName: r.item.normalizedName }))
   }, [query, fuse, clients])
 
   // Show "add new" suggestion if no exact match and query is meaningful
   const montrerAjout = query.trim().length >= 2 && !resultats.some(
-    c => normaliser(c.nom) === normaliser(query.trim())
+    c => normaliser(c.name) === normaliser(query.trim())
   )
 
   async function handleCreer() {
     if (!query.trim()) return
     setIsCreating(true)
     try {
-      const result = await creerClient(query.trim())
+      const result = await createClient(query.trim())
       if (result.ok && result.data) {
         onSelect(result.data)
       }
@@ -155,9 +155,9 @@ export function RechercheClientModal({ clients, onSelect, onClose }: Props) {
       {/* Scrollable results list */}
       <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
 
-        {/* ATELIER — always pinned at top */}
+        {/* WORKSHOP — always pinned at top */}
         <button
-          onClick={() => onSelect('ATELIER')}
+          onClick={() => onSelect('WORKSHOP')}
           style={{
             width: '100%',
             minHeight: 72,
@@ -206,7 +206,7 @@ export function RechercheClientModal({ clients, onSelect, onClose }: Props) {
               textAlign: 'left',
             }}
           >
-            <span style={{ fontSize: 18, color: 'var(--encre)' }}>{client.nom}</span>
+            <span style={{ fontSize: 18, color: 'var(--encre)' }}>{client.name}</span>
           </button>
         ))}
 

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { enregistrerCompteRendu } from '@/actions/interventions'
+import { saveWorkReport } from '@/actions/intervention/saveWorkReport'
 
 const CHIPS = [
   'Recharge fluide',
@@ -15,20 +15,20 @@ const CHIPS = [
   'Dépannage électrique',
 ]
 
-export function CompteRenduForm({
+export function WorkReportForm({
   interventionId,
-  compteRenduActuel,
+  workReport,
 }: {
   interventionId: string
-  compteRenduActuel: string
+  workReport: string
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [chipsSelectionnees, setChipsSelectionnees] = useState<Set<string>>(new Set())
-  const [texteLibre, setTexteLibre] = useState('')
+  const [selectedChips, setSelectedChips] = useState<Set<string>>(new Set())
+  const [freeText, setFreeText] = useState('')
 
   function toggleChip(chip: string) {
-    setChipsSelectionnees(prev => {
+    setSelectedChips(prev => {
       const next = new Set(prev)
       if (next.has(chip)) next.delete(chip)
       else next.add(chip)
@@ -36,14 +36,14 @@ export function CompteRenduForm({
     })
   }
 
-  function handleEnregistrer() {
-    const parties: string[] = []
-    if (chipsSelectionnees.size > 0) parties.push([...chipsSelectionnees].join(', '))
-    if (texteLibre.trim()) parties.push(texteLibre.trim())
-    const compteRendu = parties.join(' — ')
+  function handleSave() {
+    const parts: string[] = []
+    if (selectedChips.size > 0) parts.push([...selectedChips].join(', '))
+    if (freeText.trim()) parts.push(freeText.trim())
+    const report = parts.join(' — ')
 
     startTransition(async () => {
-      await enregistrerCompteRendu(interventionId, compteRendu)
+      await saveWorkReport(interventionId, report)
       if ('vibrate' in navigator) navigator.vibrate(15)
       router.push('/interventions')
       router.refresh()
@@ -56,7 +56,6 @@ export function CompteRenduForm({
         Qu&apos;est-ce que vous avez fait ?
       </h2>
 
-      {/* Chips */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
         {CHIPS.map(chip => (
           <button
@@ -65,11 +64,11 @@ export function CompteRenduForm({
             style={{
               padding: '10px 16px',
               borderRadius: 24,
-              border: `2px solid ${chipsSelectionnees.has(chip) ? 'var(--acier)' : 'var(--trait)'}`,
-              background: chipsSelectionnees.has(chip) ? 'rgba(11,95,165,0.1)' : 'var(--surface)',
-              color: chipsSelectionnees.has(chip) ? 'var(--acier)' : 'var(--encre)',
+              border: `2px solid ${selectedChips.has(chip) ? 'var(--acier)' : 'var(--trait)'}`,
+              background: selectedChips.has(chip) ? 'rgba(11,95,165,0.1)' : 'var(--surface)',
+              color: selectedChips.has(chip) ? 'var(--acier)' : 'var(--encre)',
               fontSize: 15,
-              fontWeight: chipsSelectionnees.has(chip) ? 600 : 400,
+              fontWeight: selectedChips.has(chip) ? 600 : 400,
               minHeight: 44,
               cursor: 'pointer',
             }}
@@ -79,10 +78,9 @@ export function CompteRenduForm({
         ))}
       </div>
 
-      {/* Free text */}
       <textarea
-        value={texteLibre}
-        onChange={e => setTexteLibre(e.target.value)}
+        value={freeText}
+        onChange={e => setFreeText(e.target.value)}
         placeholder="Ajouter un détail… (la dictée vocale du clavier fonctionne ici)"
         rows={3}
         style={{
@@ -99,10 +97,9 @@ export function CompteRenduForm({
         }}
       />
 
-      {/* Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button
-          onClick={handleEnregistrer}
+          onClick={handleSave}
           disabled={isPending}
           style={{
             height: 96,

@@ -1,6 +1,6 @@
 'use client'
 
-import { Chrono } from './Chrono'
+import { Timer } from './Timer'
 import type { EtatJournee } from '@/lib/etat-journee'
 
 const CONFIG: Record<EtatJournee, { bg: string; label: string }> = {
@@ -13,15 +13,15 @@ const CONFIG: Record<EtatJournee, { bg: string; label: string }> = {
 }
 
 type Props = {
-  etat: EtatJournee
-  clientNom?: string
-  debutChronoAt: number | null
-  arriveeLabel?: string
+  status: EtatJournee
+  clientName?: string
+  chronoStartAt: number | null
+  arrivalLabel?: string
 }
 
-export function BandeauEtat({ etat, clientNom, debutChronoAt, arriveeLabel }: Props) {
-  const { bg, label } = CONFIG[etat]
-  const displayLabel = etat === 'EN_INTERVENTION' && clientNom ? clientNom : label
+export function StatusBanner({ status, clientName, chronoStartAt, arrivalLabel }: Props) {
+  const { bg, label } = CONFIG[status]
+  const displayLabel = status === 'EN_INTERVENTION' && clientName ? clientName : label
 
   return (
     <div style={{
@@ -36,12 +36,12 @@ export function BandeauEtat({ etat, clientNom, debutChronoAt, arriveeLabel }: Pr
       <span style={{ fontSize: 28, fontWeight: 600, color: '#fff', textAlign: 'center' }}>
         {displayLabel}
       </span>
-      {debutChronoAt && (
-        <Chrono startAt={debutChronoAt} />
+      {chronoStartAt && (
+        <Timer startAt={chronoStartAt} />
       )}
-      {arriveeLabel && (
+      {arrivalLabel && (
         <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginTop: 4 }}>
-          {arriveeLabel}
+          {arrivalLabel}
         </span>
       )}
     </div>

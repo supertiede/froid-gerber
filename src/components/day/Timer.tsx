@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { formatDuree } from '@/lib/temps'
+import { formatDuration } from '@/lib/time/formatDuration'
 
-export function Chrono({ startAt }: { startAt: number }) {
+export function Timer({ startAt }: { startAt: number }) {
   const [minutes, setMinutes] = useState(() =>
     Math.floor((Date.now() - startAt) / 60000)
   )
@@ -23,7 +23,7 @@ export function Chrono({ startAt }: { startAt: number }) {
       fontVariantNumeric: 'tabular-nums',
       letterSpacing: '-0.02em',
     }}>
-      {formatDuree(minutes)}
+      {formatDuration(minutes)}
     </span>
   )
 }
