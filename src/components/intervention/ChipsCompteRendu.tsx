@@ -1,0 +1,95 @@
+'use client'
+
+import { useState } from 'react'
+
+const CHIPS = [
+  'Recharge fluide',
+  'Remplacement compresseur',
+  "Contrôle d'étanchéité",
+  'Dégivrage',
+  'Devis à faire',
+  'Retour prévu',
+  'Maintenance préventive',
+  'Dépannage électrique',
+]
+
+export function ChipsCompteRendu({
+  valeurInitiale,
+  onSauvegarder,
+}: {
+  valeurInitiale: string
+  onSauvegarder: (val: string) => void
+}) {
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [texte, setTexte] = useState(valeurInitiale)
+
+  function toggle(chip: string) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(chip) ? next.delete(chip) : next.add(chip)
+      return next
+    })
+  }
+
+  function handleSave() {
+    const parts: string[] = []
+    if (selected.size > 0) parts.push([...selected].join(', '))
+    if (texte.trim()) parts.push(texte.trim())
+    onSauvegarder(parts.join(' — '))
+  }
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        {CHIPS.map(chip => (
+          <button
+            key={chip}
+            onClick={() => toggle(chip)}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 24,
+              border: `2px solid ${selected.has(chip) ? 'var(--acier)' : 'var(--trait)'}`,
+              background: selected.has(chip) ? 'rgba(11,95,165,0.1)' : 'var(--surface)',
+              color: selected.has(chip) ? 'var(--acier)' : 'var(--encre)',
+              fontSize: 15,
+              minHeight: 44,
+            }}
+          >
+            {chip}
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={texte}
+        onChange={e => setTexte(e.target.value)}
+        placeholder="Détails supplémentaires…"
+        rows={3}
+        style={{
+          width: '100%',
+          padding: 12,
+          border: '1px solid var(--trait)',
+          borderRadius: 8,
+          fontSize: 18,
+          marginBottom: 16,
+          resize: 'none',
+          color: 'var(--encre)',
+        }}
+      />
+      <button
+        onClick={handleSave}
+        style={{
+          width: '100%',
+          height: 64,
+          background: 'var(--acier)',
+          color: '#fff',
+          borderRadius: 12,
+          fontSize: 18,
+          fontWeight: 600,
+          border: 'none',
+        }}
+      >
+        Enregistrer
+      </button>
+    </div>
+  )
+}
