@@ -16,6 +16,7 @@ import {
   reprendreJournee,
 } from '@/actions/pointage'
 import { terminerIntervention } from '@/actions/interventions'
+import { enqueueAction, removeAction } from '@/lib/outbox'
 import type { EtatJournee } from '@/lib/etat-journee'
 import { formatHeure, formatDuree } from '@/lib/temps'
 import { dureePausesMinutes } from '@/lib/calculs'
@@ -131,6 +132,56 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
     rafraichir()
   }
 
+  async function executerAvecOutbox<T>(
+    cleClient: string,
+    type: string,
+    payload: Record<string, unknown>,
+    actionEnLigne: () => Promise<{ ok: true } | { ok: true; data: T } | { ok: false; error: string }>,
+    etatOptimiste: EtatJournee,
+    messageAnnulation: string,
+    actionAnnulation: () => Promise<void>,
+  ) {
+    if (loading) return
+    vibrer()
+    setLoading(true)
+    setErreur(null)
+    setEtat(etatOptimiste)
+
+    if (!navigator.onLine) {
+      // Enqueue for later replay
+      await enqueueAction({ id: cleClient, type, payload, createdAt: Date.now() })
+      setAnnulation({
+        message: `${messageAnnulation} (hors ligne)`,
+        onAnnuler: async () => {
+          setAnnulation(null)
+          await removeAction(cleClient)
+          setEtat(etatInitial)
+        },
+      })
+      setLoading(false)
+      return
+    }
+
+    const result = await actionEnLigne()
+
+    if (!result.ok) {
+      setErreur((result as { ok: false; error: string }).error)
+      setEtat(etatInitial)
+    } else {
+      setAnnulation({
+        message: messageAnnulation,
+        onAnnuler: async () => {
+          setAnnulation(null)
+          await actionAnnulation()
+          rafraichir()
+        },
+      })
+    }
+
+    setLoading(false)
+    rafraichir()
+  }
+
   function arriveeLabel(): string {
     if (!poste) return ''
     const parties = [`Arrivé ${formatHeure(new Date(poste.debutAt))}`]
@@ -146,7 +197,10 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
   const handleArriver = async () => {
     const cleClient = uuidv4()
-    await executer(
+    await executerAvecOutbox(
+      cleClient,
+      'arriver',
+      { cleClient },
       () => arriver(cleClient),
       'AU_TRAVAIL',
       `Arrivée enregistrée à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
@@ -159,7 +213,10 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
   const handlePauseDejeuner = async () => {
     const cleClient = uuidv4()
-    await executer(
+    await executerAvecOutbox(
+      cleClient,
+      'demarrerPause',
+      { type: 'DEJEUNER', cleClient },
       () => demarrerPause('DEJEUNER', cleClient),
       'PAUSE_DEJEUNER',
       'Pause déjeuner démarrée',
@@ -171,7 +228,10 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
   const handlePauseCourte = async () => {
     const cleClient = uuidv4()
-    await executer(
+    await executerAvecOutbox(
+      cleClient,
+      'demarrerPause',
+      { type: 'COURTE', cleClient },
       () => demarrerPause('COURTE', cleClient),
       'EN_PAUSE',
       'Pause démarrée',
@@ -183,12 +243,14 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
   const handleReprendreTravail = async () => {
     const cleClient = uuidv4()
-    await executer(
+    await executerAvecOutbox(
+      cleClient,
+      'reprendreTravail',
+      { cleClient },
       () => reprendreTravail(cleClient),
       'AU_TRAVAIL',
       'Reprise du travail enregistrée',
       async () => {
-        // Re-open the pause (no-op for now, page refresh will show it)
         rafraichir()
       },
     )
@@ -197,7 +259,10 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
   const handleTerminerJournee = async () => {
     const cleClient = uuidv4()
     const posteId = poste?.id
-    await executer(
+    await executerAvecOutbox(
+      cleClient,
+      'terminerJournee',
+      { cleClient },
       () => terminerJournee(cleClient),
       'JOURNEE_TERMINEE',
       `Journée terminée à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
@@ -209,7 +274,10 @@ export function EcranJournee({ etat: etatInitial, poste, interventionEnCours, pa
 
   const handleReprendreJournee = async () => {
     const cleClient = uuidv4()
-    await executer(
+    await executerAvecOutbox(
+      cleClient,
+      'reprendreJournee',
+      { cleClient },
       () => reprendreJournee(cleClient),
       'AU_TRAVAIL',
       'Journée reprise',
