@@ -1,5 +1,6 @@
 {
   "crons": [
-    { "path": "/api/cron/rapport-hebdo", "schedule": "59 22 * * 0" }
+    { "path": "/api/cron/rapport-hebdo", "schedule": "59 22 * * 0" },
+    { "path": "/api/cron/purge", "schedule": "0 3 1 * *" }
   ]
 }

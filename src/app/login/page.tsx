@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
@@ -36,11 +37,16 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center px-4" style={{ background: 'var(--fond)' }}>
+      <Image
+        src="/foird-gerber-logo.jpg"
+        alt="Froid Climatisation Gerber"
+        width={200}
+        height={67}
+        priority
+        style={{ objectFit: 'contain', marginBottom: 28 }}
+      />
       <div className="w-full max-w-sm" style={{ background: 'var(--surface)', borderRadius: 12, padding: 24, border: '1px solid var(--trait)' }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)', marginBottom: 8 }}>
-          Froid Gerber
-        </h1>
-        <p style={{ fontSize: 15, color: 'var(--encre-douce)', marginBottom: 32 }}>
+        <p style={{ fontSize: 18, fontWeight: 500, color: 'var(--encre)', marginBottom: 8 }}>
           Connexion à votre espace
         </p>
 

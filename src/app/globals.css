@@ -35,6 +35,18 @@ button, a, [role="button"] {
   cursor: pointer;
 }
 
+/* Focus visible — accessibilité clavier */
+:focus-visible {
+  outline: 3px solid var(--acier);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Supprimer le focus sur tap/clic */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* Chiffres tabulaires pour les durées */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
