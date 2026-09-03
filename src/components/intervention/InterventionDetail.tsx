@@ -117,7 +117,7 @@ export function InterventionDetail({
   ]
 
   return (
-    <div style={{ paddingBottom: 100 }}>
+    <div style={{ paddingBottom: 24 }}>
       {/* Header */}
       <div
         style={{
@@ -211,7 +211,7 @@ export function InterventionDetail({
       ))}
 
       {error && (
-        <p style={{ padding: '8px 16px', color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
+        <p role="alert" style={{ padding: '8px 16px', color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
       )}
 
       {/* Delete */}

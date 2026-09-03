@@ -44,6 +44,8 @@ export function WorkReportChips({
         {CHIPS.map(chip => (
           <button
             key={chip}
+            type="button"
+            aria-pressed={selected.has(chip)}
             onClick={() => toggle(chip)}
             style={{
               padding: '10px 16px',
@@ -60,13 +62,14 @@ export function WorkReportChips({
         ))}
       </div>
       <textarea
+        aria-label="Détails supplémentaires"
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder="Détails supplémentaires…"
         rows={3}
         style={{
           width: '100%',
-          padding: 12,
+          padding: '12px 16px',
           border: '1px solid var(--trait)',
           borderRadius: 8,
           fontSize: 18,

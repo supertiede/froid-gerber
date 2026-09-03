@@ -22,20 +22,23 @@ export function CancellationBanner({ message, onCancel, onExpire }: Props) {
   }, [onExpire])
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: 80,
-      left: 16,
-      right: 16,
-      background: 'var(--encre)',
-      color: '#fff',
-      borderRadius: 12,
-      padding: '12px 16px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      zIndex: 50,
-    }}>
+    <div
+      role="alert"
+      style={{
+        position: 'fixed',
+        bottom: 80,
+        left: 16,
+        right: 16,
+        background: 'var(--encre)',
+        color: '#fff',
+        borderRadius: 12,
+        padding: '14px 16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        zIndex: 50,
+      }}
+    >
       <span style={{ fontSize: 15 }}>{message} ({remaining}s)</span>
       <button
         onClick={onCancel}

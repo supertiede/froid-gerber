@@ -285,6 +285,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     <button
       onClick={onClick}
       disabled={loading}
+      aria-busy={loading}
       style={{
         width: 'calc(100% - 32px)',
         height: 96,
@@ -308,6 +309,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     <button
       onClick={onClick}
       disabled={loading}
+      aria-busy={loading}
       style={{
         flex: 1,
         height: 64,
@@ -344,15 +346,18 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
 
       <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {error && (
-          <div style={{
-            margin: '0 16px',
-            padding: '12px 16px',
-            background: 'rgba(163,43,36,0.1)',
-            border: '1px solid var(--rouge)',
-            borderRadius: 8,
-            color: 'var(--rouge)',
-            fontSize: 15,
-          }}>
+          <div
+            role="alert"
+            style={{
+              margin: '0 16px',
+              padding: '12px 16px',
+              background: 'rgba(163,43,36,0.1)',
+              border: '1px solid var(--rouge)',
+              borderRadius: 8,
+              color: 'var(--rouge)',
+              fontSize: 15,
+            }}
+          >
             {error}
           </div>
         )}

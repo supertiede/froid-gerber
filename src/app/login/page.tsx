@@ -40,10 +40,11 @@ export default function LoginPage() {
       <Image
         src="/foird-gerber-logo.jpg"
         alt="Froid Climatisation Gerber"
-        width={200}
-        height={67}
+        width={220}
+        height={78}
         priority
-        style={{ objectFit: 'contain', marginBottom: 28 }}
+        unoptimized
+        style={{ objectFit: 'contain', marginBottom: 32 }}
       />
       <div className="w-full max-w-sm" style={{ background: 'var(--surface)', borderRadius: 12, padding: 24, border: '1px solid var(--trait)' }}>
         <p style={{ fontSize: 18, fontWeight: 500, color: 'var(--encre)', marginBottom: 8 }}>
@@ -84,7 +85,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
+            <p role="alert" style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
           )}
 
           <Button

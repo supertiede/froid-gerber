@@ -48,6 +48,7 @@ export default function OubliPage() {
   const btnType = (label: string, type: EntryType) => (
     <button
       type="button"
+      aria-pressed={entryType === type}
       onClick={() => { setEntryType(type); setError('') }}
       style={{
         flex: 1,
@@ -67,7 +68,7 @@ export default function OubliPage() {
 
   if (success) {
     return (
-      <div style={{ padding: 24, textAlign: 'center', color: 'var(--vert)', fontSize: 20, fontWeight: 600 }}>
+      <div role="status" style={{ padding: 24, textAlign: 'center', color: 'var(--vert)', fontSize: 20, fontWeight: 600 }}>
         Pointage enregistré !
       </div>
     )
@@ -91,14 +92,16 @@ export default function OubliPage() {
       {entryType && (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Label style={{ fontSize: 16 }}>
+            <Label htmlFor="oubli-start" style={{ fontSize: 16 }}>
               {entryType === 'BREAK' ? 'Début de la pause' : 'Heure'}
             </Label>
             <Input
+              id="oubli-start"
               type="datetime-local"
               value={startTime}
               onChange={e => setStartTime(e.target.value)}
               required
+              aria-required="true"
               style={{ height: 56, fontSize: 16 }}
             />
           </div>
@@ -106,19 +109,22 @@ export default function OubliPage() {
           {entryType === 'BREAK' && (
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <Label style={{ fontSize: 16 }}>Fin de la pause</Label>
+                <Label htmlFor="oubli-end" style={{ fontSize: 16 }}>Fin de la pause</Label>
                 <Input
+                  id="oubli-end"
                   type="datetime-local"
                   value={endTime}
                   onChange={e => setEndTime(e.target.value)}
                   required
+                  aria-required="true"
                   style={{ height: 56, fontSize: 16 }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: 12 }}>
+              <div role="group" aria-label="Type de pause" style={{ display: 'flex', gap: 12 }}>
                 <button
                   type="button"
+                  aria-pressed={breakType === 'SHORT'}
                   onClick={() => setBreakType('SHORT')}
                   style={{
                     flex: 1,
@@ -136,6 +142,7 @@ export default function OubliPage() {
                 </button>
                 <button
                   type="button"
+                  aria-pressed={breakType === 'LUNCH'}
                   onClick={() => setBreakType('LUNCH')}
                   style={{
                     flex: 1,
@@ -156,7 +163,7 @@ export default function OubliPage() {
           )}
 
           {error && (
-            <p style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
+            <p role="alert" style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
           )}
 
           <Button

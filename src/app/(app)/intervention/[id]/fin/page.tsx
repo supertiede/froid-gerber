@@ -28,7 +28,7 @@ export default async function FinInterventionPage({
     : null
 
   return (
-    <div style={{ padding: '16px 16px 100px' }}>
+    <div style={{ padding: '16px 16px 24px' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>
           {intervention.type === 'WORKSHOP' ? 'Atelier' : intervention.client?.name}

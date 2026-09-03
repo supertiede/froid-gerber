@@ -75,8 +75,10 @@ export function ClientSearchModal({ clients, onSelect, onClose }: Props) {
   }
 
   return (
-    // Full-screen overlay
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Rechercher un client"
       style={{
         position: 'fixed',
         inset: 0,
@@ -113,7 +115,8 @@ export function ClientSearchModal({ clients, onSelect, onClose }: Props) {
         </button>
         <input
           ref={inputRef}
-          type="text"
+          type="search"
+          aria-label="Rechercher un client"
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Chercher un client…"

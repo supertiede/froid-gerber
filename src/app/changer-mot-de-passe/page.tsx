@@ -57,10 +57,11 @@ export default function ChangerMotDePassePage() {
       <Image
         src="/foird-gerber-logo.jpg"
         alt="Froid Climatisation Gerber"
-        width={180}
-        height={60}
+        width={220}
+        height={78}
         priority
-        style={{ objectFit: 'contain', marginBottom: 24 }}
+        unoptimized
+        style={{ objectFit: 'contain', marginBottom: 32 }}
       />
 
       <div

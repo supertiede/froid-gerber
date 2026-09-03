@@ -24,15 +24,19 @@ export function StatusBanner({ status, clientName, chronoStartAt, arrivalLabel }
   const displayLabel = status === 'EN_INTERVENTION' && clientName ? clientName : label
 
   return (
-    <div style={{
-      background: bg,
-      padding: '32px 16px 24px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: 8,
-      minHeight: 180,
-    }}>
+    <div
+      role="status"
+      aria-label={`Statut : ${displayLabel}`}
+      style={{
+        background: bg,
+        padding: '24px 16px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 8,
+        minHeight: 180,
+      }}
+    >
       <span style={{ fontSize: 28, fontWeight: 600, color: '#fff', textAlign: 'center' }}>
         {displayLabel}
       </span>
