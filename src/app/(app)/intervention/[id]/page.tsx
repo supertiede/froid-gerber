@@ -11,10 +11,10 @@ export default async function InterventionDetailPage({
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/login')
 
-  const [intervention, modifications] = await Promise.all([
+  const [intervention, auditLogs] = await Promise.all([
     prisma.intervention.findUnique({ where: { id }, include: { client: true } }),
-    prisma.modification.findMany({
-      where: { entite: 'Intervention', entiteId: id },
+    prisma.auditLog.findMany({
+      where: { entity: 'Intervention', entityId: id },
       orderBy: { at: 'desc' },
       take: 10,
     }),
@@ -25,25 +25,30 @@ export default async function InterventionDetailPage({
   return (
     <InterventionDetail
       intervention={{
-        ...intervention,
-        debutAt: intervention.debutAt.toISOString(),
-        finAt: intervention.finAt?.toISOString() ?? null,
+        id: intervention.id,
+        type: intervention.type,
+        startAt: intervention.startAt.toISOString(),
+        endAt: intervention.endAt?.toISOString() ?? null,
+        travelMinutes: intervention.travelMinutes,
+        workReport: intervention.workReport,
+        origin: intervention.origin,
         createdAt: intervention.createdAt.toISOString(),
         updatedAt: intervention.updatedAt.toISOString(),
-        client: intervention.client
-          ? {
-              id: intervention.client.id,
-              nom: intervention.client.nom,
-              nomNormalise: intervention.client.nomNormalise,
-              actif: intervention.client.actif,
-              createdAt: intervention.client.createdAt.toISOString(),
-              creeParId: intervention.client.creeParId,
-            }
-          : null,
+        client: intervention.client ? {
+          id: intervention.client.id,
+          name: intervention.client.name,
+          normalizedName: intervention.client.normalizedName,
+          active: intervention.client.active,
+          createdAt: intervention.client.createdAt.toISOString(),
+          createdById: intervention.client.createdById,
+        } : null,
       }}
-      modifications={modifications.map(m => ({
-        ...m,
-        at: m.at.toISOString(),
+      auditLogs={auditLogs.map(log => ({
+        id: log.id,
+        field: log.field,
+        oldValue: log.oldValue,
+        newValue: log.newValue,
+        at: log.at.toISOString(),
       }))}
     />
   )

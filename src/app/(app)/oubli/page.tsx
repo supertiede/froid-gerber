@@ -3,59 +3,58 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
-import { pointageManuel } from '@/actions/pointage'
+import { manualTimestamp } from '@/actions/shift/manualTimestamp'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type TypeSaisie = 'ARRIVEE' | 'DEPART' | 'PAUSE' | null
+type EntryType = 'ARRIVAL' | 'DEPARTURE' | 'BREAK' | null
 
 export default function OubliPage() {
   const router = useRouter()
-  const [typeSaisie, setTypeSaisie] = useState<TypeSaisie>(null)
-  const [heureDebut, setHeureDebut] = useState('')
-  const [heureFin, setHeureFin] = useState('')
-  const [typePause, setTypePause] = useState<'DEJEUNER' | 'COURTE'>('COURTE')
+  const [entryType, setEntryType] = useState<EntryType>(null)
+  const [startTime, setStartTime] = useState('')
+  const [endTime, setEndTime] = useState('')
+  const [breakType, setBreakType] = useState<'SHORT' | 'LUNCH'>('SHORT')
   const [loading, setLoading] = useState(false)
-  const [erreur, setErreur] = useState('')
-  const [succes, setSucces] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setErreur('')
+    setError('')
 
-    if (!typeSaisie) return
+    if (!entryType) return
 
-    const cleClient = uuidv4()
-    const result = await pointageManuel({
-      type: typeSaisie,
-      heureDebut: new Date(heureDebut).toISOString(),
-      heureFin: typeSaisie === 'PAUSE' && heureFin ? new Date(heureFin).toISOString() : undefined,
-      typePause: typeSaisie === 'PAUSE' ? typePause : undefined,
-      cleClient,
+    const result = await manualTimestamp({
+      type: entryType,
+      startTime: new Date(startTime).toISOString(),
+      endTime: entryType === 'BREAK' && endTime ? new Date(endTime).toISOString() : undefined,
+      breakType: entryType === 'BREAK' ? breakType : undefined,
+      idempotencyKey: uuidv4(),
     })
 
     setLoading(false)
 
     if (!result.ok) {
-      setErreur(result.error)
+      setError(result.error)
     } else {
-      setSucces(true)
+      setSuccess(true)
       setTimeout(() => router.push('/'), 1500)
     }
   }
 
-  const btnType = (label: string, type: TypeSaisie) => (
+  const btnType = (label: string, type: EntryType) => (
     <button
       type="button"
-      onClick={() => { setTypeSaisie(type); setErreur('') }}
+      onClick={() => { setEntryType(type); setError('') }}
       style={{
         flex: 1,
         height: 64,
         borderRadius: 12,
-        background: typeSaisie === type ? 'var(--acier)' : 'transparent',
-        color: typeSaisie === type ? '#fff' : 'var(--acier)',
+        background: entryType === type ? 'var(--acier)' : 'transparent',
+        color: entryType === type ? '#fff' : 'var(--acier)',
         fontSize: 15,
         fontWeight: 600,
         border: '2px solid var(--acier)',
@@ -66,7 +65,7 @@ export default function OubliPage() {
     </button>
   )
 
-  if (succes) {
+  if (success) {
     return (
       <div style={{ padding: 24, textAlign: 'center', color: 'var(--vert)', fontSize: 20, fontWeight: 600 }}>
         Pointage enregistré !
@@ -83,36 +82,35 @@ export default function OubliPage() {
         Corrigez ou complétez un pointage oublié (7 jours max).
       </p>
 
-      {/* Sélection du type */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-        {btnType('Arrivée', 'ARRIVEE')}
-        {btnType('Départ', 'DEPART')}
-        {btnType('Pause', 'PAUSE')}
+        {btnType('Arrivée', 'ARRIVAL')}
+        {btnType('Départ', 'DEPARTURE')}
+        {btnType('Pause', 'BREAK')}
       </div>
 
-      {typeSaisie && (
+      {entryType && (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <Label style={{ fontSize: 16 }}>
-              {typeSaisie === 'PAUSE' ? 'Début de la pause' : 'Heure'}
+              {entryType === 'BREAK' ? 'Début de la pause' : 'Heure'}
             </Label>
             <Input
               type="datetime-local"
-              value={heureDebut}
-              onChange={e => setHeureDebut(e.target.value)}
+              value={startTime}
+              onChange={e => setStartTime(e.target.value)}
               required
               style={{ height: 56, fontSize: 16 }}
             />
           </div>
 
-          {typeSaisie === 'PAUSE' && (
+          {entryType === 'BREAK' && (
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <Label style={{ fontSize: 16 }}>Fin de la pause</Label>
                 <Input
                   type="datetime-local"
-                  value={heureFin}
-                  onChange={e => setHeureFin(e.target.value)}
+                  value={endTime}
+                  onChange={e => setEndTime(e.target.value)}
                   required
                   style={{ height: 56, fontSize: 16 }}
                 />
@@ -121,13 +119,13 @@ export default function OubliPage() {
               <div style={{ display: 'flex', gap: 12 }}>
                 <button
                   type="button"
-                  onClick={() => setTypePause('COURTE')}
+                  onClick={() => setBreakType('SHORT')}
                   style={{
                     flex: 1,
                     height: 56,
                     borderRadius: 8,
-                    background: typePause === 'COURTE' ? 'var(--ambre)' : 'transparent',
-                    color: typePause === 'COURTE' ? '#fff' : 'var(--ambre)',
+                    background: breakType === 'SHORT' ? 'var(--ambre)' : 'transparent',
+                    color: breakType === 'SHORT' ? '#fff' : 'var(--ambre)',
                     fontSize: 15,
                     fontWeight: 600,
                     border: '2px solid var(--ambre)',
@@ -138,13 +136,13 @@ export default function OubliPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTypePause('DEJEUNER')}
+                  onClick={() => setBreakType('LUNCH')}
                   style={{
                     flex: 1,
                     height: 56,
                     borderRadius: 8,
-                    background: typePause === 'DEJEUNER' ? 'var(--ambre)' : 'transparent',
-                    color: typePause === 'DEJEUNER' ? '#fff' : 'var(--ambre)',
+                    background: breakType === 'LUNCH' ? 'var(--ambre)' : 'transparent',
+                    color: breakType === 'LUNCH' ? '#fff' : 'var(--ambre)',
                     fontSize: 15,
                     fontWeight: 600,
                     border: '2px solid var(--ambre)',
@@ -157,8 +155,8 @@ export default function OubliPage() {
             </>
           )}
 
-          {erreur && (
-            <p style={{ color: 'var(--rouge)', fontSize: 15 }}>{erreur}</p>
+          {error && (
+            <p style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
           )}
 
           <Button

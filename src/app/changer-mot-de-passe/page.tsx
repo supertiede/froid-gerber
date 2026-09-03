@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
-import { marquerMotDePasseChange } from '@/actions/auth'
+import { markPasswordChanged } from '@/actions/auth/markPasswordChanged'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -39,7 +39,7 @@ export default function ChangerMotDePassePage() {
         return
       }
 
-      await marquerMotDePasseChange()
+      await markPasswordChanged()
       router.push('/')
       router.refresh()
     } catch {

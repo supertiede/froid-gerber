@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
 
   // Force password change on first login
   if (
-    session.user.doitChangerMotDePasse &&
+    session.user.mustChangePassword &&
     pathname !== '/changer-mot-de-passe'
   ) {
     return NextResponse.redirect(new URL('/changer-mot-de-passe', request.url))

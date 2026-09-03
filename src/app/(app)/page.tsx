@@ -2,101 +2,102 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { debutJourneeParis, finJourneeParis, maintenant } from '@/lib/temps'
+import { startOfDayParis } from '@/lib/time/startOfDayParis'
+import { endOfDayParis } from '@/lib/time/endOfDayParis'
+import { now } from '@/lib/time/now'
 import { calculerEtat } from '@/lib/etat-journee'
-import { EcranJournee } from '@/components/journee/EcranJournee'
+import { DayScreen } from '@/components/day/DayScreen'
 
 export default async function HomePage() {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/login')
 
-  // Redirect to password change if needed
-  if (session.user.doitChangerMotDePasse) {
+  if (session.user.mustChangePassword) {
     redirect('/changer-mot-de-passe')
   }
 
   const userId = session.user.id
-  const now = maintenant()
-  const debut = debutJourneeParis(now)
-  const fin = finJourneeParis(now)
+  const today = now()
+  const dayStart = startOfDayParis(today)
+  const dayEnd = endOfDayParis(today)
 
-  const [poste, interventionEnCours] = await Promise.all([
-    prisma.poste.findFirst({
-      where: { userId, debutAt: { gte: debut, lte: fin } },
-      include: { pauses: true },
-      orderBy: { debutAt: 'desc' },
+  const [shift, openIntervention] = await Promise.all([
+    prisma.shift.findFirst({
+      where: { userId, startAt: { gte: dayStart, lte: dayEnd } },
+      include: { breaks: true },
+      orderBy: { startAt: 'desc' },
     }),
     prisma.intervention.findFirst({
-      where: { userId, finAt: null },
+      where: { userId, endAt: null },
       include: { client: true },
     }),
   ])
 
-  const etat = calculerEtat(poste, interventionEnCours)
-  const pauseEnCours = poste?.pauses.find(p => !p.finAt) ?? null
+  const status = calculerEtat(shift, openIntervention)
+  const openBreak = shift?.breaks.find(b => !b.endAt) ?? null
 
-  let debutChronoAt: number | null = null
-  if (etat === 'AU_TRAVAIL') debutChronoAt = poste!.debutAt.getTime()
-  if (etat === 'EN_PAUSE' || etat === 'PAUSE_DEJEUNER') debutChronoAt = pauseEnCours!.debutAt.getTime()
-  if (etat === 'EN_INTERVENTION') debutChronoAt = interventionEnCours!.debutAt.getTime()
+  let chronoStartAt: number | null = null
+  if (status === 'AU_TRAVAIL') chronoStartAt = shift!.startAt.getTime()
+  if (status === 'EN_PAUSE' || status === 'PAUSE_DEJEUNER') chronoStartAt = openBreak!.startAt.getTime()
+  if (status === 'EN_INTERVENTION') chronoStartAt = openIntervention!.startAt.getTime()
 
   return (
-    <EcranJournee
-      etat={etat}
-      poste={poste ? {
-        id: poste.id,
-        userId: poste.userId,
-        debutAt: poste.debutAt.toISOString(),
-        finAt: poste.finAt?.toISOString() ?? null,
-        origineDebut: poste.origineDebut,
-        origineFin: poste.origineFin,
-        cleClient: poste.cleClient,
-        createdAt: poste.createdAt.toISOString(),
-        updatedAt: poste.updatedAt.toISOString(),
-        pauses: poste.pauses.map(p => ({
-          id: p.id,
-          posteId: p.posteId,
-          type: p.type,
-          debutAt: p.debutAt.toISOString(),
-          finAt: p.finAt?.toISOString() ?? null,
-          origineDebut: p.origineDebut,
-          origineFin: p.origineFin,
-          cleClient: p.cleClient,
-          createdAt: p.createdAt.toISOString(),
-          updatedAt: p.updatedAt.toISOString(),
+    <DayScreen
+      status={status}
+      shift={shift ? {
+        id: shift.id,
+        userId: shift.userId,
+        startAt: shift.startAt.toISOString(),
+        endAt: shift.endAt?.toISOString() ?? null,
+        startOrigin: shift.startOrigin,
+        endOrigin: shift.endOrigin ?? null,
+        idempotencyKey: shift.idempotencyKey ?? null,
+        createdAt: shift.createdAt.toISOString(),
+        updatedAt: shift.updatedAt.toISOString(),
+        breaks: shift.breaks.map(b => ({
+          id: b.id,
+          shiftId: b.shiftId,
+          type: b.type,
+          startAt: b.startAt.toISOString(),
+          endAt: b.endAt?.toISOString() ?? null,
+          startOrigin: b.startOrigin,
+          endOrigin: b.endOrigin ?? null,
+          idempotencyKey: b.idempotencyKey ?? null,
+          createdAt: b.createdAt.toISOString(),
+          updatedAt: b.updatedAt.toISOString(),
         })),
       } : null}
-      interventionEnCours={interventionEnCours ? {
-        id: interventionEnCours.id,
-        userId: interventionEnCours.userId,
-        type: interventionEnCours.type,
-        clientId: interventionEnCours.clientId,
-        debutAt: interventionEnCours.debutAt.toISOString(),
-        finAt: interventionEnCours.finAt?.toISOString() ?? null,
-        trajetMinutes: interventionEnCours.trajetMinutes,
-        compteRendu: interventionEnCours.compteRendu,
-        origine: interventionEnCours.origine,
-        cleClient: interventionEnCours.cleClient,
-        createdAt: interventionEnCours.createdAt.toISOString(),
-        updatedAt: interventionEnCours.updatedAt.toISOString(),
-        client: interventionEnCours.client ? {
-          id: interventionEnCours.client.id,
-          nom: interventionEnCours.client.nom,
+      openIntervention={openIntervention ? {
+        id: openIntervention.id,
+        userId: openIntervention.userId,
+        type: openIntervention.type,
+        clientId: openIntervention.clientId,
+        startAt: openIntervention.startAt.toISOString(),
+        endAt: openIntervention.endAt?.toISOString() ?? null,
+        travelMinutes: openIntervention.travelMinutes,
+        workReport: openIntervention.workReport,
+        origin: openIntervention.origin,
+        idempotencyKey: openIntervention.idempotencyKey ?? null,
+        createdAt: openIntervention.createdAt.toISOString(),
+        updatedAt: openIntervention.updatedAt.toISOString(),
+        client: openIntervention.client ? {
+          id: openIntervention.client.id,
+          name: openIntervention.client.name,
         } : null,
       } : null}
-      pauseEnCours={pauseEnCours ? {
-        id: pauseEnCours.id,
-        posteId: pauseEnCours.posteId,
-        type: pauseEnCours.type,
-        debutAt: pauseEnCours.debutAt.toISOString(),
-        finAt: pauseEnCours.finAt?.toISOString() ?? null,
-        origineDebut: pauseEnCours.origineDebut,
-        origineFin: pauseEnCours.origineFin,
-        cleClient: pauseEnCours.cleClient,
-        createdAt: pauseEnCours.createdAt.toISOString(),
-        updatedAt: pauseEnCours.updatedAt.toISOString(),
+      openBreak={openBreak ? {
+        id: openBreak.id,
+        shiftId: openBreak.shiftId,
+        type: openBreak.type,
+        startAt: openBreak.startAt.toISOString(),
+        endAt: openBreak.endAt?.toISOString() ?? null,
+        startOrigin: openBreak.startOrigin,
+        endOrigin: openBreak.endOrigin ?? null,
+        idempotencyKey: openBreak.idempotencyKey ?? null,
+        createdAt: openBreak.createdAt.toISOString(),
+        updatedAt: openBreak.updatedAt.toISOString(),
       } : null}
-      debutChronoAt={debutChronoAt}
+      chronoStartAt={chronoStartAt}
       userName={session.user.name}
     />
   )

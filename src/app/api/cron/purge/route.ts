@@ -10,22 +10,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const cinqAnsAgo = new Date()
-  cinqAnsAgo.setFullYear(cinqAnsAgo.getFullYear() - 5)
+  const fiveYearsAgo = new Date()
+  fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5)
 
   try {
-    const [interventions, postes, modifications, rapports] = await Promise.all([
-      prisma.intervention.deleteMany({ where: { createdAt: { lt: cinqAnsAgo } } }),
-      // Cascades to Pause
-      prisma.poste.deleteMany({ where: { createdAt: { lt: cinqAnsAgo } } }),
-      prisma.modification.deleteMany({ where: { at: { lt: cinqAnsAgo } } }),
-      prisma.rapportHebdo.deleteMany({ where: { envoyeAt: { lt: cinqAnsAgo } } }),
+    const [interventions, shifts, auditLogs, reports] = await Promise.all([
+      prisma.intervention.deleteMany({ where: { createdAt: { lt: fiveYearsAgo } } }),
+      prisma.shift.deleteMany({ where: { createdAt: { lt: fiveYearsAgo } } }),
+      prisma.auditLog.deleteMany({ where: { at: { lt: fiveYearsAgo } } }),
+      prisma.weeklyReport.deleteMany({ where: { sentAt: { lt: fiveYearsAgo } } }),
     ])
 
-    const total = interventions.count + postes.count + modifications.count + rapports.count
-    console.log(`[purge] Supprimé : ${postes.count} postes, ${interventions.count} interventions, ${modifications.count} modifications, ${rapports.count} rapports (total : ${total})`)
+    const total = interventions.count + shifts.count + auditLogs.count + reports.count
+    console.log(`[purge] Supprimé : ${shifts.count} shifts, ${interventions.count} interventions, ${auditLogs.count} auditLogs, ${reports.count} reports (total : ${total})`)
 
-    return NextResponse.json({ ok: true, supprime: { postes: postes.count, interventions: interventions.count, modifications: modifications.count, rapports: rapports.count } })
+    return NextResponse.json({ ok: true, deleted: { shifts: shifts.count, interventions: interventions.count, auditLogs: auditLogs.count, reports: reports.count } })
   } catch (err) {
     console.error('[purge] Erreur :', err)
     return NextResponse.json({ error: 'Erreur purge' }, { status: 500 })

@@ -2,8 +2,10 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
-import { formatHeure, formatDuree, diffMinutes } from '@/lib/temps'
-import { tempsInterventionMinutes } from '@/lib/calculs'
+import { formatTime } from '@/lib/time/formatTime'
+import { formatDuration } from '@/lib/time/formatDuration'
+import { diffMinutes } from '@/lib/time/diffMinutes'
+import { interventionMinutes } from '@/lib/calculations/interventionMinutes'
 import { toZonedTime, format } from 'date-fns-tz'
 import { fr } from 'date-fns/locale'
 import Link from 'next/link'
@@ -17,19 +19,18 @@ export default async function InterventionsPage() {
   const interventions = await prisma.intervention.findMany({
     where: { userId: session.user.id },
     include: { client: true },
-    orderBy: { debutAt: 'desc' },
+    orderBy: { startAt: 'desc' },
     take: 100,
   })
 
-  // Group by day (Paris time)
-  const groupes = new Map<string, typeof interventions>()
+  const grouped = new Map<string, typeof interventions>()
   for (const interv of interventions) {
-    const jourLabel = format(toZonedTime(interv.debutAt, TZ), 'EEEE d MMMM yyyy', {
+    const dayLabel = format(toZonedTime(interv.startAt, TZ), 'EEEE d MMMM yyyy', {
       timeZone: TZ,
       locale: fr,
     })
-    if (!groupes.has(jourLabel)) groupes.set(jourLabel, [])
-    groupes.get(jourLabel)!.push(interv)
+    if (!grouped.has(dayLabel)) grouped.set(dayLabel, [])
+    grouped.get(dayLabel)!.push(interv)
   }
 
   if (interventions.length === 0) {
@@ -49,8 +50,8 @@ export default async function InterventionsPage() {
         Interventions
       </h1>
 
-      {[...groupes.entries()].map(([jour, list]) => (
-        <div key={jour} style={{ marginBottom: 24 }}>
+      {[...grouped.entries()].map(([day, list]) => (
+        <div key={day} style={{ marginBottom: 24 }}>
           <h2 style={{
             fontSize: 13,
             fontWeight: 600,
@@ -60,13 +61,13 @@ export default async function InterventionsPage() {
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
           }}>
-            {jour}
+            {day}
           </h2>
           {list.map(interv => {
-            const duree = interv.finAt ? diffMinutes(interv.debutAt, interv.finAt) : null
-            const total = interv.finAt ? tempsInterventionMinutes(interv) : null
-            const enCours = !interv.finAt
-            const sansCompteRendu = interv.finAt && !interv.compteRendu
+            const duration = interv.endAt ? diffMinutes(interv.startAt, interv.endAt) : null
+            const total = interv.endAt ? interventionMinutes({ startAt: interv.startAt, endAt: interv.endAt, travelMinutes: interv.travelMinutes }) : null
+            const inProgress = !interv.endAt
+            const missingReport = interv.endAt && !interv.workReport
 
             return (
               <Link
@@ -84,9 +85,9 @@ export default async function InterventionsPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
                     <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)' }}>
-                      {interv.type === 'ATELIER' ? 'Atelier' : interv.client?.nom}
+                      {interv.type === 'WORKSHOP' ? 'Atelier' : interv.client?.name}
                     </span>
-                    {enCours && (
+                    {inProgress && (
                       <span style={{
                         marginLeft: 8,
                         fontSize: 12,
@@ -98,7 +99,7 @@ export default async function InterventionsPage() {
                         En cours
                       </span>
                     )}
-                    {sansCompteRendu && (
+                    {missingReport && (
                       <span style={{
                         marginLeft: 8,
                         fontSize: 12,
@@ -113,19 +114,19 @@ export default async function InterventionsPage() {
                   </div>
                   {total !== null && (
                     <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)', fontVariantNumeric: 'tabular-nums' }}>
-                      {formatDuree(total)}
+                      {formatDuration(total)}
                     </span>
                   )}
                 </div>
                 <div style={{ marginTop: 4, fontSize: 15, color: 'var(--encre-douce)' }}>
-                  {formatHeure(interv.debutAt)}
-                  {interv.finAt ? ` → ${formatHeure(interv.finAt)}` : ''}
-                  {duree !== null ? ` · ${formatDuree(duree)}` : ''}
-                  {interv.trajetMinutes > 0 ? ` + ${formatDuree(interv.trajetMinutes)} trajet` : ''}
+                  {formatTime(interv.startAt)}
+                  {interv.endAt ? ` → ${formatTime(interv.endAt)}` : ''}
+                  {duration !== null ? ` · ${formatDuration(duration)}` : ''}
+                  {interv.travelMinutes > 0 ? ` + ${formatDuration(interv.travelMinutes)} trajet` : ''}
                 </div>
-                {interv.compteRendu && (
+                {interv.workReport && (
                   <div style={{ marginTop: 4, fontSize: 15, color: 'var(--encre-douce)' }}>
-                    {interv.compteRendu.length > 60 ? interv.compteRendu.slice(0, 60) + '…' : interv.compteRendu}
+                    {interv.workReport.length > 60 ? interv.workReport.slice(0, 60) + '…' : interv.workReport}
                   </div>
                 )}
               </Link>

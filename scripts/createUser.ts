@@ -3,11 +3,11 @@
  * Nécessite que le serveur Next.js soit démarré (npm run dev).
  *
  * Usage :
- *   npx tsx scripts/creer-utilisateur.ts "Prénom Nom" prenomnom motdepassetemp
+ *   npx tsx scripts/createUser.ts "Prénom Nom" prenomnom motdepassetemp
  *
  * Exemples :
- *   npx tsx scripts/creer-utilisateur.ts "Jean-Luc Carpentier" jeanluccarpentier Gerber2026!
- *   npx tsx scripts/creer-utilisateur.ts "Alexandre Dupont" alexandred Gerber2026!
+ *   npx tsx scripts/createUser.ts "Jean-Luc Carpentier" jeanluccarpentier Gerber2026!
+ *   npx tsx scripts/createUser.ts "Alexandre Dupont" alexandred Gerber2026!
  */
 
 import { config } from 'dotenv'
@@ -19,7 +19,7 @@ async function main() {
   const [, , name, username, password] = process.argv
 
   if (!name || !username || !password) {
-    console.error('Usage : npx tsx scripts/creer-utilisateur.ts "Prénom Nom" prenomnom motdepasse')
+    console.error('Usage : npx tsx scripts/createUser.ts "Prénom Nom" prenomnom motdepasse')
     process.exit(1)
   }
 

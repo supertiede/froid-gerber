@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { toZonedTime } from 'date-fns-tz'
 import { getDay, getHours } from 'date-fns'
-import { aggregerSemaine, getSemaineIsoActuelle } from '@/lib/aggregation'
-import { genererPdfRapport } from '@/lib/pdf-rapport'
-import { envoyerRapport } from '@/lib/email-rapport'
+import { aggregateWeek } from '@/lib/aggregation/aggregateWeek'
+import { getCurrentIsoWeek } from '@/lib/aggregation/getCurrentIsoWeek'
+import { generatePdfReport } from '@/lib/report/generatePdfReport'
+import { sendReport } from '@/lib/report/sendReport'
 import { prisma } from '@/lib/prisma'
 
 export const runtime = 'nodejs'
@@ -12,75 +13,63 @@ export const maxDuration = 60
 const TZ = 'Europe/Paris'
 
 export async function GET(request: NextRequest) {
-  // 1. Authenticate cron request
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // 2. Timezone guard: must be Sunday (0) between 20h and Monday 02h Paris time
   const nowParis = toZonedTime(new Date(), TZ)
-  const jourSemaine = getDay(nowParis) // 0=Sunday, 1=Monday
-  const heure = getHours(nowParis)
-  const estDimanche = jourSemaine === 0 && heure >= 20
-  const estLundiNuit = jourSemaine === 1 && heure < 2
+  const dayOfWeek = getDay(nowParis)
+  const hour = getHours(nowParis)
+  const isSunday = dayOfWeek === 0 && hour >= 20
+  const isMondayNight = dayOfWeek === 1 && hour < 2
 
-  if (!estDimanche && !estLundiNuit) {
-    console.log(`[rapport] Hors fenêtre — jour ${jourSemaine} heure ${heure} Paris, skip`)
+  if (!isSunday && !isMondayNight) {
+    console.log(`[rapport] Hors fenêtre — jour ${dayOfWeek} heure ${hour} Paris, skip`)
     return NextResponse.json({ message: 'Hors fenêtre de déclenchement' })
   }
 
-  // 3. Determine which week: use current ISO week (Sunday is still in the week being closed)
-  const semaineIso = getSemaineIsoActuelle()
+  const isoWeek = getCurrentIsoWeek()
 
-  // 4. Idempotence: skip if already sent
-  const existing = await prisma.rapportHebdo.findUnique({ where: { semaineIso } })
-  if (existing && existing.statut === 'ENVOYE') {
-    return NextResponse.json({ message: `Rapport ${semaineIso} déjà envoyé` })
+  const existing = await prisma.weeklyReport.findUnique({ where: { isoWeek } })
+  if (existing && existing.status === 'ENVOYE') {
+    return NextResponse.json({ message: `Rapport ${isoWeek} déjà envoyé` })
   }
 
-  // 5. Create or update rapport record
-  await prisma.rapportHebdo.upsert({
-    where: { semaineIso },
+  await prisma.weeklyReport.upsert({
+    where: { isoWeek },
     create: {
-      semaineIso,
-      statut: 'EN_ATTENTE',
-      destinataires: (process.env.RAPPORT_DESTINATAIRES ?? '').split(',').map(s => s.trim()).filter(Boolean),
+      isoWeek,
+      status: 'EN_ATTENTE',
+      recipients: (process.env.RAPPORT_DESTINATAIRES ?? '').split(',').map(s => s.trim()).filter(Boolean),
     },
-    update: { statut: 'EN_ATTENTE', erreur: null },
+    update: { status: 'EN_ATTENTE', error: null },
   })
 
   try {
-    // 6. Aggregate data
-    const donnees = await aggregerSemaine(semaineIso)
+    const data = await aggregateWeek(isoWeek)
+    const pdfBuffer = await generatePdfReport(isoWeek, data)
+    await sendReport(isoWeek, data, pdfBuffer)
 
-    // 7. Generate PDF
-    const pdfBuffer = await genererPdfRapport(semaineIso, donnees)
-
-    // 8. Send email
-    await envoyerRapport(semaineIso, donnees, pdfBuffer)
-
-    // 9. Mark as sent + lock week
-    await prisma.rapportHebdo.update({
-      where: { semaineIso },
+    await prisma.weeklyReport.update({
+      where: { isoWeek },
       data: {
-        statut: 'ENVOYE',
-        envoyeAt: new Date(),
-        verrouillee: true,
+        status: 'ENVOYE',
+        sentAt: new Date(),
+        locked: true,
       },
     })
 
-    return NextResponse.json({ ok: true, semaineIso, techniciens: donnees.length })
+    return NextResponse.json({ ok: true, isoWeek, technicians: data.length })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[rapport] Erreur:', message)
 
-    await prisma.rapportHebdo.update({
-      where: { semaineIso },
-      data: { statut: 'ECHEC', erreur: message },
+    await prisma.weeklyReport.update({
+      where: { isoWeek },
+      data: { status: 'ECHEC', error: message },
     })
 
-    // Notify admin via Resend if possible
     try {
       const apiKey = process.env.RESEND_API_KEY
       if (apiKey) {
@@ -91,8 +80,8 @@ export async function GET(request: NextRequest) {
           await resend.emails.send({
             from: 'Froid Gerber <noreply@froid-gerber.fr>',
             to: [firstDest],
-            subject: `Echec rapport semaine ${semaineIso}`,
-            html: `<p>Le rapport de la semaine ${semaineIso} n'a pas pu être généré.</p><p>Erreur : ${message}</p>`,
+            subject: `Echec rapport semaine ${isoWeek}`,
+            html: `<p>Le rapport de la semaine ${isoWeek} n'a pas pu être généré.</p><p>Erreur : ${message}</p>`,
           })
         }
       }

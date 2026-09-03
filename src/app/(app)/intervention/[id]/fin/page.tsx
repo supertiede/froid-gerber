@@ -2,8 +2,10 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { redirect, notFound } from 'next/navigation'
-import { CompteRenduForm } from '@/components/intervention/CompteRenduForm'
-import { formatHeure, diffMinutes, formatDuree } from '@/lib/temps'
+import { WorkReportForm } from '@/components/intervention/WorkReportForm'
+import { formatTime } from '@/lib/time/formatTime'
+import { diffMinutes } from '@/lib/time/diffMinutes'
+import { formatDuration } from '@/lib/time/formatDuration'
 
 export default async function FinInterventionPage({
   params,
@@ -21,24 +23,24 @@ export default async function FinInterventionPage({
 
   if (!intervention || intervention.userId !== session.user.id) notFound()
 
-  const dureeMinutes = intervention.finAt
-    ? diffMinutes(intervention.debutAt, intervention.finAt)
+  const durationMinutes = intervention.endAt
+    ? diffMinutes(intervention.startAt, intervention.endAt)
     : null
 
   return (
     <div style={{ padding: '16px 16px 100px' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>
-          {intervention.type === 'ATELIER' ? 'Atelier' : intervention.client?.nom}
+          {intervention.type === 'WORKSHOP' ? 'Atelier' : intervention.client?.name}
         </h1>
-        {dureeMinutes !== null && (
+        {durationMinutes !== null && (
           <p style={{ fontSize: 18, color: 'var(--encre-douce)', marginTop: 4 }}>
-            {formatDuree(dureeMinutes)}
-            {intervention.finAt && ` · ${formatHeure(intervention.debutAt)} → ${formatHeure(intervention.finAt)}`}
+            {formatDuration(durationMinutes)}
+            {intervention.endAt && ` · ${formatTime(intervention.startAt)} → ${formatTime(intervention.endAt)}`}
           </p>
         )}
       </div>
-      <CompteRenduForm interventionId={id} compteRenduActuel={intervention.compteRendu ?? ''} />
+      <WorkReportForm interventionId={id} workReport={intervention.workReport ?? ''} />
     </div>
   )
 }
