@@ -31,7 +31,18 @@ export async function chercherClients(query: string) {
   })
 }
 
-export async function creerClient(nom: string) {
+export async function getTousLesClients(): Promise<{ id: string; nom: string; nomNormalise: string }[]> {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) throw new Error('Non authentifié')
+
+  return prisma.client.findMany({
+    where: { actif: true },
+    orderBy: { nom: 'asc' },
+    select: { id: true, nom: true, nomNormalise: true },
+  })
+}
+
+export async function creerClient(nom: string): Promise<{ ok: boolean; data?: { id: string; nom: string; nomNormalise: string } }> {
   const session = await getSession()
   const creeParId = session.user.id
 
@@ -39,10 +50,10 @@ export async function creerClient(nom: string) {
 
   // Check for existing
   const existing = await prisma.client.findUnique({ where: { nomNormalise } })
-  if (existing) return { ok: true as const, data: existing }
+  if (existing) return { ok: true, data: { id: existing.id, nom: existing.nom, nomNormalise: existing.nomNormalise } }
 
   const client = await prisma.client.create({
     data: { nom: nom.trim(), nomNormalise, creeParId },
   })
-  return { ok: true as const, data: client }
+  return { ok: true, data: { id: client.id, nom: client.nom, nomNormalise: client.nomNormalise } }
 }

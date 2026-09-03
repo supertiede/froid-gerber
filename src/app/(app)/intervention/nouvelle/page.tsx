@@ -1,19 +1,13 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import { demarrerIntervention } from '@/actions/interventions'
-import { chercherClients, creerClient } from '@/actions/clients'
+import { getTousLesClients } from '@/actions/clients'
+import { RechercheClientModal } from '@/components/intervention/RechercheClientModal'
 
-type ClientRow = {
-  id: string
-  nom: string
-  nomNormalise: string
-  actif: boolean
-  createdAt: Date
-  creeParId: string | null
-}
+type Client = { id: string; nom: string; nomNormalise: string }
 
 const PRESETS_TRAJET = [5, 10, 15, 20, 30]
 
@@ -21,52 +15,41 @@ export default function NouvelleInterventionPage() {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  // Client selection
   const [typeChoisi, setTypeChoisi] = useState<'ATELIER' | 'CLIENT' | null>(null)
-  const [clientChoisi, setClientChoisi] = useState<ClientRow | null>(null)
-  const [query, setQuery] = useState('')
-  const [resultats, setResultats] = useState<ClientRow[]>([])
-  const [suggestion, setSuggestion] = useState<string | null>(null)
+  const [clientChoisi, setClientChoisi] = useState<Client | null>(null)
+  const [modalOuverte, setModalOuverte] = useState(false)
+  const [clients, setClients] = useState<Client[]>([])
+  const [loadingClients, setLoadingClients] = useState(false)
 
-  // Trajet
-  const [trajet, setTrajet] = useState<number>(0)
+  const [trajet, setTrajet] = useState(0)
   const [trajetCustom, setTrajetCustom] = useState('')
-
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    if (!query || query.length < 2) {
-      setResultats([])
-      setSuggestion(null)
-      return
+  async function ouvrirModal() {
+    setModalOuverte(true)
+    if (clients.length === 0) {
+      setLoadingClients(true)
+      const list = await getTousLesClients()
+      setClients(list)
+      setLoadingClients(false)
     }
-    const timer = setTimeout(async () => {
-      const clients = await chercherClients(query)
-      setResultats(clients)
-      if (clients.length === 0) setSuggestion(query)
-      else setSuggestion(null)
-    }, 200)
-    return () => clearTimeout(timer)
-  }, [query])
+  }
 
-  async function handleAddClient() {
-    if (!suggestion) return
-    const result = await creerClient(suggestion)
-    if (result.ok) {
-      setClientChoisi(result.data)
+  function handleSelect(selection: Client | 'ATELIER') {
+    setModalOuverte(false)
+    if (selection === 'ATELIER') {
+      setTypeChoisi('ATELIER')
+      setClientChoisi(null)
+    } else {
       setTypeChoisi('CLIENT')
-      setQuery('')
-      setResultats([])
-      setSuggestion(null)
+      setClientChoisi(selection)
     }
   }
 
   function handleDemarrer() {
     if (!typeChoisi) return
     setError('')
-
-    const trajetFinal = typeChoisi === 'ATELIER' ? 0 :
-      trajetCustom ? parseInt(trajetCustom, 10) : trajet
+    const trajetFinal = typeChoisi === 'ATELIER' ? 0 : (trajetCustom ? parseInt(trajetCustom, 10) : trajet)
 
     startTransition(async () => {
       const result = await demarrerIntervention({
@@ -75,7 +58,6 @@ export default function NouvelleInterventionPage() {
         trajetMinutes: trajetFinal,
         cleClient: uuidv4(),
       })
-
       if (result.ok) {
         if ('vibrate' in navigator) navigator.vibrate(15)
         router.push('/')
@@ -86,10 +68,19 @@ export default function NouvelleInterventionPage() {
     })
   }
 
-  const peutDemarrer = typeChoisi !== null && (typeChoisi === 'ATELIER' || clientChoisi !== null)
+  const peutDemarrer = typeChoisi !== null
 
   return (
-    <div style={{ paddingBottom: 100 }}>
+    <div style={{ paddingBottom: 120 }}>
+      {/* Modal plein écran */}
+      {modalOuverte && (
+        <RechercheClientModal
+          clients={clients}
+          onSelect={handleSelect}
+          onClose={() => setModalOuverte(false)}
+        />
+      )}
+
       {/* Header */}
       <div style={{ padding: '16px 16px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
@@ -111,106 +102,55 @@ export default function NouvelleInterventionPage() {
             Chez qui ?
           </h2>
 
-          {/* Search field */}
-          <input
-            type="text"
-            value={query}
-            onChange={e => {
-              setQuery(e.target.value)
-              setClientChoisi(null)
-              setTypeChoisi(null)
-            }}
-            placeholder="Chercher un client…"
-            style={{
-              width: '100%',
-              height: 56,
-              border: '1px solid var(--trait)',
-              borderRadius: 8,
-              padding: '0 16px',
-              fontSize: 18,
-              color: 'var(--encre)',
-              background: 'var(--surface)',
-              marginBottom: 12,
-              boxSizing: 'border-box',
-            }}
-          />
-
-          {/* ATELIER button — always shown first */}
-          <button
-            onClick={() => { setTypeChoisi('ATELIER'); setClientChoisi(null); setQuery('') }}
-            style={{
-              width: '100%',
-              height: 64,
-              border: `2px solid ${typeChoisi === 'ATELIER' ? 'var(--acier)' : 'var(--trait)'}`,
-              borderRadius: 8,
-              background: typeChoisi === 'ATELIER' ? 'rgba(11,95,165,0.08)' : 'var(--surface)',
-              color: 'var(--encre)',
-              fontSize: 18,
-              fontWeight: 600,
+          {/* Selected state OR search trigger button */}
+          {typeChoisi ? (
+            <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 12,
+              justifyContent: 'space-between',
               padding: '0 16px',
-              marginBottom: 12,
-              cursor: 'pointer',
-            }}
-          >
-            🔧 ATELIER
-          </button>
-
-          {/* Search results */}
-          {resultats.map(client => (
-            <button
-              key={client.id}
-              onClick={() => { setClientChoisi(client); setTypeChoisi('CLIENT'); setQuery(client.nom) }}
-              style={{
-                width: '100%',
-                height: 56,
-                border: `2px solid ${clientChoisi?.id === client.id ? 'var(--acier)' : 'var(--trait)'}`,
-                borderRadius: 8,
-                background: clientChoisi?.id === client.id ? 'rgba(11,95,165,0.08)' : 'var(--surface)',
-                color: 'var(--encre)',
-                fontSize: 18,
-                textAlign: 'left',
-                padding: '0 16px',
-                marginBottom: 8,
-                cursor: 'pointer',
-              }}
-            >
-              {client.nom}
-            </button>
-          ))}
-
-          {/* Add new client suggestion */}
-          {suggestion && (
-            <button
-              onClick={handleAddClient}
-              style={{
-                width: '100%',
-                height: 56,
-                border: '2px dashed var(--trait)',
-                borderRadius: 8,
-                background: 'transparent',
-                color: 'var(--acier)',
-                fontSize: 16,
-                textAlign: 'left',
-                padding: '0 16px',
-                cursor: 'pointer',
-              }}
-            >
-              + Ajouter « {suggestion} » comme nouveau client
-            </button>
-          )}
-
-          {/* Selected client display */}
-          {clientChoisi && typeChoisi === 'CLIENT' && (
-            <div style={{ padding: '8px 0', fontSize: 16, color: 'var(--vert)' }}>
-              ✓ {clientChoisi.nom} sélectionné
+              height: 64,
+              borderRadius: 10,
+              border: '2px solid var(--acier)',
+              background: 'rgba(11,95,165,0.06)',
+              marginBottom: 8,
+            }}>
+              <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)' }}>
+                {typeChoisi === 'ATELIER' ? '🔧 Atelier' : clientChoisi?.nom}
+              </span>
+              <button
+                onClick={() => { setTypeChoisi(null); setClientChoisi(null); ouvrirModal() }}
+                style={{ fontSize: 15, color: 'var(--acier)', background: 'none', border: 'none', minHeight: 'auto', padding: '4px 8px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Changer
+              </button>
             </div>
+          ) : (
+            <button
+              onClick={ouvrirModal}
+              style={{
+                width: '100%',
+                height: 64,
+                borderRadius: 10,
+                border: '1.5px solid var(--trait)',
+                background: 'var(--surface)',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0 16px',
+                gap: 12,
+                cursor: 'pointer',
+                marginBottom: 8,
+              }}
+            >
+              <span style={{ fontSize: 20, color: 'var(--encre-douce)' }}>🔍</span>
+              <span style={{ fontSize: 18, color: 'var(--encre-douce)' }}>
+                {loadingClients ? 'Chargement…' : 'Choisir un client ou l\'atelier…'}
+              </span>
+            </button>
           )}
         </section>
 
-        {/* Section: Trajet (only for CLIENT) */}
+        {/* Section: Trajet — only for CLIENT */}
         {typeChoisi === 'CLIENT' && (
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 500, color: 'var(--encre)', marginBottom: 12 }}>
@@ -262,12 +202,7 @@ export default function NouvelleInterventionPage() {
       </div>
 
       {/* Fixed bottom: DÉMARRER button */}
-      <div style={{
-        position: 'fixed',
-        bottom: 80,
-        left: 16,
-        right: 16,
-      }}>
+      <div style={{ position: 'fixed', bottom: 80, left: 16, right: 16 }}>
         <button
           onClick={handleDemarrer}
           disabled={!peutDemarrer || isPending}
@@ -281,9 +216,10 @@ export default function NouvelleInterventionPage() {
             fontWeight: 600,
             border: 'none',
             cursor: peutDemarrer ? 'pointer' : 'not-allowed',
+            transition: 'background 200ms',
           }}
         >
-          {isPending ? 'Démarrage…' : 'DÉMARRER L\'INTERVENTION'}
+          {isPending ? 'Démarrage…' : 'DÉMARRER'}
         </button>
       </div>
     </div>
