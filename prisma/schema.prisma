@@ -7,26 +7,25 @@ datasource db {
   provider = "postgresql"
 }
 
-// Better Auth core models — user model also carries app-specific fields
+// Better Auth core models — model names must stay lowercase for the adapter
 model user {
-  id                    String    @id
-  name                  String
-  email                 String?
-  emailVerified         Boolean   @default(false)
-  image                 String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  username              String?   @unique
-  displayUsername       String?
-  doitChangerMotDePasse Boolean   @default(true)
-  actif                 Boolean   @default(true)
-  sessions              session[]
-  accounts              account[]
+  id                 String    @id
+  name               String
+  email              String?
+  emailVerified      Boolean   @default(false)
+  image              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  username           String?   @unique
+  displayUsername    String?
+  mustChangePassword Boolean   @default(true)
+  active             Boolean   @default(true)
+  sessions           session[]
+  accounts           account[]
 
-  // App relations
-  postes        Poste[]
-  interventions Intervention[]
-  clientsCrees  Client[]       @relation("ClientCreePar")
+  shifts         Shift[]
+  interventions  Intervention[]
+  clientsCreated Client[]       @relation("ClientCreatedBy")
 
   @@map("user")
 }
@@ -77,108 +76,107 @@ model verification {
   @@map("verification")
 }
 
-// App-specific enums
-enum PauseType {
-  DEJEUNER
-  COURTE
+enum BreakType {
+  LUNCH
+  SHORT
 }
 
-enum Origine {
+enum Origin {
   APP
-  MANUEL
+  MANUAL
 }
 
-enum TypeIntervention {
+enum InterventionType {
   CLIENT
-  ATELIER
+  WORKSHOP
 }
 
 model Client {
-  id           String   @id @default(cuid())
-  nom          String
-  nomNormalise String   @unique
-  actif        Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  creeParId    String?
-  creePar      user?    @relation("ClientCreePar", fields: [creeParId], references: [id])
+  id             String   @id @default(cuid())
+  name           String
+  normalizedName String   @unique
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  createdById    String?
+  createdBy      user?    @relation("ClientCreatedBy", fields: [createdById], references: [id])
 
   interventions Intervention[]
 
-  @@index([actif, nom])
+  @@index([active, name])
 }
 
-model Poste {
-  id           String    @id @default(cuid())
-  userId       String
-  user         user      @relation(fields: [userId], references: [id])
-  debutAt      DateTime
-  finAt        DateTime?
-  origineDebut Origine   @default(APP)
-  origineFin   Origine?
-  cleClient    String?   @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  pauses       Pause[]
+model Shift {
+  id             String    @id @default(cuid())
+  userId         String
+  user           user      @relation(fields: [userId], references: [id])
+  startAt        DateTime
+  endAt          DateTime?
+  startOrigin    Origin    @default(APP)
+  endOrigin      Origin?
+  idempotencyKey String?   @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  breaks         Break[]
 
-  @@index([userId, debutAt])
+  @@index([userId, startAt])
 }
 
-model Pause {
-  id           String    @id @default(cuid())
-  posteId      String
-  poste        Poste     @relation(fields: [posteId], references: [id], onDelete: Cascade)
-  type         PauseType
-  debutAt      DateTime
-  finAt        DateTime?
-  origineDebut Origine   @default(APP)
-  origineFin   Origine?
-  cleClient    String?   @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+model Break {
+  id             String    @id @default(cuid())
+  shiftId        String
+  shift          Shift     @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  type           BreakType
+  startAt        DateTime
+  endAt          DateTime?
+  startOrigin    Origin    @default(APP)
+  endOrigin      Origin?
+  idempotencyKey String?   @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  @@index([posteId, debutAt])
+  @@index([shiftId, startAt])
 }
 
 model Intervention {
-  id            String           @id @default(cuid())
-  userId        String
-  user          user             @relation(fields: [userId], references: [id])
-  type          TypeIntervention
-  clientId      String?
-  client        Client?          @relation(fields: [clientId], references: [id])
-  debutAt       DateTime
-  finAt         DateTime?
-  trajetMinutes Int              @default(0)
-  compteRendu   String?
-  origine       Origine          @default(APP)
-  cleClient     String?          @unique
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id             String           @id @default(cuid())
+  userId         String
+  user           user             @relation(fields: [userId], references: [id])
+  type           InterventionType
+  clientId       String?
+  client         Client?          @relation(fields: [clientId], references: [id])
+  startAt        DateTime
+  endAt          DateTime?
+  travelMinutes  Int              @default(0)
+  workReport     String?
+  origin         Origin           @default(APP)
+  idempotencyKey String?          @unique
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
-  @@index([userId, debutAt])
-  @@index([clientId, debutAt])
+  @@index([userId, startAt])
+  @@index([clientId, startAt])
 }
 
-model Modification {
-  id        String   @id @default(cuid())
-  entite    String
-  entiteId  String
-  champ     String
-  ancienne  String?
-  nouvelle  String?
-  parUserId String
-  at        DateTime @default(now())
-  motif     String?
+model AuditLog {
+  id              String   @id @default(cuid())
+  entity          String
+  entityId        String
+  field           String
+  oldValue        String?
+  newValue        String?
+  changedByUserId String
+  at              DateTime @default(now())
+  reason          String?
 
-  @@index([entite, entiteId])
+  @@index([entity, entityId])
 }
 
-model RapportHebdo {
-  id            String    @id @default(cuid())
-  semaineIso    String    @unique
-  envoyeAt      DateTime?
-  destinataires String[]
-  statut        String
-  erreur        String?
-  verrouillee   Boolean   @default(false)
+model WeeklyReport {
+  id         String    @id @default(cuid())
+  isoWeek    String    @unique
+  sentAt     DateTime?
+  recipients String[]
+  status     String
+  error      String?
+  locked     Boolean   @default(false)
 }

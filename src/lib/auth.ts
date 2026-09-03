@@ -20,13 +20,13 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      doitChangerMotDePasse: {
+      mustChangePassword: {
         type: 'boolean',
         required: false,
         defaultValue: true,
         input: false,
       },
-      actif: {
+      active: {
         type: 'boolean',
         required: false,
         defaultValue: true,
