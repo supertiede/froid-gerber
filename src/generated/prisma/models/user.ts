@@ -34,8 +34,8 @@ export type UserMinAggregateOutputType = {
   updatedAt: Date | null
   username: string | null
   displayUsername: string | null
-  doitChangerMotDePasse: boolean | null
-  actif: boolean | null
+  mustChangePassword: boolean | null
+  active: boolean | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -48,8 +48,8 @@ export type UserMaxAggregateOutputType = {
   updatedAt: Date | null
   username: string | null
   displayUsername: string | null
-  doitChangerMotDePasse: boolean | null
-  actif: boolean | null
+  mustChangePassword: boolean | null
+  active: boolean | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -62,8 +62,8 @@ export type UserCountAggregateOutputType = {
   updatedAt: number
   username: number
   displayUsername: number
-  doitChangerMotDePasse: number
-  actif: number
+  mustChangePassword: number
+  active: number
   _all: number
 }
 
@@ -78,8 +78,8 @@ export type UserMinAggregateInputType = {
   updatedAt?: true
   username?: true
   displayUsername?: true
-  doitChangerMotDePasse?: true
-  actif?: true
+  mustChangePassword?: true
+  active?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -92,8 +92,8 @@ export type UserMaxAggregateInputType = {
   updatedAt?: true
   username?: true
   displayUsername?: true
-  doitChangerMotDePasse?: true
-  actif?: true
+  mustChangePassword?: true
+  active?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -106,8 +106,8 @@ export type UserCountAggregateInputType = {
   updatedAt?: true
   username?: true
   displayUsername?: true
-  doitChangerMotDePasse?: true
-  actif?: true
+  mustChangePassword?: true
+  active?: true
   _all?: true
 }
 
@@ -193,8 +193,8 @@ export type UserGroupByOutputType = {
   updatedAt: Date
   username: string | null
   displayUsername: string | null
-  doitChangerMotDePasse: boolean
-  actif: boolean
+  mustChangePassword: boolean
+  active: boolean
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -228,13 +228,13 @@ export type userWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"user"> | Date | string
   username?: Prisma.StringNullableFilter<"user"> | string | null
   displayUsername?: Prisma.StringNullableFilter<"user"> | string | null
-  doitChangerMotDePasse?: Prisma.BoolFilter<"user"> | boolean
-  actif?: Prisma.BoolFilter<"user"> | boolean
+  mustChangePassword?: Prisma.BoolFilter<"user"> | boolean
+  active?: Prisma.BoolFilter<"user"> | boolean
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
-  postes?: Prisma.PosteListRelationFilter
+  shifts?: Prisma.ShiftListRelationFilter
   interventions?: Prisma.InterventionListRelationFilter
-  clientsCrees?: Prisma.ClientListRelationFilter
+  clientsCreated?: Prisma.ClientListRelationFilter
 }
 
 export type userOrderByWithRelationInput = {
@@ -247,13 +247,13 @@ export type userOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   username?: Prisma.SortOrderInput | Prisma.SortOrder
   displayUsername?: Prisma.SortOrderInput | Prisma.SortOrder
-  doitChangerMotDePasse?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   sessions?: Prisma.sessionOrderByRelationAggregateInput
   accounts?: Prisma.accountOrderByRelationAggregateInput
-  postes?: Prisma.PosteOrderByRelationAggregateInput
+  shifts?: Prisma.ShiftOrderByRelationAggregateInput
   interventions?: Prisma.InterventionOrderByRelationAggregateInput
-  clientsCrees?: Prisma.ClientOrderByRelationAggregateInput
+  clientsCreated?: Prisma.ClientOrderByRelationAggregateInput
 }
 
 export type userWhereUniqueInput = Prisma.AtLeast<{
@@ -269,13 +269,13 @@ export type userWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"user"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"user"> | Date | string
   displayUsername?: Prisma.StringNullableFilter<"user"> | string | null
-  doitChangerMotDePasse?: Prisma.BoolFilter<"user"> | boolean
-  actif?: Prisma.BoolFilter<"user"> | boolean
+  mustChangePassword?: Prisma.BoolFilter<"user"> | boolean
+  active?: Prisma.BoolFilter<"user"> | boolean
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
-  postes?: Prisma.PosteListRelationFilter
+  shifts?: Prisma.ShiftListRelationFilter
   interventions?: Prisma.InterventionListRelationFilter
-  clientsCrees?: Prisma.ClientListRelationFilter
+  clientsCreated?: Prisma.ClientListRelationFilter
 }, "id" | "username">
 
 export type userOrderByWithAggregationInput = {
@@ -288,8 +288,8 @@ export type userOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   username?: Prisma.SortOrderInput | Prisma.SortOrder
   displayUsername?: Prisma.SortOrderInput | Prisma.SortOrder
-  doitChangerMotDePasse?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   _count?: Prisma.userCountOrderByAggregateInput
   _max?: Prisma.userMaxOrderByAggregateInput
   _min?: Prisma.userMinOrderByAggregateInput
@@ -308,8 +308,8 @@ export type userScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"user"> | Date | string
   username?: Prisma.StringNullableWithAggregatesFilter<"user"> | string | null
   displayUsername?: Prisma.StringNullableWithAggregatesFilter<"user"> | string | null
-  doitChangerMotDePasse?: Prisma.BoolWithAggregatesFilter<"user"> | boolean
-  actif?: Prisma.BoolWithAggregatesFilter<"user"> | boolean
+  mustChangePassword?: Prisma.BoolWithAggregatesFilter<"user"> | boolean
+  active?: Prisma.BoolWithAggregatesFilter<"user"> | boolean
 }
 
 export type userCreateInput = {
@@ -322,13 +322,13 @@ export type userCreateInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientCreateNestedManyWithoutCreatedByInput
 }
 
 export type userUncheckedCreateInput = {
@@ -341,13 +341,13 @@ export type userUncheckedCreateInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteUncheckedCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientUncheckedCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type userUpdateInput = {
@@ -360,13 +360,13 @@ export type userUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userUncheckedUpdateInput = {
@@ -379,13 +379,13 @@ export type userUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUncheckedUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUncheckedUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userCreateManyInput = {
@@ -398,8 +398,8 @@ export type userCreateManyInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
 }
 
 export type userUpdateManyMutationInput = {
@@ -412,8 +412,8 @@ export type userUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type userUncheckedUpdateManyInput = {
@@ -426,8 +426,8 @@ export type userUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type userCountOrderByAggregateInput = {
@@ -440,8 +440,8 @@ export type userCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   username?: Prisma.SortOrder
   displayUsername?: Prisma.SortOrder
-  doitChangerMotDePasse?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  active?: Prisma.SortOrder
 }
 
 export type userMaxOrderByAggregateInput = {
@@ -454,8 +454,8 @@ export type userMaxOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   username?: Prisma.SortOrder
   displayUsername?: Prisma.SortOrder
-  doitChangerMotDePasse?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  active?: Prisma.SortOrder
 }
 
 export type userMinOrderByAggregateInput = {
@@ -468,8 +468,8 @@ export type userMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   username?: Prisma.SortOrder
   displayUsername?: Prisma.SortOrder
-  doitChangerMotDePasse?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  active?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -526,34 +526,34 @@ export type userUpdateOneRequiredWithoutAccountsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutAccountsInput, Prisma.userUpdateWithoutAccountsInput>, Prisma.userUncheckedUpdateWithoutAccountsInput>
 }
 
-export type userCreateNestedOneWithoutClientsCreesInput = {
-  create?: Prisma.XOR<Prisma.userCreateWithoutClientsCreesInput, Prisma.userUncheckedCreateWithoutClientsCreesInput>
-  connectOrCreate?: Prisma.userCreateOrConnectWithoutClientsCreesInput
+export type userCreateNestedOneWithoutClientsCreatedInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutClientsCreatedInput, Prisma.userUncheckedCreateWithoutClientsCreatedInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutClientsCreatedInput
   connect?: Prisma.userWhereUniqueInput
 }
 
-export type userUpdateOneWithoutClientsCreesNestedInput = {
-  create?: Prisma.XOR<Prisma.userCreateWithoutClientsCreesInput, Prisma.userUncheckedCreateWithoutClientsCreesInput>
-  connectOrCreate?: Prisma.userCreateOrConnectWithoutClientsCreesInput
-  upsert?: Prisma.userUpsertWithoutClientsCreesInput
+export type userUpdateOneWithoutClientsCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutClientsCreatedInput, Prisma.userUncheckedCreateWithoutClientsCreatedInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutClientsCreatedInput
+  upsert?: Prisma.userUpsertWithoutClientsCreatedInput
   disconnect?: Prisma.userWhereInput | boolean
   delete?: Prisma.userWhereInput | boolean
   connect?: Prisma.userWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutClientsCreesInput, Prisma.userUpdateWithoutClientsCreesInput>, Prisma.userUncheckedUpdateWithoutClientsCreesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutClientsCreatedInput, Prisma.userUpdateWithoutClientsCreatedInput>, Prisma.userUncheckedUpdateWithoutClientsCreatedInput>
 }
 
-export type userCreateNestedOneWithoutPostesInput = {
-  create?: Prisma.XOR<Prisma.userCreateWithoutPostesInput, Prisma.userUncheckedCreateWithoutPostesInput>
-  connectOrCreate?: Prisma.userCreateOrConnectWithoutPostesInput
+export type userCreateNestedOneWithoutShiftsInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutShiftsInput, Prisma.userUncheckedCreateWithoutShiftsInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutShiftsInput
   connect?: Prisma.userWhereUniqueInput
 }
 
-export type userUpdateOneRequiredWithoutPostesNestedInput = {
-  create?: Prisma.XOR<Prisma.userCreateWithoutPostesInput, Prisma.userUncheckedCreateWithoutPostesInput>
-  connectOrCreate?: Prisma.userCreateOrConnectWithoutPostesInput
-  upsert?: Prisma.userUpsertWithoutPostesInput
+export type userUpdateOneRequiredWithoutShiftsNestedInput = {
+  create?: Prisma.XOR<Prisma.userCreateWithoutShiftsInput, Prisma.userUncheckedCreateWithoutShiftsInput>
+  connectOrCreate?: Prisma.userCreateOrConnectWithoutShiftsInput
+  upsert?: Prisma.userUpsertWithoutShiftsInput
   connect?: Prisma.userWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutPostesInput, Prisma.userUpdateWithoutPostesInput>, Prisma.userUncheckedUpdateWithoutPostesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.userUpdateToOneWithWhereWithoutShiftsInput, Prisma.userUpdateWithoutShiftsInput>, Prisma.userUncheckedUpdateWithoutShiftsInput>
 }
 
 export type userCreateNestedOneWithoutInterventionsInput = {
@@ -580,12 +580,12 @@ export type userCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientCreateNestedManyWithoutCreatedByInput
 }
 
 export type userUncheckedCreateWithoutSessionsInput = {
@@ -598,12 +598,12 @@ export type userUncheckedCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteUncheckedCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientUncheckedCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type userCreateOrConnectWithoutSessionsInput = {
@@ -632,12 +632,12 @@ export type userUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userUncheckedUpdateWithoutSessionsInput = {
@@ -650,12 +650,12 @@ export type userUncheckedUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUncheckedUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUncheckedUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userCreateWithoutAccountsInput = {
@@ -668,12 +668,12 @@ export type userCreateWithoutAccountsInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientCreateNestedManyWithoutCreatedByInput
 }
 
 export type userUncheckedCreateWithoutAccountsInput = {
@@ -686,12 +686,12 @@ export type userUncheckedCreateWithoutAccountsInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteUncheckedCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientUncheckedCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type userCreateOrConnectWithoutAccountsInput = {
@@ -720,12 +720,12 @@ export type userUpdateWithoutAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userUncheckedUpdateWithoutAccountsInput = {
@@ -738,15 +738,15 @@ export type userUncheckedUpdateWithoutAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUncheckedUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUncheckedUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
-export type userCreateWithoutClientsCreesInput = {
+export type userCreateWithoutClientsCreatedInput = {
   id: string
   name: string
   email?: string | null
@@ -756,15 +756,15 @@ export type userCreateWithoutClientsCreesInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutUserInput
 }
 
-export type userUncheckedCreateWithoutClientsCreesInput = {
+export type userUncheckedCreateWithoutClientsCreatedInput = {
   id: string
   name: string
   email?: string | null
@@ -774,31 +774,31 @@ export type userUncheckedCreateWithoutClientsCreesInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteUncheckedCreateNestedManyWithoutUserInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutUserInput
 }
 
-export type userCreateOrConnectWithoutClientsCreesInput = {
+export type userCreateOrConnectWithoutClientsCreatedInput = {
   where: Prisma.userWhereUniqueInput
-  create: Prisma.XOR<Prisma.userCreateWithoutClientsCreesInput, Prisma.userUncheckedCreateWithoutClientsCreesInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutClientsCreatedInput, Prisma.userUncheckedCreateWithoutClientsCreatedInput>
 }
 
-export type userUpsertWithoutClientsCreesInput = {
-  update: Prisma.XOR<Prisma.userUpdateWithoutClientsCreesInput, Prisma.userUncheckedUpdateWithoutClientsCreesInput>
-  create: Prisma.XOR<Prisma.userCreateWithoutClientsCreesInput, Prisma.userUncheckedCreateWithoutClientsCreesInput>
+export type userUpsertWithoutClientsCreatedInput = {
+  update: Prisma.XOR<Prisma.userUpdateWithoutClientsCreatedInput, Prisma.userUncheckedUpdateWithoutClientsCreatedInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutClientsCreatedInput, Prisma.userUncheckedCreateWithoutClientsCreatedInput>
   where?: Prisma.userWhereInput
 }
 
-export type userUpdateToOneWithWhereWithoutClientsCreesInput = {
+export type userUpdateToOneWithWhereWithoutClientsCreatedInput = {
   where?: Prisma.userWhereInput
-  data: Prisma.XOR<Prisma.userUpdateWithoutClientsCreesInput, Prisma.userUncheckedUpdateWithoutClientsCreesInput>
+  data: Prisma.XOR<Prisma.userUpdateWithoutClientsCreatedInput, Prisma.userUncheckedUpdateWithoutClientsCreatedInput>
 }
 
-export type userUpdateWithoutClientsCreesInput = {
+export type userUpdateWithoutClientsCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -808,15 +808,15 @@ export type userUpdateWithoutClientsCreesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutUserNestedInput
 }
 
-export type userUncheckedUpdateWithoutClientsCreesInput = {
+export type userUncheckedUpdateWithoutClientsCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -826,15 +826,15 @@ export type userUncheckedUpdateWithoutClientsCreesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUncheckedUpdateManyWithoutUserNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type userCreateWithoutPostesInput = {
+export type userCreateWithoutShiftsInput = {
   id: string
   name: string
   email?: string | null
@@ -844,15 +844,15 @@ export type userCreateWithoutPostesInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientCreateNestedManyWithoutCreatedByInput
 }
 
-export type userUncheckedCreateWithoutPostesInput = {
+export type userUncheckedCreateWithoutShiftsInput = {
   id: string
   name: string
   email?: string | null
@@ -862,31 +862,31 @@ export type userUncheckedCreateWithoutPostesInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientUncheckedCreateNestedManyWithoutCreeParInput
+  clientsCreated?: Prisma.ClientUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
-export type userCreateOrConnectWithoutPostesInput = {
+export type userCreateOrConnectWithoutShiftsInput = {
   where: Prisma.userWhereUniqueInput
-  create: Prisma.XOR<Prisma.userCreateWithoutPostesInput, Prisma.userUncheckedCreateWithoutPostesInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutShiftsInput, Prisma.userUncheckedCreateWithoutShiftsInput>
 }
 
-export type userUpsertWithoutPostesInput = {
-  update: Prisma.XOR<Prisma.userUpdateWithoutPostesInput, Prisma.userUncheckedUpdateWithoutPostesInput>
-  create: Prisma.XOR<Prisma.userCreateWithoutPostesInput, Prisma.userUncheckedCreateWithoutPostesInput>
+export type userUpsertWithoutShiftsInput = {
+  update: Prisma.XOR<Prisma.userUpdateWithoutShiftsInput, Prisma.userUncheckedUpdateWithoutShiftsInput>
+  create: Prisma.XOR<Prisma.userCreateWithoutShiftsInput, Prisma.userUncheckedCreateWithoutShiftsInput>
   where?: Prisma.userWhereInput
 }
 
-export type userUpdateToOneWithWhereWithoutPostesInput = {
+export type userUpdateToOneWithWhereWithoutShiftsInput = {
   where?: Prisma.userWhereInput
-  data: Prisma.XOR<Prisma.userUpdateWithoutPostesInput, Prisma.userUncheckedUpdateWithoutPostesInput>
+  data: Prisma.XOR<Prisma.userUpdateWithoutShiftsInput, Prisma.userUncheckedUpdateWithoutShiftsInput>
 }
 
-export type userUpdateWithoutPostesInput = {
+export type userUpdateWithoutShiftsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -896,15 +896,15 @@ export type userUpdateWithoutPostesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUpdateManyWithoutCreatedByNestedInput
 }
 
-export type userUncheckedUpdateWithoutPostesInput = {
+export type userUncheckedUpdateWithoutShiftsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -914,12 +914,12 @@ export type userUncheckedUpdateWithoutPostesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUncheckedUpdateManyWithoutCreeParNestedInput
+  clientsCreated?: Prisma.ClientUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userCreateWithoutInterventionsInput = {
@@ -932,12 +932,12 @@ export type userCreateWithoutInterventionsInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientCreateNestedManyWithoutCreeParInput
+  shifts?: Prisma.ShiftCreateNestedManyWithoutUserInput
+  clientsCreated?: Prisma.ClientCreateNestedManyWithoutCreatedByInput
 }
 
 export type userUncheckedCreateWithoutInterventionsInput = {
@@ -950,12 +950,12 @@ export type userUncheckedCreateWithoutInterventionsInput = {
   updatedAt?: Date | string
   username?: string | null
   displayUsername?: string | null
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: Prisma.sessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.accountUncheckedCreateNestedManyWithoutUserInput
-  postes?: Prisma.PosteUncheckedCreateNestedManyWithoutUserInput
-  clientsCrees?: Prisma.ClientUncheckedCreateNestedManyWithoutCreeParInput
+  shifts?: Prisma.ShiftUncheckedCreateNestedManyWithoutUserInput
+  clientsCreated?: Prisma.ClientUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type userCreateOrConnectWithoutInterventionsInput = {
@@ -984,12 +984,12 @@ export type userUpdateWithoutInterventionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUpdateManyWithoutCreeParNestedInput
+  shifts?: Prisma.ShiftUpdateManyWithoutUserNestedInput
+  clientsCreated?: Prisma.ClientUpdateManyWithoutCreatedByNestedInput
 }
 
 export type userUncheckedUpdateWithoutInterventionsInput = {
@@ -1002,12 +1002,12 @@ export type userUncheckedUpdateWithoutInterventionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  doitChangerMotDePasse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessions?: Prisma.sessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.accountUncheckedUpdateManyWithoutUserNestedInput
-  postes?: Prisma.PosteUncheckedUpdateManyWithoutUserNestedInput
-  clientsCrees?: Prisma.ClientUncheckedUpdateManyWithoutCreeParNestedInput
+  shifts?: Prisma.ShiftUncheckedUpdateManyWithoutUserNestedInput
+  clientsCreated?: Prisma.ClientUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -1018,17 +1018,17 @@ export type userUncheckedUpdateWithoutInterventionsInput = {
 export type UserCountOutputType = {
   sessions: number
   accounts: number
-  postes: number
+  shifts: number
   interventions: number
-  clientsCrees: number
+  clientsCreated: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
-  postes?: boolean | UserCountOutputTypeCountPostesArgs
+  shifts?: boolean | UserCountOutputTypeCountShiftsArgs
   interventions?: boolean | UserCountOutputTypeCountInterventionsArgs
-  clientsCrees?: boolean | UserCountOutputTypeCountClientsCreesArgs
+  clientsCreated?: boolean | UserCountOutputTypeCountClientsCreatedArgs
 }
 
 /**
@@ -1058,8 +1058,8 @@ export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountPostesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PosteWhereInput
+export type UserCountOutputTypeCountShiftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ShiftWhereInput
 }
 
 /**
@@ -1072,7 +1072,7 @@ export type UserCountOutputTypeCountInterventionsArgs<ExtArgs extends runtime.Ty
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountClientsCreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountClientsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ClientWhereInput
 }
 
@@ -1087,13 +1087,13 @@ export type userSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   username?: boolean
   displayUsername?: boolean
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
   sessions?: boolean | Prisma.user$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.user$accountsArgs<ExtArgs>
-  postes?: boolean | Prisma.user$postesArgs<ExtArgs>
+  shifts?: boolean | Prisma.user$shiftsArgs<ExtArgs>
   interventions?: boolean | Prisma.user$interventionsArgs<ExtArgs>
-  clientsCrees?: boolean | Prisma.user$clientsCreesArgs<ExtArgs>
+  clientsCreated?: boolean | Prisma.user$clientsCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1107,8 +1107,8 @@ export type userSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   username?: boolean
   displayUsername?: boolean
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type userSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1121,8 +1121,8 @@ export type userSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   username?: boolean
   displayUsername?: boolean
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type userSelectScalar = {
@@ -1135,17 +1135,17 @@ export type userSelectScalar = {
   updatedAt?: boolean
   username?: boolean
   displayUsername?: boolean
-  doitChangerMotDePasse?: boolean
-  actif?: boolean
+  mustChangePassword?: boolean
+  active?: boolean
 }
 
-export type userOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "username" | "displayUsername" | "doitChangerMotDePasse" | "actif", ExtArgs["result"]["user"]>
+export type userOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "username" | "displayUsername" | "mustChangePassword" | "active", ExtArgs["result"]["user"]>
 export type userInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.user$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.user$accountsArgs<ExtArgs>
-  postes?: boolean | Prisma.user$postesArgs<ExtArgs>
+  shifts?: boolean | Prisma.user$shiftsArgs<ExtArgs>
   interventions?: boolean | Prisma.user$interventionsArgs<ExtArgs>
-  clientsCrees?: boolean | Prisma.user$clientsCreesArgs<ExtArgs>
+  clientsCreated?: boolean | Prisma.user$clientsCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type userIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1156,9 +1156,9 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     sessions: Prisma.$sessionPayload<ExtArgs>[]
     accounts: Prisma.$accountPayload<ExtArgs>[]
-    postes: Prisma.$PostePayload<ExtArgs>[]
+    shifts: Prisma.$ShiftPayload<ExtArgs>[]
     interventions: Prisma.$InterventionPayload<ExtArgs>[]
-    clientsCrees: Prisma.$ClientPayload<ExtArgs>[]
+    clientsCreated: Prisma.$ClientPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1170,8 +1170,8 @@ export type $userPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     updatedAt: Date
     username: string | null
     displayUsername: string | null
-    doitChangerMotDePasse: boolean
-    actif: boolean
+    mustChangePassword: boolean
+    active: boolean
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1568,9 +1568,9 @@ export interface Prisma__userClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   sessions<T extends Prisma.user$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$sessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.user$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$accountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  postes<T extends Prisma.user$postesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$postesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  shifts<T extends Prisma.user$shiftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$shiftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   interventions<T extends Prisma.user$interventionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$interventionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InterventionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  clientsCrees<T extends Prisma.user$clientsCreesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$clientsCreesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clientsCreated<T extends Prisma.user$clientsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.user$clientsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1609,8 +1609,8 @@ export interface userFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"user", 'DateTime'>
   readonly username: Prisma.FieldRef<"user", 'String'>
   readonly displayUsername: Prisma.FieldRef<"user", 'String'>
-  readonly doitChangerMotDePasse: Prisma.FieldRef<"user", 'Boolean'>
-  readonly actif: Prisma.FieldRef<"user", 'Boolean'>
+  readonly mustChangePassword: Prisma.FieldRef<"user", 'Boolean'>
+  readonly active: Prisma.FieldRef<"user", 'Boolean'>
 }
     
 
@@ -2052,27 +2052,27 @@ export type user$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * user.postes
+ * user.shifts
  */
-export type user$postesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type user$shiftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Poste
+   * Select specific fields to fetch from the Shift
    */
-  select?: Prisma.PosteSelect<ExtArgs> | null
+  select?: Prisma.ShiftSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Poste
+   * Omit specific fields from the Shift
    */
-  omit?: Prisma.PosteOmit<ExtArgs> | null
+  omit?: Prisma.ShiftOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PosteInclude<ExtArgs> | null
-  where?: Prisma.PosteWhereInput
-  orderBy?: Prisma.PosteOrderByWithRelationInput | Prisma.PosteOrderByWithRelationInput[]
-  cursor?: Prisma.PosteWhereUniqueInput
+  include?: Prisma.ShiftInclude<ExtArgs> | null
+  where?: Prisma.ShiftWhereInput
+  orderBy?: Prisma.ShiftOrderByWithRelationInput | Prisma.ShiftOrderByWithRelationInput[]
+  cursor?: Prisma.ShiftWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PosteScalarFieldEnum | Prisma.PosteScalarFieldEnum[]
+  distinct?: Prisma.ShiftScalarFieldEnum | Prisma.ShiftScalarFieldEnum[]
 }
 
 /**
@@ -2100,9 +2100,9 @@ export type user$interventionsArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * user.clientsCrees
+ * user.clientsCreated
  */
-export type user$clientsCreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type user$clientsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Client
    */

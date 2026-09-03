@@ -26,58 +26,58 @@ export type AggregateClient = {
 
 export type ClientMinAggregateOutputType = {
   id: string | null
-  nom: string | null
-  nomNormalise: string | null
-  actif: boolean | null
+  name: string | null
+  normalizedName: string | null
+  active: boolean | null
   createdAt: Date | null
-  creeParId: string | null
+  createdById: string | null
 }
 
 export type ClientMaxAggregateOutputType = {
   id: string | null
-  nom: string | null
-  nomNormalise: string | null
-  actif: boolean | null
+  name: string | null
+  normalizedName: string | null
+  active: boolean | null
   createdAt: Date | null
-  creeParId: string | null
+  createdById: string | null
 }
 
 export type ClientCountAggregateOutputType = {
   id: number
-  nom: number
-  nomNormalise: number
-  actif: number
+  name: number
+  normalizedName: number
+  active: number
   createdAt: number
-  creeParId: number
+  createdById: number
   _all: number
 }
 
 
 export type ClientMinAggregateInputType = {
   id?: true
-  nom?: true
-  nomNormalise?: true
-  actif?: true
+  name?: true
+  normalizedName?: true
+  active?: true
   createdAt?: true
-  creeParId?: true
+  createdById?: true
 }
 
 export type ClientMaxAggregateInputType = {
   id?: true
-  nom?: true
-  nomNormalise?: true
-  actif?: true
+  name?: true
+  normalizedName?: true
+  active?: true
   createdAt?: true
-  creeParId?: true
+  createdById?: true
 }
 
 export type ClientCountAggregateInputType = {
   id?: true
-  nom?: true
-  nomNormalise?: true
-  actif?: true
+  name?: true
+  normalizedName?: true
+  active?: true
   createdAt?: true
-  creeParId?: true
+  createdById?: true
   _all?: true
 }
 
@@ -155,11 +155,11 @@ export type ClientGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type ClientGroupByOutputType = {
   id: string
-  nom: string
-  nomNormalise: string
-  actif: boolean
+  name: string
+  normalizedName: string
+  active: boolean
   createdAt: Date
-  creeParId: string | null
+  createdById: string | null
   _count: ClientCountAggregateOutputType | null
   _min: ClientMinAggregateOutputType | null
   _max: ClientMaxAggregateOutputType | null
@@ -185,47 +185,47 @@ export type ClientWhereInput = {
   OR?: Prisma.ClientWhereInput[]
   NOT?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   id?: Prisma.StringFilter<"Client"> | string
-  nom?: Prisma.StringFilter<"Client"> | string
-  nomNormalise?: Prisma.StringFilter<"Client"> | string
-  actif?: Prisma.BoolFilter<"Client"> | boolean
+  name?: Prisma.StringFilter<"Client"> | string
+  normalizedName?: Prisma.StringFilter<"Client"> | string
+  active?: Prisma.BoolFilter<"Client"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
-  creeParId?: Prisma.StringNullableFilter<"Client"> | string | null
-  creePar?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.userWhereInput> | null
+  createdById?: Prisma.StringNullableFilter<"Client"> | string | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.userWhereInput> | null
   interventions?: Prisma.InterventionListRelationFilter
 }
 
 export type ClientOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  nom?: Prisma.SortOrder
-  nomNormalise?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  normalizedName?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  creeParId?: Prisma.SortOrderInput | Prisma.SortOrder
-  creePar?: Prisma.userOrderByWithRelationInput
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.userOrderByWithRelationInput
   interventions?: Prisma.InterventionOrderByRelationAggregateInput
 }
 
 export type ClientWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  nomNormalise?: string
+  normalizedName?: string
   AND?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   OR?: Prisma.ClientWhereInput[]
   NOT?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
-  nom?: Prisma.StringFilter<"Client"> | string
-  actif?: Prisma.BoolFilter<"Client"> | boolean
+  name?: Prisma.StringFilter<"Client"> | string
+  active?: Prisma.BoolFilter<"Client"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
-  creeParId?: Prisma.StringNullableFilter<"Client"> | string | null
-  creePar?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.userWhereInput> | null
+  createdById?: Prisma.StringNullableFilter<"Client"> | string | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.userWhereInput> | null
   interventions?: Prisma.InterventionListRelationFilter
-}, "id" | "nomNormalise">
+}, "id" | "normalizedName">
 
 export type ClientOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  nom?: Prisma.SortOrder
-  nomNormalise?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  normalizedName?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  creeParId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ClientCountOrderByAggregateInput
   _max?: Prisma.ClientMaxOrderByAggregateInput
   _min?: Prisma.ClientMinOrderByAggregateInput
@@ -236,77 +236,77 @@ export type ClientScalarWhereWithAggregatesInput = {
   OR?: Prisma.ClientScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ClientScalarWhereWithAggregatesInput | Prisma.ClientScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Client"> | string
-  nom?: Prisma.StringWithAggregatesFilter<"Client"> | string
-  nomNormalise?: Prisma.StringWithAggregatesFilter<"Client"> | string
-  actif?: Prisma.BoolWithAggregatesFilter<"Client"> | boolean
+  name?: Prisma.StringWithAggregatesFilter<"Client"> | string
+  normalizedName?: Prisma.StringWithAggregatesFilter<"Client"> | string
+  active?: Prisma.BoolWithAggregatesFilter<"Client"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
-  creeParId?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
 }
 
 export type ClientCreateInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
-  creePar?: Prisma.userCreateNestedOneWithoutClientsCreesInput
+  createdBy?: Prisma.userCreateNestedOneWithoutClientsCreatedInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
-  creeParId?: string | null
+  createdById?: string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  creePar?: Prisma.userUpdateOneWithoutClientsCreesNestedInput
+  createdBy?: Prisma.userUpdateOneWithoutClientsCreatedNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  creeParId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateManyInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
-  creeParId?: string | null
+  createdById?: string | null
 }
 
 export type ClientUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ClientUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  creeParId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ClientListRelationFilter = {
@@ -321,29 +321,29 @@ export type ClientOrderByRelationAggregateInput = {
 
 export type ClientCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  nom?: Prisma.SortOrder
-  nomNormalise?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  normalizedName?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  creeParId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
 }
 
 export type ClientMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  nom?: Prisma.SortOrder
-  nomNormalise?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  normalizedName?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  creeParId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
 }
 
 export type ClientMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  nom?: Prisma.SortOrder
-  nomNormalise?: Prisma.SortOrder
-  actif?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  normalizedName?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  creeParId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
 }
 
 export type ClientNullableScalarRelationFilter = {
@@ -351,45 +351,45 @@ export type ClientNullableScalarRelationFilter = {
   isNot?: Prisma.ClientWhereInput | null
 }
 
-export type ClientCreateNestedManyWithoutCreeParInput = {
-  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreeParInput, Prisma.ClientUncheckedCreateWithoutCreeParInput> | Prisma.ClientCreateWithoutCreeParInput[] | Prisma.ClientUncheckedCreateWithoutCreeParInput[]
-  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreeParInput | Prisma.ClientCreateOrConnectWithoutCreeParInput[]
-  createMany?: Prisma.ClientCreateManyCreeParInputEnvelope
+export type ClientCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreatedByInput, Prisma.ClientUncheckedCreateWithoutCreatedByInput> | Prisma.ClientCreateWithoutCreatedByInput[] | Prisma.ClientUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreatedByInput | Prisma.ClientCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.ClientCreateManyCreatedByInputEnvelope
   connect?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
 }
 
-export type ClientUncheckedCreateNestedManyWithoutCreeParInput = {
-  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreeParInput, Prisma.ClientUncheckedCreateWithoutCreeParInput> | Prisma.ClientCreateWithoutCreeParInput[] | Prisma.ClientUncheckedCreateWithoutCreeParInput[]
-  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreeParInput | Prisma.ClientCreateOrConnectWithoutCreeParInput[]
-  createMany?: Prisma.ClientCreateManyCreeParInputEnvelope
+export type ClientUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreatedByInput, Prisma.ClientUncheckedCreateWithoutCreatedByInput> | Prisma.ClientCreateWithoutCreatedByInput[] | Prisma.ClientUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreatedByInput | Prisma.ClientCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.ClientCreateManyCreatedByInputEnvelope
   connect?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
 }
 
-export type ClientUpdateManyWithoutCreeParNestedInput = {
-  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreeParInput, Prisma.ClientUncheckedCreateWithoutCreeParInput> | Prisma.ClientCreateWithoutCreeParInput[] | Prisma.ClientUncheckedCreateWithoutCreeParInput[]
-  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreeParInput | Prisma.ClientCreateOrConnectWithoutCreeParInput[]
-  upsert?: Prisma.ClientUpsertWithWhereUniqueWithoutCreeParInput | Prisma.ClientUpsertWithWhereUniqueWithoutCreeParInput[]
-  createMany?: Prisma.ClientCreateManyCreeParInputEnvelope
+export type ClientUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreatedByInput, Prisma.ClientUncheckedCreateWithoutCreatedByInput> | Prisma.ClientCreateWithoutCreatedByInput[] | Prisma.ClientUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreatedByInput | Prisma.ClientCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.ClientUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.ClientUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.ClientCreateManyCreatedByInputEnvelope
   set?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
   disconnect?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
   delete?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
   connect?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
-  update?: Prisma.ClientUpdateWithWhereUniqueWithoutCreeParInput | Prisma.ClientUpdateWithWhereUniqueWithoutCreeParInput[]
-  updateMany?: Prisma.ClientUpdateManyWithWhereWithoutCreeParInput | Prisma.ClientUpdateManyWithWhereWithoutCreeParInput[]
+  update?: Prisma.ClientUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ClientUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.ClientUpdateManyWithWhereWithoutCreatedByInput | Prisma.ClientUpdateManyWithWhereWithoutCreatedByInput[]
   deleteMany?: Prisma.ClientScalarWhereInput | Prisma.ClientScalarWhereInput[]
 }
 
-export type ClientUncheckedUpdateManyWithoutCreeParNestedInput = {
-  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreeParInput, Prisma.ClientUncheckedCreateWithoutCreeParInput> | Prisma.ClientCreateWithoutCreeParInput[] | Prisma.ClientUncheckedCreateWithoutCreeParInput[]
-  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreeParInput | Prisma.ClientCreateOrConnectWithoutCreeParInput[]
-  upsert?: Prisma.ClientUpsertWithWhereUniqueWithoutCreeParInput | Prisma.ClientUpsertWithWhereUniqueWithoutCreeParInput[]
-  createMany?: Prisma.ClientCreateManyCreeParInputEnvelope
+export type ClientUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutCreatedByInput, Prisma.ClientUncheckedCreateWithoutCreatedByInput> | Prisma.ClientCreateWithoutCreatedByInput[] | Prisma.ClientUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutCreatedByInput | Prisma.ClientCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.ClientUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.ClientUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.ClientCreateManyCreatedByInputEnvelope
   set?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
   disconnect?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
   delete?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
   connect?: Prisma.ClientWhereUniqueInput | Prisma.ClientWhereUniqueInput[]
-  update?: Prisma.ClientUpdateWithWhereUniqueWithoutCreeParInput | Prisma.ClientUpdateWithWhereUniqueWithoutCreeParInput[]
-  updateMany?: Prisma.ClientUpdateManyWithWhereWithoutCreeParInput | Prisma.ClientUpdateManyWithWhereWithoutCreeParInput[]
+  update?: Prisma.ClientUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ClientUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.ClientUpdateManyWithWhereWithoutCreatedByInput | Prisma.ClientUpdateManyWithWhereWithoutCreatedByInput[]
   deleteMany?: Prisma.ClientScalarWhereInput | Prisma.ClientScalarWhereInput[]
 }
 
@@ -409,48 +409,48 @@ export type ClientUpdateOneWithoutInterventionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutInterventionsInput, Prisma.ClientUpdateWithoutInterventionsInput>, Prisma.ClientUncheckedUpdateWithoutInterventionsInput>
 }
 
-export type ClientCreateWithoutCreeParInput = {
+export type ClientCreateWithoutCreatedByInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
   interventions?: Prisma.InterventionCreateNestedManyWithoutClientInput
 }
 
-export type ClientUncheckedCreateWithoutCreeParInput = {
+export type ClientUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutClientInput
 }
 
-export type ClientCreateOrConnectWithoutCreeParInput = {
+export type ClientCreateOrConnectWithoutCreatedByInput = {
   where: Prisma.ClientWhereUniqueInput
-  create: Prisma.XOR<Prisma.ClientCreateWithoutCreeParInput, Prisma.ClientUncheckedCreateWithoutCreeParInput>
+  create: Prisma.XOR<Prisma.ClientCreateWithoutCreatedByInput, Prisma.ClientUncheckedCreateWithoutCreatedByInput>
 }
 
-export type ClientCreateManyCreeParInputEnvelope = {
-  data: Prisma.ClientCreateManyCreeParInput | Prisma.ClientCreateManyCreeParInput[]
+export type ClientCreateManyCreatedByInputEnvelope = {
+  data: Prisma.ClientCreateManyCreatedByInput | Prisma.ClientCreateManyCreatedByInput[]
   skipDuplicates?: boolean
 }
 
-export type ClientUpsertWithWhereUniqueWithoutCreeParInput = {
+export type ClientUpsertWithWhereUniqueWithoutCreatedByInput = {
   where: Prisma.ClientWhereUniqueInput
-  update: Prisma.XOR<Prisma.ClientUpdateWithoutCreeParInput, Prisma.ClientUncheckedUpdateWithoutCreeParInput>
-  create: Prisma.XOR<Prisma.ClientCreateWithoutCreeParInput, Prisma.ClientUncheckedCreateWithoutCreeParInput>
+  update: Prisma.XOR<Prisma.ClientUpdateWithoutCreatedByInput, Prisma.ClientUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.ClientCreateWithoutCreatedByInput, Prisma.ClientUncheckedCreateWithoutCreatedByInput>
 }
 
-export type ClientUpdateWithWhereUniqueWithoutCreeParInput = {
+export type ClientUpdateWithWhereUniqueWithoutCreatedByInput = {
   where: Prisma.ClientWhereUniqueInput
-  data: Prisma.XOR<Prisma.ClientUpdateWithoutCreeParInput, Prisma.ClientUncheckedUpdateWithoutCreeParInput>
+  data: Prisma.XOR<Prisma.ClientUpdateWithoutCreatedByInput, Prisma.ClientUncheckedUpdateWithoutCreatedByInput>
 }
 
-export type ClientUpdateManyWithWhereWithoutCreeParInput = {
+export type ClientUpdateManyWithWhereWithoutCreatedByInput = {
   where: Prisma.ClientScalarWhereInput
-  data: Prisma.XOR<Prisma.ClientUpdateManyMutationInput, Prisma.ClientUncheckedUpdateManyWithoutCreeParInput>
+  data: Prisma.XOR<Prisma.ClientUpdateManyMutationInput, Prisma.ClientUncheckedUpdateManyWithoutCreatedByInput>
 }
 
 export type ClientScalarWhereInput = {
@@ -458,29 +458,29 @@ export type ClientScalarWhereInput = {
   OR?: Prisma.ClientScalarWhereInput[]
   NOT?: Prisma.ClientScalarWhereInput | Prisma.ClientScalarWhereInput[]
   id?: Prisma.StringFilter<"Client"> | string
-  nom?: Prisma.StringFilter<"Client"> | string
-  nomNormalise?: Prisma.StringFilter<"Client"> | string
-  actif?: Prisma.BoolFilter<"Client"> | boolean
+  name?: Prisma.StringFilter<"Client"> | string
+  normalizedName?: Prisma.StringFilter<"Client"> | string
+  active?: Prisma.BoolFilter<"Client"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
-  creeParId?: Prisma.StringNullableFilter<"Client"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Client"> | string | null
 }
 
 export type ClientCreateWithoutInterventionsInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
-  creePar?: Prisma.userCreateNestedOneWithoutClientsCreesInput
+  createdBy?: Prisma.userCreateNestedOneWithoutClientsCreatedInput
 }
 
 export type ClientUncheckedCreateWithoutInterventionsInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
-  creeParId?: string | null
+  createdById?: string | null
 }
 
 export type ClientCreateOrConnectWithoutInterventionsInput = {
@@ -501,53 +501,53 @@ export type ClientUpdateToOneWithWhereWithoutInterventionsInput = {
 
 export type ClientUpdateWithoutInterventionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  creePar?: Prisma.userUpdateOneWithoutClientsCreesNestedInput
+  createdBy?: Prisma.userUpdateOneWithoutClientsCreatedNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutInterventionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  creeParId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type ClientCreateManyCreeParInput = {
+export type ClientCreateManyCreatedByInput = {
   id?: string
-  nom: string
-  nomNormalise: string
-  actif?: boolean
+  name: string
+  normalizedName: string
+  active?: boolean
   createdAt?: Date | string
 }
 
-export type ClientUpdateWithoutCreeParInput = {
+export type ClientUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   interventions?: Prisma.InterventionUpdateManyWithoutClientNestedInput
 }
 
-export type ClientUncheckedUpdateWithoutCreeParInput = {
+export type ClientUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutClientNestedInput
 }
 
-export type ClientUncheckedUpdateManyWithoutCreeParInput = {
+export type ClientUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  nom?: Prisma.StringFieldUpdateOperationsInput | string
-  nomNormalise?: Prisma.StringFieldUpdateOperationsInput | string
-  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -584,71 +584,71 @@ export type ClientCountOutputTypeCountInterventionsArgs<ExtArgs extends runtime.
 
 export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  nom?: boolean
-  nomNormalise?: boolean
-  actif?: boolean
+  name?: boolean
+  normalizedName?: boolean
+  active?: boolean
   createdAt?: boolean
-  creeParId?: boolean
-  creePar?: boolean | Prisma.Client$creeParArgs<ExtArgs>
+  createdById?: boolean
+  createdBy?: boolean | Prisma.Client$createdByArgs<ExtArgs>
   interventions?: boolean | Prisma.Client$interventionsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
 export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  nom?: boolean
-  nomNormalise?: boolean
-  actif?: boolean
+  name?: boolean
+  normalizedName?: boolean
+  active?: boolean
   createdAt?: boolean
-  creeParId?: boolean
-  creePar?: boolean | Prisma.Client$creeParArgs<ExtArgs>
+  createdById?: boolean
+  createdBy?: boolean | Prisma.Client$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
 export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  nom?: boolean
-  nomNormalise?: boolean
-  actif?: boolean
+  name?: boolean
+  normalizedName?: boolean
+  active?: boolean
   createdAt?: boolean
-  creeParId?: boolean
-  creePar?: boolean | Prisma.Client$creeParArgs<ExtArgs>
+  createdById?: boolean
+  createdBy?: boolean | Prisma.Client$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
 export type ClientSelectScalar = {
   id?: boolean
-  nom?: boolean
-  nomNormalise?: boolean
-  actif?: boolean
+  name?: boolean
+  normalizedName?: boolean
+  active?: boolean
   createdAt?: boolean
-  creeParId?: boolean
+  createdById?: boolean
 }
 
-export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nom" | "nomNormalise" | "actif" | "createdAt" | "creeParId", ExtArgs["result"]["client"]>
+export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "normalizedName" | "active" | "createdAt" | "createdById", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  creePar?: boolean | Prisma.Client$creeParArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Client$createdByArgs<ExtArgs>
   interventions?: boolean | Prisma.Client$interventionsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ClientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  creePar?: boolean | Prisma.Client$creeParArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Client$createdByArgs<ExtArgs>
 }
 export type ClientIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  creePar?: boolean | Prisma.Client$creeParArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Client$createdByArgs<ExtArgs>
 }
 
 export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Client"
   objects: {
-    creePar: Prisma.$userPayload<ExtArgs> | null
+    createdBy: Prisma.$userPayload<ExtArgs> | null
     interventions: Prisma.$InterventionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    nom: string
-    nomNormalise: string
-    actif: boolean
+    name: string
+    normalizedName: string
+    active: boolean
     createdAt: Date
-    creeParId: string | null
+    createdById: string | null
   }, ExtArgs["result"]["client"]>
   composites: {}
 }
@@ -1043,7 +1043,7 @@ readonly fields: ClientFieldRefs;
  */
 export interface Prisma__ClientClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  creePar<T extends Prisma.Client$creeParArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$creeParArgs<ExtArgs>>): Prisma.Prisma__userClient<runtime.Types.Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.Client$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$createdByArgs<ExtArgs>>): Prisma.Prisma__userClient<runtime.Types.Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   interventions<T extends Prisma.Client$interventionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$interventionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InterventionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1075,11 +1075,11 @@ export interface Prisma__ClientClient<T, Null = never, ExtArgs extends runtime.T
  */
 export interface ClientFieldRefs {
   readonly id: Prisma.FieldRef<"Client", 'String'>
-  readonly nom: Prisma.FieldRef<"Client", 'String'>
-  readonly nomNormalise: Prisma.FieldRef<"Client", 'String'>
-  readonly actif: Prisma.FieldRef<"Client", 'Boolean'>
+  readonly name: Prisma.FieldRef<"Client", 'String'>
+  readonly normalizedName: Prisma.FieldRef<"Client", 'String'>
+  readonly active: Prisma.FieldRef<"Client", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Client", 'DateTime'>
-  readonly creeParId: Prisma.FieldRef<"Client", 'String'>
+  readonly createdById: Prisma.FieldRef<"Client", 'String'>
 }
     
 
@@ -1481,9 +1481,9 @@ export type ClientDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Client.creePar
+ * Client.createdBy
  */
-export type Client$creeParArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Client$createdByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the user
    */

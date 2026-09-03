@@ -43,27 +43,27 @@ export type verification = Prisma.verificationModel
  */
 export type Client = Prisma.ClientModel
 /**
- * Model Poste
+ * Model Shift
  * 
  */
-export type Poste = Prisma.PosteModel
+export type Shift = Prisma.ShiftModel
 /**
- * Model Pause
+ * Model Break
  * 
  */
-export type Pause = Prisma.PauseModel
+export type Break = Prisma.BreakModel
 /**
  * Model Intervention
  * 
  */
 export type Intervention = Prisma.InterventionModel
 /**
- * Model Modification
+ * Model AuditLog
  * 
  */
-export type Modification = Prisma.ModificationModel
+export type AuditLog = Prisma.AuditLogModel
 /**
- * Model RapportHebdo
+ * Model WeeklyReport
  * 
  */
-export type RapportHebdo = Prisma.RapportHebdoModel
+export type WeeklyReport = Prisma.WeeklyReportModel

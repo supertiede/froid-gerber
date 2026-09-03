@@ -9,25 +9,25 @@
 * 🟢 You can import this file directly.
 */
 
-export const PauseType = {
-  DEJEUNER: 'DEJEUNER',
-  COURTE: 'COURTE'
+export const BreakType = {
+  LUNCH: 'LUNCH',
+  SHORT: 'SHORT'
 } as const
 
-export type PauseType = (typeof PauseType)[keyof typeof PauseType]
+export type BreakType = (typeof BreakType)[keyof typeof BreakType]
 
 
-export const Origine = {
+export const Origin = {
   APP: 'APP',
-  MANUEL: 'MANUEL'
+  MANUAL: 'MANUAL'
 } as const
 
-export type Origine = (typeof Origine)[keyof typeof Origine]
+export type Origin = (typeof Origin)[keyof typeof Origin]
 
 
-export const TypeIntervention = {
+export const InterventionType = {
   CLIENT: 'CLIENT',
-  ATELIER: 'ATELIER'
+  WORKSHOP: 'WORKSHOP'
 } as const
 
-export type TypeIntervention = (typeof TypeIntervention)[keyof typeof TypeIntervention]
+export type InterventionType = (typeof InterventionType)[keyof typeof InterventionType]

@@ -2,27 +2,34 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { getPendingActions, removeAction, incrementRetry, countPending } from '@/lib/outbox'
-import { arriver, demarrerPause, reprendreTravail, terminerJournee } from '@/actions/pointage'
-import { demarrerIntervention, terminerIntervention } from '@/actions/interventions'
+import { clockIn } from '@/actions/shift/clockIn'
+import { startBreak } from '@/actions/shift/startBreak'
+import { resumeWork } from '@/actions/shift/resumeWork'
+import { endDay } from '@/actions/shift/endDay'
+import { resumeDay } from '@/actions/shift/resumeDay'
+import { startIntervention } from '@/actions/intervention/startIntervention'
+import { endIntervention } from '@/actions/intervention/endIntervention'
 
 type ActionResult = { ok: boolean; error?: string }
 
 async function replayAction(type: string, payload: Record<string, unknown>): Promise<ActionResult> {
   switch (type) {
-    case 'arriver':
-      return arriver(payload.cleClient as string)
-    case 'demarrerPause':
-      return demarrerPause(payload.type as 'DEJEUNER' | 'COURTE', payload.cleClient as string)
-    case 'reprendreTravail':
-      return reprendreTravail(payload.cleClient as string)
-    case 'terminerJournee':
-      return terminerJournee(payload.cleClient as string)
-    case 'demarrerIntervention':
-      return demarrerIntervention(payload as Parameters<typeof demarrerIntervention>[0])
-    case 'terminerIntervention':
-      return terminerIntervention(payload.interventionId as string)
+    case 'clockIn':
+      return clockIn(payload.idempotencyKey as string)
+    case 'startBreak':
+      return startBreak(payload.type as 'LUNCH' | 'SHORT', payload.idempotencyKey as string)
+    case 'resumeWork':
+      return resumeWork()
+    case 'endDay':
+      return endDay()
+    case 'resumeDay':
+      return resumeDay(payload.idempotencyKey as string)
+    case 'startIntervention':
+      return startIntervention(payload as Parameters<typeof startIntervention>[0])
+    case 'endIntervention':
+      return endIntervention(payload.interventionId as string)
     default:
-      return { ok: false, error: `Type inconnu: ${type}` }
+      return { ok: false, error: `Unknown action type: ${type}` }
   }
 }
 
@@ -44,9 +51,8 @@ export function useOfflineSync() {
         if (result.ok) {
           await removeAction(action.id)
         } else if (action.retries >= 3) {
-          // Give up after 3 retries
           await removeAction(action.id)
-          console.error('[outbox] Action abandonnée après 3 tentatives:', action)
+          console.error('[outbox] Action abandoned after 3 retries:', action)
         } else {
           await incrementRetry(action.id)
         }
@@ -70,7 +76,6 @@ export function useOfflineSync() {
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
 
-    // Also replay on mount if online
     if (navigator.onLine) replayQueue()
 
     return () => {

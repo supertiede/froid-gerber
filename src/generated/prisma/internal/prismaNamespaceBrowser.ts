@@ -56,11 +56,11 @@ export const ModelName = {
   account: 'account',
   verification: 'verification',
   Client: 'Client',
-  Poste: 'Poste',
-  Pause: 'Pause',
+  Shift: 'Shift',
+  Break: 'Break',
   Intervention: 'Intervention',
-  Modification: 'Modification',
-  RapportHebdo: 'RapportHebdo'
+  AuditLog: 'AuditLog',
+  WeeklyReport: 'WeeklyReport'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -89,8 +89,8 @@ export const UserScalarFieldEnum = {
   updatedAt: 'updatedAt',
   username: 'username',
   displayUsername: 'displayUsername',
-  doitChangerMotDePasse: 'doitChangerMotDePasse',
-  actif: 'actif'
+  mustChangePassword: 'mustChangePassword',
+  active: 'active'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -144,45 +144,45 @@ export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[k
 
 export const ClientScalarFieldEnum = {
   id: 'id',
-  nom: 'nom',
-  nomNormalise: 'nomNormalise',
-  actif: 'actif',
+  name: 'name',
+  normalizedName: 'normalizedName',
+  active: 'active',
   createdAt: 'createdAt',
-  creeParId: 'creeParId'
+  createdById: 'createdById'
 } as const
 
 export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
 
 
-export const PosteScalarFieldEnum = {
+export const ShiftScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  debutAt: 'debutAt',
-  finAt: 'finAt',
-  origineDebut: 'origineDebut',
-  origineFin: 'origineFin',
-  cleClient: 'cleClient',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  startOrigin: 'startOrigin',
+  endOrigin: 'endOrigin',
+  idempotencyKey: 'idempotencyKey',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type PosteScalarFieldEnum = (typeof PosteScalarFieldEnum)[keyof typeof PosteScalarFieldEnum]
+export type ShiftScalarFieldEnum = (typeof ShiftScalarFieldEnum)[keyof typeof ShiftScalarFieldEnum]
 
 
-export const PauseScalarFieldEnum = {
+export const BreakScalarFieldEnum = {
   id: 'id',
-  posteId: 'posteId',
+  shiftId: 'shiftId',
   type: 'type',
-  debutAt: 'debutAt',
-  finAt: 'finAt',
-  origineDebut: 'origineDebut',
-  origineFin: 'origineFin',
-  cleClient: 'cleClient',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  startOrigin: 'startOrigin',
+  endOrigin: 'endOrigin',
+  idempotencyKey: 'idempotencyKey',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type PauseScalarFieldEnum = (typeof PauseScalarFieldEnum)[keyof typeof PauseScalarFieldEnum]
+export type BreakScalarFieldEnum = (typeof BreakScalarFieldEnum)[keyof typeof BreakScalarFieldEnum]
 
 
 export const InterventionScalarFieldEnum = {
@@ -190,12 +190,12 @@ export const InterventionScalarFieldEnum = {
   userId: 'userId',
   type: 'type',
   clientId: 'clientId',
-  debutAt: 'debutAt',
-  finAt: 'finAt',
-  trajetMinutes: 'trajetMinutes',
-  compteRendu: 'compteRendu',
-  origine: 'origine',
-  cleClient: 'cleClient',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  travelMinutes: 'travelMinutes',
+  workReport: 'workReport',
+  origin: 'origin',
+  idempotencyKey: 'idempotencyKey',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -203,32 +203,32 @@ export const InterventionScalarFieldEnum = {
 export type InterventionScalarFieldEnum = (typeof InterventionScalarFieldEnum)[keyof typeof InterventionScalarFieldEnum]
 
 
-export const ModificationScalarFieldEnum = {
+export const AuditLogScalarFieldEnum = {
   id: 'id',
-  entite: 'entite',
-  entiteId: 'entiteId',
-  champ: 'champ',
-  ancienne: 'ancienne',
-  nouvelle: 'nouvelle',
-  parUserId: 'parUserId',
+  entity: 'entity',
+  entityId: 'entityId',
+  field: 'field',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  changedByUserId: 'changedByUserId',
   at: 'at',
-  motif: 'motif'
+  reason: 'reason'
 } as const
 
-export type ModificationScalarFieldEnum = (typeof ModificationScalarFieldEnum)[keyof typeof ModificationScalarFieldEnum]
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
-export const RapportHebdoScalarFieldEnum = {
+export const WeeklyReportScalarFieldEnum = {
   id: 'id',
-  semaineIso: 'semaineIso',
-  envoyeAt: 'envoyeAt',
-  destinataires: 'destinataires',
-  statut: 'statut',
-  erreur: 'erreur',
-  verrouillee: 'verrouillee'
+  isoWeek: 'isoWeek',
+  sentAt: 'sentAt',
+  recipients: 'recipients',
+  status: 'status',
+  error: 'error',
+  locked: 'locked'
 } as const
 
-export type RapportHebdoScalarFieldEnum = (typeof RapportHebdoScalarFieldEnum)[keyof typeof RapportHebdoScalarFieldEnum]
+export type WeeklyReportScalarFieldEnum = (typeof WeeklyReportScalarFieldEnum)[keyof typeof WeeklyReportScalarFieldEnum]
 
 
 export const SortOrder = {

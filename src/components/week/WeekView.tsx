@@ -22,10 +22,6 @@ const TZ = 'Europe/Paris'
 type ClientSer = {
   id: string
   name: string
-  normalizedName: string
-  active: boolean
-  createdAt: string
-  createdById: string | null
 }
 
 type BreakSer = {
