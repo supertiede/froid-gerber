@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { formatDuration } from '@/lib/time/formatDuration'
 
 type Break = {
@@ -14,15 +14,18 @@ type Props = {
 }
 
 export function WorkTimer({ shiftStartAt, breaks }: Props) {
+  const breaksRef = useRef(breaks)
+  breaksRef.current = breaks
+
   const [minutes, setMinutes] = useState(() => computeNetMinutes(shiftStartAt, breaks))
 
   useEffect(() => {
     if (!shiftStartAt) return
     const interval = setInterval(() => {
-      setMinutes(computeNetMinutes(shiftStartAt, breaks))
+      setMinutes(computeNetMinutes(shiftStartAt, breaksRef.current))
     }, 30000)
     return () => clearInterval(interval)
-  }, [shiftStartAt, breaks])
+  }, [shiftStartAt])
 
   return (
     <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)' }}>
