@@ -1,19 +1,10 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Mic, MicOff } from 'lucide-react'
 import { saveWorkReport } from '@/actions/intervention/saveWorkReport'
-
-const CHIPS = [
-  'Recharge fluide',
-  'Remplacement compresseur',
-  "Contrôle d'étanchéité",
-  'Dégivrage',
-  'Devis à faire',
-  'Retour prévu',
-  'Maintenance préventive',
-  'Dépannage électrique',
-]
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition'
 
 export function WorkReportForm({
   interventionId,
@@ -24,31 +15,28 @@ export function WorkReportForm({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [selectedChips, setSelectedChips] = useState<Set<string>>(new Set())
-  const [freeText, setFreeText] = useState('')
+  const [freeText, setFreeText] = useState(workReport)
 
-  function toggleChip(chip: string) {
-    setSelectedChips(prev => {
-      const next = new Set(prev)
-      if (next.has(chip)) next.delete(chip)
-      else next.add(chip)
-      return next
+  const { isSupported, isListening, interimText, start, stop, setOnFinalResult } =
+    useSpeechRecognition()
+
+  useEffect(() => {
+    setOnFinalResult((text: string) => {
+      setFreeText(prev => (prev ? prev + ' ' + text : text))
     })
-  }
+  }, [setOnFinalResult])
 
   function handleSave() {
-    const parts: string[] = []
-    if (selectedChips.size > 0) parts.push([...selectedChips].join(', '))
-    if (freeText.trim()) parts.push(freeText.trim())
-    const report = parts.join(' — ')
-
+    if (isListening) stop()
     startTransition(async () => {
-      await saveWorkReport(interventionId, report)
+      await saveWorkReport(interventionId, freeText.trim())
       if ('vibrate' in navigator) navigator.vibrate(15)
       router.push('/interventions')
       router.refresh()
     })
   }
+
+  const displayValue = freeText + (isListening && interimText ? ' ' + interimText : '')
 
   return (
     <div>
@@ -56,82 +44,76 @@ export function WorkReportForm({
         Qu&apos;est-ce que vous avez fait ?
       </h2>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
-        {CHIPS.map(chip => (
+      <div style={{ position: 'relative', marginBottom: 20 }}>
+        <textarea
+          value={displayValue}
+          onChange={e => {
+            if (!isListening) setFreeText(e.target.value)
+          }}
+          readOnly={isListening}
+          placeholder="Ajouter un détail…"
+          rows={4}
+          style={{
+            width: '100%',
+            padding: `12px ${isSupported ? '56px' : '16px'} 12px 16px`,
+            border: `1px solid ${isListening ? 'var(--rouge)' : 'var(--trait)'}`,
+            borderRadius: 8,
+            fontSize: 18,
+            color: 'var(--encre)',
+            background: 'var(--surface)',
+            resize: 'none',
+            boxSizing: 'border-box',
+            transition: 'border-color 200ms ease',
+          }}
+        />
+
+        {isSupported && (
           <button
-            key={chip}
-            onClick={() => toggleChip(chip)}
+            onClick={isListening ? stop : start}
+            className={isListening ? 'mic-recording' : undefined}
+            aria-label={isListening ? 'Arrêter la dictée' : 'Démarrer la dictée'}
+            aria-pressed={isListening}
             style={{
-              padding: '10px 16px',
-              borderRadius: 24,
-              border: `2px solid ${selectedChips.has(chip) ? 'var(--acier)' : 'var(--trait)'}`,
-              background: selectedChips.has(chip) ? 'rgba(11,95,165,0.1)' : 'var(--surface)',
-              color: selectedChips.has(chip) ? 'var(--acier)' : 'var(--encre)',
-              fontSize: 15,
-              fontWeight: selectedChips.has(chip) ? 600 : 400,
-              minHeight: 44,
+              position: 'absolute',
+              bottom: 10,
+              right: 10,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 44,
+              height: 44,
+              minHeight: 'unset',
+              borderRadius: 8,
+              border: isListening ? 'none' : '1.5px solid var(--trait)',
+              background: isListening ? 'var(--rouge)' : 'transparent',
+              color: isListening ? '#fff' : 'var(--encre-douce)',
               cursor: 'pointer',
+              transition: 'background 200ms ease, border-color 200ms ease',
             }}
           >
-            {chip}
+            {isListening ? <MicOff size={20} /> : <Mic size={20} />}
           </button>
-        ))}
+        )}
       </div>
 
-      <textarea
-        value={freeText}
-        onChange={e => setFreeText(e.target.value)}
-        placeholder="Ajouter un détail… (la dictée vocale du clavier fonctionne ici)"
-        rows={3}
+      <button
+        onClick={handleSave}
+        disabled={isPending}
         style={{
+          height: 96,
+          borderRadius: 12,
+          background: 'var(--acier)',
+          color: '#fff',
+          fontSize: 20,
+          fontWeight: 600,
+          border: 'none',
           width: '100%',
-          padding: '12px 16px',
-          border: '1px solid var(--trait)',
-          borderRadius: 8,
-          fontSize: 18,
-          color: 'var(--encre)',
-          background: 'var(--surface)',
-          resize: 'none',
-          marginBottom: 20,
-          boxSizing: 'border-box',
+          cursor: isPending ? 'not-allowed' : 'pointer',
+          opacity: isPending ? 0.7 : 1,
         }}
-      />
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <button
-          onClick={handleSave}
-          disabled={isPending}
-          style={{
-            height: 96,
-            borderRadius: 12,
-            background: 'var(--acier)',
-            color: '#fff',
-            fontSize: 20,
-            fontWeight: 600,
-            border: 'none',
-            width: '100%',
-            cursor: isPending ? 'not-allowed' : 'pointer',
-            opacity: isPending ? 0.7 : 1,
-          }}
-        >
-          {isPending ? 'Enregistrement…' : 'ENREGISTRER'}
-        </button>
-        <button
-          onClick={() => router.push('/interventions')}
-          style={{
-            height: 64,
-            borderRadius: 12,
-            background: 'transparent',
-            color: 'var(--encre-douce)',
-            fontSize: 18,
-            border: '2px solid var(--trait)',
-            width: '100%',
-            cursor: 'pointer',
-          }}
-        >
-          Passer (enregistrer sans compte rendu)
-        </button>
-      </div>
+      >
+        {isPending ? 'Enregistrement…' : 'ENREGISTRER'}
+      </button>
     </div>
   )
 }
