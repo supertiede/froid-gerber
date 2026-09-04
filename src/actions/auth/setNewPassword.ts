@@ -10,19 +10,23 @@ export async function setNewPassword(newPassword: string): Promise<{ ok: true } 
     return { ok: false, error: 'Le mot de passe doit contenir au moins 6 caractères.' }
   }
 
-  const session = await getSession()
-  const hashed = await hashPassword(newPassword)
+  try {
+    const session = await getSession()
+    const hashed = await hashPassword(newPassword)
 
-  await prisma.account.updateMany({
-    where: { userId: session.user.id, providerId: 'credential' },
-    data: { password: hashed },
-  })
+    await prisma.account.updateMany({
+      where: { userId: session.user.id, providerId: 'credential' },
+      data: { password: hashed },
+    })
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { mustChangePassword: false },
-  })
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { mustChangePassword: false },
+    })
 
-  revalidatePath('/')
-  return { ok: true }
+    revalidatePath('/')
+    return { ok: true }
+  } catch (err) {
+    return { ok: false, error: (err as Error).message ?? 'Erreur lors du changement de mot de passe.' }
+  }
 }

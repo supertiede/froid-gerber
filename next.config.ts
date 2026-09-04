@@ -9,6 +9,7 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ['better-auth', '@better-auth/utils', '@better-auth/core'],
 }
 
 export default withSerwist(nextConfig)
