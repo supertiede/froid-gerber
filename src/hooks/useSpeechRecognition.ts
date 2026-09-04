@@ -8,18 +8,19 @@ interface UseSpeechRecognitionReturn {
   isSupported: boolean
   isListening: boolean
   interimText: string
+  error: string | null
   start: () => void
   stop: () => void
   setOnFinalResult: (cb: FinalResultCallback) => void
 }
 
-// Web Speech API types (not yet in all TypeScript DOM libs)
+// Web Speech API: SpeechRecognition class and SpeechRecognitionEvent are absent from the TypeScript DOM lib
 interface ISpeechRecognition extends EventTarget {
   lang: string
   continuous: boolean
   interimResults: boolean
   onresult: ((event: ISpeechRecognitionEvent) => void) | null
-  onerror: ((event: Event) => void) | null
+  onerror: ((event: ISpeechRecognitionErrorEvent) => void) | null
   onend: ((event: Event) => void) | null
   start(): void
   stop(): void
@@ -29,6 +30,10 @@ interface ISpeechRecognition extends EventTarget {
 interface ISpeechRecognitionEvent extends Event {
   resultIndex: number
   results: SpeechRecognitionResultList
+}
+
+interface ISpeechRecognitionErrorEvent extends Event {
+  error: string
 }
 
 interface ISpeechRecognitionConstructor {
@@ -44,6 +49,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const [isSupported, setIsSupported] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [interimText, setInterimText] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<ISpeechRecognition | null>(null)
   const onFinalResultRef = useRef<FinalResultCallback | null>(null)
 
@@ -72,7 +78,8 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       setInterimText(interim)
     }
 
-    recognition.onerror = () => {
+    recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
+      setError(event.error)
       setIsListening(false)
       setInterimText('')
     }
@@ -92,20 +99,23 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const start = useCallback(() => {
     if (!recognitionRef.current || isListening) return
     setInterimText('')
-    recognitionRef.current.start()
-    setIsListening(true)
+    setError(null)
+    try {
+      recognitionRef.current.start()
+      setIsListening(true)
+    } catch {
+      // start() threw synchronously (e.g. already started)
+    }
   }, [isListening])
 
   const stop = useCallback(() => {
     if (!recognitionRef.current || !isListening) return
     recognitionRef.current.stop()
-    setIsListening(false)
-    setInterimText('')
   }, [isListening])
 
   const setOnFinalResult = useCallback((cb: FinalResultCallback) => {
     onFinalResultRef.current = cb
   }, [])
 
-  return { isSupported, isListening, interimText, start, stop, setOnFinalResult }
+  return { isSupported, isListening, interimText, error, start, stop, setOnFinalResult }
 }
