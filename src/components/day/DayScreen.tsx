@@ -1,9 +1,16 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import type { ReactNode, CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
+import Image from 'next/image'
+import {
+  LogIn, Wrench, Clock, Coffee, Pause, Play,
+  LogOut, CheckSquare, CalendarRange,
+} from 'lucide-react'
 import { StatusBanner } from './StatusBanner'
+import { FeedbackZone } from './FeedbackZone'
 import { clockIn } from '@/actions/shift/clockIn'
 import { cancelClockIn } from '@/actions/shift/cancelClockIn'
 import { startBreak } from '@/actions/shift/startBreak'
@@ -45,10 +52,7 @@ type ShiftClient = {
   breaks: BreakClient[]
 }
 
-type ClientInfo = {
-  id: string
-  name: string
-} | null
+type ClientInfo = { id: string; name: string } | null
 
 type InterventionClient = {
   id: string
@@ -80,11 +84,18 @@ type Props = {
   userName: string
 }
 
-function vibrate() {
-  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-    navigator.vibrate(15)
-  }
+type SlotConfig = {
+  primary: { label: string; icon: ReactNode; color: string; onClick: () => void }
+  sec1:    { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
+  sec2:    { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
+  tertiary:{ label: string; icon: ReactNode; onClick: () => void; visible: boolean }
 }
+
+function vibrate() {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(15)
+}
+
+const DATE_FMT = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
 
 export function DayScreen({ status: initialStatus, shift, openIntervention, openBreak, chronoStartAt, userName }: Props) {
   const router = useRouter()
@@ -93,41 +104,8 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const [error, setError] = useState<string | null>(null)
   const [cancellation, setCancellation] = useState<Cancellation | null>(null)
 
-  const refresh = useCallback(() => {
-    router.refresh()
-  }, [router])
-
-  async function execute<T>(
-    action: () => Promise<{ ok: true } | { ok: true; data: T } | { ok: false; error: string }>,
-    optimisticStatus: EtatJournee,
-    cancellationMessage: string,
-    undoAction: () => Promise<void>,
-  ) {
-    if (loading) return
-    vibrate()
-    setLoading(true)
-    setError(null)
-    setStatus(optimisticStatus)
-
-    const result = await action()
-
-    if (!result.ok) {
-      setError((result as { ok: false; error: string }).error)
-      setStatus(initialStatus)
-    } else {
-      setCancellation({
-        message: cancellationMessage,
-        onCancel: async () => {
-          setCancellation(null)
-          await undoAction()
-          refresh()
-        },
-      })
-    }
-
-    setLoading(false)
-    refresh()
-  }
+  const refresh = useCallback(() => router.refresh(), [router])
+  const openBreakRef = { current: openBreak }
 
   async function executeWithOutbox<T>(
     idempotencyKey: string,
@@ -143,7 +121,6 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     setLoading(true)
     setError(null)
     setStatus(optimisticStatus)
-
     if (!navigator.onLine) {
       await enqueueAction({ id: idempotencyKey, type, payload, createdAt: Date.now() })
       setCancellation({
@@ -157,23 +134,13 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
       setLoading(false)
       return
     }
-
     const result = await onlineAction()
-
     if (!result.ok) {
       setError((result as { ok: false; error: string }).error)
       setStatus(initialStatus)
     } else {
-      setCancellation({
-        message: cancellationMessage,
-        onCancel: async () => {
-          setCancellation(null)
-          await undoAction()
-          refresh()
-        },
-      })
+      setCancellation({ message: cancellationMessage, onCancel: undoAction })
     }
-
     setLoading(false)
     refresh()
   }
@@ -194,57 +161,36 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const handleClockIn = async () => {
     const key = uuidv4()
     await executeWithOutbox(
-      key,
-      'clockIn',
-      { idempotencyKey: key },
-      () => clockIn(key),
+      key, 'clockIn', { idempotencyKey: key }, () => clockIn(key),
       'AU_TRAVAIL',
       `Arrivée enregistrée à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
-      async () => {
-        if (shift?.id) await cancelClockIn(shift.id)
-      },
+      async () => { if (shift?.id) await cancelClockIn(shift.id) },
     )
   }
 
   const handleLunchBreak = async () => {
     const key = uuidv4()
     await executeWithOutbox(
-      key,
-      'startBreak',
-      { type: 'LUNCH', idempotencyKey: key },
-      () => startBreak('LUNCH', key),
-      'PAUSE_DEJEUNER',
-      'Pause déjeuner démarrée',
-      async () => {
-        if (openBreakRef.current?.id) await cancelBreak(openBreakRef.current.id)
-      },
+      key, 'startBreak', { type: 'LUNCH', idempotencyKey: key }, () => startBreak('LUNCH', key),
+      'PAUSE_DEJEUNER', 'Pause déjeuner démarrée',
+      async () => { if (openBreakRef.current?.id) await cancelBreak(openBreakRef.current.id) },
     )
   }
 
   const handleShortBreak = async () => {
     const key = uuidv4()
     await executeWithOutbox(
-      key,
-      'startBreak',
-      { type: 'SHORT', idempotencyKey: key },
-      () => startBreak('SHORT', key),
-      'EN_PAUSE',
-      'Pause démarrée',
-      async () => {
-        if (openBreakRef.current?.id) await cancelBreak(openBreakRef.current.id)
-      },
+      key, 'startBreak', { type: 'SHORT', idempotencyKey: key }, () => startBreak('SHORT', key),
+      'EN_PAUSE', 'Pause démarrée',
+      async () => { if (openBreakRef.current?.id) await cancelBreak(openBreakRef.current.id) },
     )
   }
 
   const handleResumeWork = async () => {
     const key = uuidv4()
     await executeWithOutbox(
-      key,
-      'resumeWork',
-      { idempotencyKey: key },
-      () => resumeWork(),
-      'AU_TRAVAIL',
-      'Reprise du travail enregistrée',
+      key, 'resumeWork', { idempotencyKey: key }, () => resumeWork(),
+      'AU_TRAVAIL', 'Reprise du travail enregistrée',
       async () => { refresh() },
     )
   }
@@ -253,174 +199,246 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     const key = uuidv4()
     const shiftId = shift?.id
     await executeWithOutbox(
-      key,
-      'endDay',
-      { idempotencyKey: key },
-      () => endDay(),
+      key, 'endDay', { idempotencyKey: key }, () => endDay(),
       'JOURNEE_TERMINEE',
       `Journée terminée à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
-      async () => {
-        if (shiftId) await cancelEndDay(shiftId)
-      },
+      async () => { if (shiftId) await cancelEndDay(shiftId) },
     )
   }
 
   const handleResumeDay = async () => {
     const key = uuidv4()
     await executeWithOutbox(
-      key,
-      'resumeDay',
-      { idempotencyKey: key },
-      () => resumeDay(key),
-      'AU_TRAVAIL',
-      'Journée reprise',
+      key, 'resumeDay', { idempotencyKey: key }, () => resumeDay(key),
+      'AU_TRAVAIL', 'Journée reprise',
       async () => { refresh() },
     )
   }
 
-  const openBreakRef = { current: openBreak }
+  const handleEndIntervention = async () => {
+    if (!openIntervention) return
+    vibrate()
+    setLoading(true)
+    const result = await endIntervention(openIntervention.id)
+    setLoading(false)
+    if (result.ok) {
+      router.push(`/intervention/${openIntervention.id}/fin`)
+    } else {
+      setError((result as { ok: false; error: string }).error)
+    }
+  }
 
-  const primaryButton = (label: string, onClick: () => void | Promise<void>, color?: string) => (
-    <button
-      onClick={onClick}
-      disabled={loading}
-      aria-busy={loading}
-      style={{
-        width: 'calc(100% - 32px)',
-        height: 96,
-        margin: '0 16px',
-        borderRadius: 12,
-        background: color ?? 'var(--bleu-ciel)',
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 600,
-        border: 'none',
-        cursor: loading ? 'not-allowed' : 'pointer',
-        opacity: loading ? 0.7 : 1,
-        letterSpacing: '0.02em',
-      }}
-    >
-      {label}
-    </button>
-  )
+  /* ---- Styles des boutons ---- */
 
-  const secondaryButton = (label: string, onClick: () => void | Promise<void>, color?: string) => (
-    <button
-      onClick={onClick}
-      disabled={loading}
-      aria-busy={loading}
-      style={{
-        flex: 1,
-        height: 64,
-        borderRadius: 12,
-        background: 'transparent',
-        color: color ?? 'var(--bleu-ciel)',
-        fontSize: 15,
-        fontWeight: 600,
-        border: `2px solid ${color ?? 'var(--bleu-ciel)'}`,
-        cursor: loading ? 'not-allowed' : 'pointer',
-        opacity: loading ? 0.7 : 1,
-      }}
-    >
-      {label}
-    </button>
-  )
+  const primaryStyle = (color: string): CSSProperties => ({
+    width: 'calc(100% - 32px)',
+    height: 72,
+    margin: '0 16px',
+    borderRadius: 14,
+    background: color,
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: 600,
+    border: 'none',
+    cursor: loading ? 'not-allowed' : 'pointer',
+    opacity: loading ? 0.7 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    touchAction: 'manipulation',
+    flexShrink: 0,
+  })
 
-  const clientName = openIntervention?.client?.name
+  const secondaryStyle = (color: string, visible: boolean): CSSProperties => ({
+    flex: 1,
+    height: 52,
+    borderRadius: 12,
+    background: 'transparent',
+    color,
+    fontSize: 13,
+    fontWeight: 600,
+    border: `1.5px solid ${color}`,
+    cursor: loading ? 'not-allowed' : 'pointer',
+    opacity: loading ? 0.7 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    touchAction: 'manipulation',
+    visibility: visible ? 'visible' : 'hidden',
+    pointerEvents: visible ? 'auto' : 'none',
+    flexShrink: 0,
+  })
+
+  const tertiaryStyle = (visible: boolean): CSSProperties => ({
+    width: '100%',
+    height: 52,
+    borderRadius: 12,
+    background: 'transparent',
+    color: 'var(--encre-douce)',
+    fontSize: 13,
+    fontWeight: 600,
+    border: 'none',
+    cursor: loading ? 'not-allowed' : 'pointer',
+    opacity: loading ? 0.7 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    touchAction: 'manipulation',
+    visibility: visible ? 'visible' : 'hidden',
+    pointerEvents: visible ? 'auto' : 'none',
+    flexShrink: 0,
+  })
+
+  /* ---- Contenu des slots par état ---- */
+
+  const EMPTY_SEC = { label: '', icon: null, color: 'transparent', onClick: () => {}, visible: false }
+  const EMPTY_TER = { label: '', icon: null, onClick: () => {}, visible: false }
+
+  const slots: SlotConfig = (() => {
+    switch (status) {
+      case 'HORS_POSTE':
+        return {
+          primary:  { label: 'Arrivée',                    icon: <LogIn size={22} />,        color: 'var(--vert)',        onClick: handleClockIn },
+          sec1:     { label: 'Intervention directe',        icon: <Wrench size={18} />,       color: 'var(--violet)',      onClick: () => router.push('/intervention/nouvelle'), visible: true },
+          sec2:     { label: "J'ai oublié de pointer",      icon: <Clock size={18} />,        color: 'var(--encre-douce)', onClick: () => router.push('/oubli'),                  visible: true },
+          tertiary: EMPTY_TER,
+        }
+      case 'AU_TRAVAIL':
+        return {
+          primary:  { label: 'Démarrer une intervention',  icon: <Wrench size={22} />,       color: 'var(--violet)',      onClick: () => router.push('/intervention/nouvelle') },
+          sec1:     { label: 'Pause déjeuner',              icon: <Coffee size={18} />,       color: 'var(--ambre)',       onClick: handleLunchBreak, visible: true },
+          sec2:     { label: 'Faire une pause',             icon: <Pause size={18} />,        color: 'var(--ambre)',       onClick: handleShortBreak, visible: true },
+          tertiary: { label: 'Fin de journée',              icon: <LogOut size={18} />,                                   onClick: handleEndDay,     visible: true },
+        }
+      case 'EN_PAUSE':
+      case 'PAUSE_DEJEUNER':
+        return {
+          primary:  { label: 'Reprendre le travail',        icon: <Play size={22} />,         color: 'var(--vert)',        onClick: handleResumeWork },
+          sec1:     EMPTY_SEC,
+          sec2:     EMPTY_SEC,
+          tertiary: EMPTY_TER,
+        }
+      case 'EN_INTERVENTION':
+        return {
+          primary:  { label: "Terminer l'intervention",     icon: <CheckSquare size={22} />,  color: 'var(--violet)',      onClick: handleEndIntervention },
+          sec1:     { label: 'Faire une pause',             icon: <Pause size={18} />,        color: 'var(--ambre)',       onClick: handleShortBreak, visible: true },
+          sec2:     EMPTY_SEC,
+          tertiary: EMPTY_TER,
+        }
+      case 'JOURNEE_TERMINEE':
+        return {
+          primary:  { label: 'Reprendre le travail',        icon: <Play size={22} />,         color: 'var(--vert)',        onClick: handleResumeDay },
+          sec1:     { label: 'Voir ma journée',             icon: <CalendarRange size={18} />, color: 'var(--bleu-ciel)', onClick: () => router.push('/semaine'), visible: true },
+          sec2:     EMPTY_SEC,
+          tertiary: EMPTY_TER,
+        }
+    }
+  })()
+
+  const firstName = userName.split(' ')[0]
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--fond)' }}>
-      <div style={{ padding: '16px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 16, color: 'var(--encre-douce)', fontWeight: 500 }}>
-          Bonjour, {userName}
-        </span>
-      </div>
+    <div style={{ minHeight: '100dvh', background: 'var(--fond)', display: 'flex', flexDirection: 'column' }}>
 
+      {/* HEADER ZONE — 56px fixe */}
+      <header style={{
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 16px',
+        background: 'var(--surface)',
+        borderBottom: '1px solid var(--trait)',
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Image src="/froid-gerber-flocon.png" alt="" width={24} height={24} style={{ objectFit: 'contain' }} />
+          <span style={{ fontSize: 13, color: 'var(--encre-douce)', fontWeight: 500 }}>
+            {DATE_FMT.format(new Date())}
+          </span>
+        </div>
+        <span style={{ fontSize: 15, color: 'var(--encre)', fontWeight: 500 }}>
+          Bonjour, {firstName}
+        </span>
+      </header>
+
+      {/* STATUS ZONE — 240px fixe */}
       <StatusBanner
         status={status}
-        clientName={clientName}
+        clientName={openIntervention?.client?.name ?? undefined}
         chronoStartAt={chronoStartAt}
+        shiftStartAt={shift?.startAt ?? null}
+        breaks={shift?.breaks ?? []}
         arrivalLabel={shift ? arrivalLabel() : undefined}
       />
 
-      <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {error && (
-          <div
-            role="alert"
-            style={{
-              margin: '0 16px',
-              padding: '12px 16px',
-              background: 'rgba(163,43,36,0.1)',
-              border: '1px solid var(--rouge)',
-              borderRadius: 8,
-              color: 'var(--rouge)',
-              fontSize: 15,
-            }}
+      {/* ACTION ZONE — 216px fixe
+          paddingTop(16) + primary(72) + gap(12) + secRow(52) + gap(12) + tertiary(52) = 216 */}
+      <div style={{
+        height: 216,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        paddingTop: 16,
+        flexShrink: 0,
+      }}>
+        <button
+          onClick={slots.primary.onClick}
+          disabled={loading}
+          aria-busy={loading}
+          style={primaryStyle(slots.primary.color)}
+        >
+          {slots.primary.icon}
+          {slots.primary.label}
+        </button>
+
+        <div style={{ display: 'flex', gap: 12, padding: '0 16px', flexShrink: 0 }}>
+          <button
+            onClick={slots.sec1.onClick}
+            disabled={loading || !slots.sec1.visible}
+            style={secondaryStyle(slots.sec1.color, slots.sec1.visible)}
           >
-            {error}
-          </div>
-        )}
+            {slots.sec1.icon}
+            {slots.sec1.label}
+          </button>
+          <button
+            onClick={slots.sec2.onClick}
+            disabled={loading || !slots.sec2.visible}
+            style={secondaryStyle(slots.sec2.color, slots.sec2.visible)}
+          >
+            {slots.sec2.icon}
+            {slots.sec2.label}
+          </button>
+        </div>
 
-        {status === 'HORS_POSTE' && (
-          <>
-            {primaryButton('JE SUIS ARRIVÉ', handleClockIn, 'var(--vert)')}
-            <div style={{ display: 'flex', gap: 12, padding: '0 16px' }}>
-              {secondaryButton("Démarrer une intervention", () => router.push('/intervention/nouvelle'), 'var(--violet)')}
-              {secondaryButton("J'ai oublié de pointer", () => router.push('/oubli'))}
-            </div>
-          </>
-        )}
-
-        {status === 'AU_TRAVAIL' && (
-          <>
-            {primaryButton("DÉMARRER UNE INTERVENTION", () => router.push('/intervention/nouvelle'), 'var(--violet)')}
-            <div style={{ display: 'flex', gap: 12, padding: '0 16px' }}>
-              {secondaryButton('Pause déjeuner', handleLunchBreak, 'var(--ambre)')}
-              {secondaryButton('Faire une pause', handleShortBreak, 'var(--ambre)')}
-            </div>
-            <div style={{ padding: '0 16px' }}>
-              {secondaryButton('Fin de journée', handleEndDay, 'var(--gris-etat)')}
-            </div>
-          </>
-        )}
-
-        {(status === 'PAUSE_DEJEUNER' || status === 'EN_PAUSE') && (
-          <>
-            {primaryButton('REPRENDRE LE TRAVAIL', handleResumeWork, 'var(--vert)')}
-          </>
-        )}
-
-        {status === 'EN_INTERVENTION' && (
-          <>
-            {primaryButton("TERMINER L'INTERVENTION", async () => {
-              if (!openIntervention) return
-              vibrate()
-              setLoading(true)
-              const result = await endIntervention(openIntervention.id)
-              setLoading(false)
-              if (result.ok) {
-                router.push(`/intervention/${openIntervention.id}/fin`)
-              } else {
-                setError((result as { ok: false; error: string }).error)
-              }
-            }, 'var(--violet)')}
-            <div style={{ padding: '0 16px' }}>
-              {secondaryButton('Faire une pause', handleShortBreak, 'var(--ambre)')}
-            </div>
-          </>
-        )}
-
-        {status === 'JOURNEE_TERMINEE' && (
-          <>
-            {primaryButton('REPRENDRE LE TRAVAIL', handleResumeDay, 'var(--vert)')}
-            <div style={{ padding: '0 16px' }}>
-              {secondaryButton('Voir ma journée', () => router.push('/semaine'))}
-            </div>
-          </>
-        )}
+        <div style={{ padding: '0 16px', flexShrink: 0 }}>
+          <button
+            onClick={slots.tertiary.onClick}
+            disabled={loading || !slots.tertiary.visible}
+            style={tertiaryStyle(slots.tertiary.visible)}
+          >
+            {slots.tertiary.icon}
+            {slots.tertiary.label}
+          </button>
+        </div>
       </div>
 
-      {/* FeedbackZone will be integrated in Task 5 */}
+      {/* FEEDBACK ZONE — 56px fixe (erreur ou annulation) */}
+      <FeedbackZone
+        error={error}
+        cancellation={cancellation ? {
+          message: cancellation.message,
+          onCancel: async () => {
+            setCancellation(null)
+            await cancellation.onCancel()
+          },
+        } : null}
+        onCancellationExpire={() => setCancellation(null)}
+      />
+
     </div>
   )
 }
