@@ -88,7 +88,6 @@ type SlotConfig = {
   primary: { label: string; icon: ReactNode; color: string; onClick: () => void }
   sec1:    { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
   sec2:    { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
-  tertiary:{ label: string; icon: ReactNode; onClick: () => void; visible: boolean }
 }
 
 function vibrate() {
@@ -210,7 +209,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const handleResumeDay = async () => {
     const key = uuidv4()
     await executeWithOutbox(
-      key, 'resumeDay', { idempotencyKey: key }, () => resumeDay(key),
+      key, 'resumeDay', {}, () => resumeDay(),
       'AU_TRAVAIL', 'Journée reprise',
       async () => { refresh() },
     )
@@ -272,31 +271,9 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     flexShrink: 0,
   })
 
-  const tertiaryStyle = (visible: boolean): CSSProperties => ({
-    width: '100%',
-    height: 52,
-    borderRadius: 12,
-    background: 'transparent',
-    color: 'var(--encre-douce)',
-    fontSize: 13,
-    fontWeight: 600,
-    border: 'none',
-    cursor: loading ? 'not-allowed' : 'pointer',
-    opacity: loading ? 0.7 : 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    touchAction: 'manipulation',
-    visibility: visible ? 'visible' : 'hidden',
-    pointerEvents: visible ? 'auto' : 'none',
-    flexShrink: 0,
-  })
-
   /* ---- Contenu des slots par état ---- */
 
   const EMPTY_SEC = { label: '', icon: null, color: 'transparent', onClick: () => {}, visible: false }
-  const EMPTY_TER = { label: '', icon: null, onClick: () => {}, visible: false }
 
   const slots: SlotConfig = (() => {
     switch (status) {
@@ -305,14 +282,12 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
           primary:  { label: 'Arrivée',                    icon: <LogIn size={22} />,        color: 'var(--vert)',        onClick: handleClockIn },
           sec1:     { label: 'Intervention directe',        icon: <Wrench size={18} />,       color: 'var(--violet)',      onClick: () => router.push('/intervention/nouvelle'), visible: true },
           sec2:     { label: "J'ai oublié de pointer",      icon: <Clock size={18} />,        color: 'var(--encre-douce)', onClick: () => router.push('/oubli'),                  visible: true },
-          tertiary: EMPTY_TER,
         }
       case 'AU_TRAVAIL':
         return {
           primary:  { label: 'Démarrer une intervention',  icon: <Wrench size={22} />,       color: 'var(--violet)',      onClick: () => router.push('/intervention/nouvelle') },
           sec1:     { label: 'Pause déjeuner',              icon: <Coffee size={18} />,       color: 'var(--ambre)',       onClick: handleLunchBreak, visible: true },
           sec2:     { label: 'Faire une pause',             icon: <Pause size={18} />,        color: 'var(--ambre)',       onClick: handleShortBreak, visible: true },
-          tertiary: { label: 'Fin de journée',              icon: <LogOut size={18} />,                                   onClick: handleEndDay,     visible: true },
         }
       case 'EN_PAUSE':
       case 'PAUSE_DEJEUNER':
@@ -320,21 +295,18 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
           primary:  { label: 'Reprendre le travail',        icon: <Play size={22} />,         color: 'var(--vert)',        onClick: handleResumeWork },
           sec1:     EMPTY_SEC,
           sec2:     EMPTY_SEC,
-          tertiary: EMPTY_TER,
         }
       case 'EN_INTERVENTION':
         return {
           primary:  { label: "Terminer l'intervention",     icon: <CheckSquare size={22} />,  color: 'var(--violet)',      onClick: handleEndIntervention },
           sec1:     { label: 'Faire une pause',             icon: <Pause size={18} />,        color: 'var(--ambre)',       onClick: handleShortBreak, visible: true },
           sec2:     EMPTY_SEC,
-          tertiary: EMPTY_TER,
         }
       case 'JOURNEE_TERMINEE':
         return {
           primary:  { label: 'Reprendre le travail',        icon: <Play size={22} />,         color: 'var(--vert)',        onClick: handleResumeDay },
-          sec1:     { label: 'Voir ma journée',             icon: <CalendarRange size={18} />, color: 'var(--bleu-ciel)', onClick: () => router.push('/semaine'), visible: true },
+          sec1:     EMPTY_SEC,
           sec2:     EMPTY_SEC,
-          tertiary: EMPTY_TER,
         }
     }
   })()
@@ -372,14 +344,15 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         clientName={openIntervention?.client?.name ?? undefined}
         chronoStartAt={chronoStartAt}
         shiftStartAt={shift?.startAt ?? null}
+        shiftEndAt={shift?.endAt ?? null}
         breaks={shift?.breaks ?? []}
         arrivalLabel={shift ? arrivalLabel() : undefined}
       />
 
-      {/* ACTION ZONE — 216px fixe
-          paddingTop(16) + primary(72) + gap(12) + secRow(52) + gap(12) + tertiary(52) = 216 */}
+      {/* ACTION ZONE — 152px fixe
+          paddingTop(16) + primary(72) + gap(12) + secRow(52) = 152 */}
       <div style={{
-        height: 216,
+        height: 152,
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
@@ -414,17 +387,30 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
             {slots.sec2.label}
           </button>
         </div>
+      </div>
 
-        <div style={{ padding: '0 16px', flexShrink: 0 }}>
-          <button
-            onClick={slots.tertiary.onClick}
-            disabled={loading || !slots.tertiary.visible}
-            style={tertiaryStyle(slots.tertiary.visible)}
-          >
-            {slots.tertiary.icon}
-            {slots.tertiary.label}
-          </button>
-        </div>
+      {/* SPACER — pousse le bouton Fin de journée vers le bas */}
+      <div style={{ flex: 1 }} />
+
+      {/* FIN DE JOURNÉE — 88px fixe, réservé en bas */}
+      <div style={{
+        height: 88,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        flexShrink: 0,
+        visibility: status === 'AU_TRAVAIL' ? 'visible' : 'hidden',
+        pointerEvents: status === 'AU_TRAVAIL' ? 'auto' : 'none',
+      }}>
+        <button
+          onClick={handleEndDay}
+          disabled={loading || status !== 'AU_TRAVAIL'}
+          aria-busy={loading}
+          style={primaryStyle('var(--encre)')}
+        >
+          <LogOut size={22} />
+          Fin de journée
+        </button>
       </div>
 
       {/* FEEDBACK ZONE — 56px fixe (erreur ou annulation) */}

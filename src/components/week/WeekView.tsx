@@ -11,18 +11,14 @@ import {
 } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { fr } from 'date-fns/locale'
+import { ChevronLeft, ChevronRight, LogIn, LogOut, Coffee } from 'lucide-react'
 import { formatDuration } from '@/lib/time/formatDuration'
+import { formatTime } from '@/lib/time/formatTime'
 import { diffMinutes } from '@/lib/time/diffMinutes'
+import { breaksDuration } from '@/lib/calculations/breaksDuration'
 import { workedMinutes } from '@/lib/calculations/workedMinutes'
-import { interventionMinutes } from '@/lib/calculations/interventionMinutes'
-import Link from 'next/link'
 
 const TZ = 'Europe/Paris'
-
-type ClientSer = {
-  id: string
-  name: string
-}
 
 type BreakSer = {
   id: string
@@ -38,16 +34,6 @@ type ShiftSer = {
   breaks: BreakSer[]
 }
 
-type InterventionSer = {
-  id: string
-  type: 'CLIENT' | 'WORKSHOP'
-  startAt: string
-  endAt: string | null
-  travelMinutes: number
-  workReport: string | null
-  client: ClientSer | null
-}
-
 function toIsoWeek(date: Date) {
   return `${getISOWeekYear(date)}-W${String(getISOWeek(date)).padStart(2, '0')}`
 }
@@ -56,12 +42,10 @@ export function WeekView({
   isoWeek,
   weekStart,
   shifts,
-  interventions,
 }: {
   isoWeek: string
   weekStart: string
   shifts: ShiftSer[]
-  interventions: InterventionSer[]
 }) {
   const router = useRouter()
   const debut = new Date(weekStart)
@@ -74,241 +58,186 @@ export function WeekView({
   const jours = eachDayOfInterval({ start: debut, end: addWeeks(debut, 1) }).slice(0, 7)
   let totalSemaine = 0
 
+  const joursAvecShift = jours
+    .map(jour => {
+      const jourStr = format(toZonedTime(jour, TZ), 'yyyy-MM-dd')
+      const shift =
+        shifts.find(
+          s => format(toZonedTime(new Date(s.startAt), TZ), 'yyyy-MM-dd') === jourStr,
+        ) ?? null
+      return { jour, jourStr, shift }
+    })
+    .filter(({ shift }) => shift !== null)
+
   return (
-    <div style={{ paddingBottom: 24 }}>
-      {/* Navigation */}
-      <div
-        style={{
-          padding: 16,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid var(--trait)',
-        }}
-      >
+    <div style={{ paddingBottom: 32 }}>
+
+      {/* Navigation semaine */}
+      <div style={{
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 4px',
+        borderBottom: '1px solid var(--trait)',
+        background: 'var(--surface)',
+      }}>
         <button
           onClick={() => navigate(-1)}
+          aria-label="Semaine précédente"
           style={{
-            fontSize: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 48,
+            height: 48,
             background: 'none',
             border: 'none',
             color: 'var(--encre)',
-            minHeight: 'auto',
-            padding: '4px 12px',
+            cursor: 'pointer',
+            touchAction: 'manipulation',
           }}
         >
-          ‹
+          <ChevronLeft size={24} />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)' }}>
+
+        <h1 style={{ fontSize: 17, fontWeight: 600, color: 'var(--encre)' }}>
           Semaine {isoWeek.split('-W')[1]}
         </h1>
+
         <button
           onClick={() => navigate(1)}
+          aria-label="Semaine suivante"
           style={{
-            fontSize: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 48,
+            height: 48,
             background: 'none',
             border: 'none',
             color: 'var(--encre)',
-            minHeight: 'auto',
-            padding: '4px 12px',
+            cursor: 'pointer',
+            touchAction: 'manipulation',
           }}
         >
-          ›
+          <ChevronRight size={24} />
         </button>
       </div>
 
-      {jours.map(jour => {
-        const jourStr = format(toZonedTime(jour, TZ), 'yyyy-MM-dd')
+      {joursAvecShift.length === 0 && (
+        <p style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--encre-douce)', fontSize: 16 }}>
+          Aucune journée enregistrée cette semaine.
+        </p>
+      )}
 
-        const shift =
-          shifts.find(
-            s => format(toZonedTime(new Date(s.startAt), TZ), 'yyyy-MM-dd') === jourStr,
-          ) ?? null
-
-        const intervJour = interventions.filter(
-          i => format(toZonedTime(new Date(i.startAt), TZ), 'yyyy-MM-dd') === jourStr,
-        )
-
-        if (!shift && intervJour.length === 0) return null
-
-        const breaksConv = (shift?.breaks ?? []).map(b => ({
+      {joursAvecShift.map(({ jour, jourStr, shift }) => {
+        const s = shift!
+        const breaksConv = s.breaks.map(b => ({
           startAt: new Date(b.startAt),
           endAt: b.endAt ? new Date(b.endAt) : null,
         }))
+        const shiftConv = {
+          startAt: new Date(s.startAt),
+          endAt: s.endAt ? new Date(s.endAt) : null,
+        }
 
-        const shiftConv = shift
-          ? {
-              startAt: new Date(shift.startAt),
-              endAt: shift.endAt ? new Date(shift.endAt) : null,
-            }
-          : null
+        const worked = workedMinutes(shiftConv, breaksConv)
+        const inProgress = !s.endAt
 
-        const workedMins = shiftConv ? workedMinutes(shiftConv, breaksConv) : 0
-        if (shiftConv?.endAt) totalSemaine += workedMins
+        if (shiftConv.endAt) totalSemaine += worked
 
-        const tempsInterv = intervJour
-          .filter(i => i.endAt)
-          .reduce(
-            (acc, i) =>
-              acc +
-              interventionMinutes({
-                startAt: new Date(i.startAt),
-                endAt: new Date(i.endAt!),
-                travelMinutes: i.travelMinutes,
-              }),
-            0,
-          )
-
-        const ecart = workedMins - tempsInterv
-        const aEcart = shiftConv?.endAt && Math.abs(ecart) > 30
+        const closedBreaks = breaksConv.filter(b => b.endAt)
+        const pauseMinutes = breaksDuration(closedBreaks)
 
         return (
-          <div key={jourStr}>
-            {/* Day header */}
-            <div
-              style={{
-                padding: '10px 16px',
-                background: 'var(--surface)',
-                borderBottom: '1px solid var(--trait)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: 'var(--encre-douce)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
-                }}
-              >
+          <div
+            key={jourStr}
+            style={{
+              background: 'var(--surface)',
+              borderBottom: '1px solid var(--trait)',
+              padding: '14px 16px',
+            }}
+          >
+            {/* Jour + total */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: 'var(--encre-douce)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}>
                 {format(toZonedTime(jour, TZ), 'EEEE d MMM', { locale: fr })}
               </span>
-              <span
-                style={{
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: 'var(--encre)',
-                  fontVariantNumeric: 'tabular-nums',
-                }}
-              >
-                {workedMins > 0 ? formatDuration(workedMins) : '—'}
-                {shiftConv && !shiftConv.endAt && ' ⏳'}
+              <span style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: inProgress ? 'var(--ambre)' : 'var(--encre)',
+                fontVariantNumeric: 'tabular-nums',
+              }}>
+                {worked > 0 ? formatDuration(worked) : '—'}
+                {inProgress ? ' ⏳' : ''}
               </span>
             </div>
 
-            {/* Shift summary line */}
-            {shift && (
-              <div
-                style={{
-                  padding: '6px 16px',
-                  fontSize: 15,
-                  color: 'var(--encre-douce)',
-                  borderBottom: '1px solid var(--trait)',
-                }}
-              >
-                {format(toZonedTime(new Date(shift.startAt), TZ), 'HH:mm')}
-                {shift.endAt
-                  ? ` → ${format(toZonedTime(new Date(shift.endAt), TZ), 'HH:mm')}`
-                  : ' → en cours'}
-                {breaksConv.filter(b => b.endAt).length > 0 &&
-                  ` · pauses ${formatDuration(
-                    breaksConv
-                      .filter(b => b.endAt)
-                      .reduce((a, b) => a + diffMinutes(b.startAt, b.endAt!), 0),
-                  )}`}
+            {/* Arrivée → Départ */}
+            <div style={{ display: 'flex', gap: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <LogIn size={14} color="var(--encre-douce)" />
+                <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--encre)', fontVariantNumeric: 'tabular-nums' }}>
+                  {formatTime(shiftConv.startAt)}
+                </span>
               </div>
-            )}
 
-            {/* Interventions */}
-            {intervJour.map(i => {
-              const t = i.endAt
-                ? interventionMinutes({
-                    startAt: new Date(i.startAt),
-                    endAt: new Date(i.endAt),
-                    travelMinutes: i.travelMinutes,
-                  })
-                : null
-              return (
-                <Link
-                  key={i.id}
-                  href={`/intervention/${i.id}`}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '10px 16px',
-                    borderBottom: '1px solid var(--trait)',
-                    textDecoration: 'none',
-                    minHeight: 56,
-                  }}
-                >
-                  <span style={{ fontSize: 18, color: 'var(--encre)' }}>
-                    {i.type === 'WORKSHOP' ? 'Atelier' : i.client?.name}
-                    {!i.workReport && i.endAt && (
-                      <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--ambre)' }}>●</span>
-                    )}
-                  </span>
-                  {t !== null && (
-                    <span
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 600,
-                        color: 'var(--encre)',
-                        fontVariantNumeric: 'tabular-nums',
-                      }}
-                    >
-                      {formatDuration(t)}
+              <span style={{ color: 'var(--encre-douce)', alignSelf: 'center' }}>→</span>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <LogOut size={14} color="var(--encre-douce)" />
+                <span style={{ fontSize: 16, fontWeight: 600, color: shiftConv.endAt ? 'var(--encre)' : 'var(--encre-douce)', fontVariantNumeric: 'tabular-nums' }}>
+                  {shiftConv.endAt ? formatTime(shiftConv.endAt) : 'en cours'}
+                </span>
+              </div>
+
+              {pauseMinutes > 0 && (
+                <>
+                  <span style={{ color: 'var(--encre-douce)', alignSelf: 'center' }}>·</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Coffee size={14} color="var(--encre-douce)" />
+                    <span style={{ fontSize: 15, color: 'var(--encre-douce)', fontVariantNumeric: 'tabular-nums' }}>
+                      {formatDuration(pauseMinutes)}
                     </span>
-                  )}
-                </Link>
-              )
-            })}
-
-            {/* Écart warning */}
-            {aEcart && (
-              <div
-                style={{
-                  padding: '8px 16px',
-                  background: 'rgba(138,90,18,0.08)',
-                  borderBottom: '1px solid var(--trait)',
-                  fontSize: 15,
-                  color: 'var(--ambre)',
-                }}
-              >
-                ⚠ {Math.abs(ecart)} min non affectées — vérifiez vos interventions
-              </div>
-            )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         )
       })}
 
-      {/* Week total */}
-      <div
-        style={{
-          margin: '24px 16px',
+      {/* Total semaine */}
+      {totalSemaine > 0 && (
+        <div style={{
+          margin: '20px 16px 0',
           padding: '16px 20px',
           background: 'var(--bleu-ciel)',
           borderRadius: 12,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-        }}
-      >
-        <span style={{ fontSize: 18, color: '#fff' }}>Total semaine</span>
-        <span
-          style={{
+        }}>
+          <span style={{ fontSize: 16, color: '#fff', fontWeight: 500 }}>Total semaine</span>
+          <span style={{
             fontSize: 32,
             fontWeight: 700,
             color: '#fff',
             fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {formatDuration(totalSemaine)}
-        </span>
-      </div>
+          }}>
+            {formatDuration(totalSemaine)}
+          </span>
+        </div>
+      )}
+
     </div>
   )
 }

@@ -32,18 +32,11 @@ export default async function SemainePage({
   const weekEnd = endOfISOWeek(referenceDate)
   const isoWeek = `${getISOWeekYear(referenceDate)}-W${String(getISOWeek(referenceDate)).padStart(2, '0')}`
 
-  const [shifts, interventions] = await Promise.all([
-    prisma.shift.findMany({
-      where: { userId: session.user.id, startAt: { gte: weekStart, lte: weekEnd } },
-      include: { breaks: true },
-      orderBy: { startAt: 'asc' },
-    }),
-    prisma.intervention.findMany({
-      where: { userId: session.user.id, startAt: { gte: weekStart, lte: weekEnd } },
-      include: { client: true },
-      orderBy: { startAt: 'asc' },
-    }),
-  ])
+  const shifts = await prisma.shift.findMany({
+    where: { userId: session.user.id, startAt: { gte: weekStart, lte: weekEnd } },
+    include: { breaks: true },
+    orderBy: { startAt: 'asc' },
+  })
 
   return (
     <WeekView
@@ -59,18 +52,6 @@ export default async function SemainePage({
           startAt: b.startAt.toISOString(),
           endAt: b.endAt?.toISOString() ?? null,
         })),
-      }))}
-      interventions={interventions.map(i => ({
-        id: i.id,
-        type: i.type,
-        startAt: i.startAt.toISOString(),
-        endAt: i.endAt?.toISOString() ?? null,
-        travelMinutes: i.travelMinutes,
-        workReport: i.workReport,
-        client: i.client ? {
-          id: i.client.id,
-          name: i.client.name,
-        } : null,
       }))}
     />
   )

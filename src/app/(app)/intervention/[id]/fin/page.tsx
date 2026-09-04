@@ -2,8 +2,7 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { redirect, notFound } from 'next/navigation'
-import { WorkReportForm } from '@/components/intervention/WorkReportForm'
-import { InterventionTimesEditor } from '@/components/intervention/InterventionTimesEditor'
+import { InterventionView } from '@/components/intervention/InterventionView'
 
 export default async function FinInterventionPage({
   params,
@@ -21,21 +20,15 @@ export default async function FinInterventionPage({
 
   if (!intervention || intervention.userId !== session.user.id) notFound()
 
+  const title = intervention.type === 'WORKSHOP' ? 'Atelier' : intervention.client?.name ?? '—'
+
   return (
-    <div style={{ padding: '16px 16px 24px' }}>
-      <div>
-        <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>
-          {intervention.type === 'WORKSHOP' ? 'Atelier' : intervention.client?.name}
-        </h1>
-        {intervention.endAt && (
-          <InterventionTimesEditor
-            interventionId={id}
-            startAt={intervention.startAt.toISOString()}
-            endAt={intervention.endAt.toISOString()}
-          />
-        )}
-      </div>
-      <WorkReportForm interventionId={id} workReport={intervention.workReport ?? ''} />
-    </div>
+    <InterventionView
+      interventionId={intervention.id}
+      title={title}
+      startAt={intervention.startAt.toISOString()}
+      endAt={intervention.endAt?.toISOString() ?? null}
+      workReport={intervention.workReport ?? ''}
+    />
   )
 }

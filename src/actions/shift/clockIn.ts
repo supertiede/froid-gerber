@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth/getSession'
 import { findShiftByClientKey } from '@/lib/queries/findShiftByClientKey'
 import { getOpenShift } from '@/lib/queries/getOpenShift'
 import { now } from '@/lib/time/now'
+import { startOfDayParis } from '@/lib/time/startOfDayParis'
 import { revalidatePath } from 'next/cache'
 
 export async function clockIn(idempotencyKey: string) {
@@ -16,6 +17,13 @@ export async function clockIn(idempotencyKey: string) {
 
   const openShift = await getOpenShift(userId)
   if (openShift) return { ok: false as const, error: 'Vous êtes déjà au travail.' }
+
+  // Block a second shift for the same calendar day (open or closed)
+  const todayStart = startOfDayParis(now())
+  const shiftToday = await prisma.shift.findFirst({
+    where: { userId, startAt: { gte: todayStart } },
+  })
+  if (shiftToday) return { ok: false as const, error: "Une journée a déjà été enregistrée aujourd'hui." }
 
   const shift = await prisma.shift.create({
     data: { userId, startAt: now(), startOrigin: 'APP', idempotencyKey },

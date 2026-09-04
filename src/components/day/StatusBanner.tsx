@@ -1,9 +1,11 @@
 'use client'
 
-import { MapPin, Briefcase, Coffee, Pause, Wrench, CheckCircle } from 'lucide-react'
+import { MapPin, Briefcase, Coffee, Pause, Wrench, CheckCircle, LogIn, LogOut } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Timer } from './Timer'
 import { WorkTimer } from './WorkTimer'
+import { formatTime } from '@/lib/time/formatTime'
+import { formatDuration } from '@/lib/time/formatDuration'
 import type { EtatJournee } from '@/lib/etat-journee'
 
 type Break = {
@@ -31,13 +33,20 @@ type Props = {
   clientName?: string
   chronoStartAt: number | null
   shiftStartAt: string | null
+  shiftEndAt: string | null
   breaks: Break[]
   arrivalLabel?: string
 }
 
-export function StatusBanner({ status, clientName, chronoStartAt, shiftStartAt, breaks, arrivalLabel }: Props) {
+export function StatusBanner({ status, clientName, chronoStartAt, shiftStartAt, shiftEndAt, breaks, arrivalLabel }: Props) {
   const { bg, label, Icon } = CONFIG[status]
   const displayLabel = status === 'EN_INTERVENTION' && clientName ? clientName : label
+
+  const pauseMinutes = breaks
+    .filter(b => b.endAt)
+    .reduce((acc, b) => acc + Math.floor((new Date(b.endAt!).getTime() - new Date(b.startAt).getTime()) / 60000), 0)
+
+  const showDayDetail = status === 'JOURNEE_TERMINEE' && !!shiftStartAt && !!shiftEndAt
 
   return (
     <div
@@ -78,9 +87,32 @@ export function StatusBanner({ status, clientName, chronoStartAt, shiftStartAt, 
 
       <WorkTimer shiftStartAt={shiftStartAt} breaks={breaks} />
 
-      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', minHeight: 18 }}>
-        {arrivalLabel ?? ' '}
-      </span>
+      {showDayDetail ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'rgba(255,255,255,0.9)' }}>
+            <LogIn size={13} />
+            {formatTime(new Date(shiftStartAt!))}
+          </span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>→</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'rgba(255,255,255,0.9)' }}>
+            <LogOut size={13} />
+            {formatTime(new Date(shiftEndAt!))}
+          </span>
+          {pauseMinutes > 0 && (
+            <>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>·</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>
+                <Coffee size={13} />
+                {formatDuration(pauseMinutes)}
+              </span>
+            </>
+          )}
+        </div>
+      ) : (
+        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', minHeight: 18 }}>
+          {arrivalLabel ?? ' '}
+        </span>
+      )}
     </div>
   )
 }

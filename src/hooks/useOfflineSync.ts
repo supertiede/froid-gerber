@@ -23,7 +23,7 @@ async function replayAction(type: string, payload: Record<string, unknown>): Pro
     case 'endDay':
       return endDay()
     case 'resumeDay':
-      return resumeDay(payload.idempotencyKey as string)
+      return resumeDay()
     case 'startIntervention':
       return startIntervention(payload as Parameters<typeof startIntervention>[0])
     case 'endIntervention':
