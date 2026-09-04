@@ -75,8 +75,10 @@ export function FeedbackZone({ error, cancellation, onCancellationExpire }: Prop
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '4px 8px',
-                minHeight: 'auto',
+                padding: '0 8px',
+                minHeight: 44,
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               Annuler
@@ -98,7 +100,7 @@ export function FeedbackZone({ error, cancellation, onCancellationExpire }: Prop
         <div style={{
           height: '100%',
           background: 'rgba(220,38,38,0.08)',
-          border: '1px solid var(--rouge)',
+          boxShadow: 'inset 0 0 0 1px var(--rouge)',
           display: 'flex',
           alignItems: 'center',
           gap: 8,

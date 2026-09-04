@@ -29,7 +29,7 @@ export function WorkTimer({ shiftStartAt, breaks }: Props) {
 
   return (
     <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)' }}>
-      {shiftStartAt ? `Temps travaillé : ${formatDuration(minutes)}` : 'Temps travaillé : –:––'}
+      {shiftStartAt ? `Temps travaillé : ${formatDuration(minutes)}` : 'Temps travaillé : – h ––'}
     </span>
   )
 }

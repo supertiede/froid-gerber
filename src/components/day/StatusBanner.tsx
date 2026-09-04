@@ -72,7 +72,7 @@ export function StatusBanner({ status, clientName, chronoStartAt, shiftStartAt, 
           letterSpacing: '-0.02em',
           lineHeight: 1,
         }}>
-          –:––
+          – h ––
         </span>
       )}
 

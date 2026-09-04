@@ -17,7 +17,7 @@ export function Timer({ startAt }: { startAt: number }) {
 
   return (
     <span style={{
-      fontSize: 44,
+      fontSize: 56,
       fontWeight: 600,
       color: '#fff',
       fontVariantNumeric: 'tabular-nums',
