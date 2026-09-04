@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import { StatusBanner } from './StatusBanner'
-import { CancellationBanner } from './CancellationBanner'
 import { clockIn } from '@/actions/shift/clockIn'
 import { cancelClockIn } from '@/actions/shift/cancelClockIn'
 import { startBreak } from '@/actions/shift/startBreak'
@@ -421,13 +420,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         )}
       </div>
 
-      {cancellation && (
-        <CancellationBanner
-          message={cancellation.message}
-          onCancel={cancellation.onCancel}
-          onExpire={() => setCancellation(null)}
-        />
-      )}
+      {/* FeedbackZone will be integrated in Task 5 */}
     </div>
   )
 }
