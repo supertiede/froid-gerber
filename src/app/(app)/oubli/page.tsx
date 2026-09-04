@@ -54,11 +54,11 @@ export default function OubliPage() {
         flex: 1,
         height: 64,
         borderRadius: 12,
-        background: entryType === type ? 'var(--acier)' : 'transparent',
-        color: entryType === type ? '#fff' : 'var(--acier)',
+        background: entryType === type ? 'var(--bleu-ciel)' : 'transparent',
+        color: entryType === type ? '#fff' : 'var(--bleu-ciel)',
         fontSize: 15,
         fontWeight: 600,
-        border: '2px solid var(--acier)',
+        border: '2px solid var(--bleu-ciel)',
         cursor: 'pointer',
       }}
     >
@@ -173,7 +173,7 @@ export default function OubliPage() {
               height: 64,
               fontSize: 18,
               fontWeight: 600,
-              background: 'var(--acier)',
+              background: 'var(--bleu-ciel)',
               color: '#fff',
               borderRadius: 12,
             }}

@@ -39,7 +39,7 @@ export function EditTimeSheet({
           width: '100%',
           height: 64,
           marginTop: 16,
-          background: 'var(--acier)',
+          background: 'var(--bleu-ciel)',
           color: '#fff',
           borderRadius: 12,
           fontSize: 18,

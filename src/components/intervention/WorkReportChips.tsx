@@ -50,9 +50,9 @@ export function WorkReportChips({
             style={{
               padding: '10px 16px',
               borderRadius: 24,
-              border: `2px solid ${selected.has(chip) ? 'var(--acier)' : 'var(--trait)'}`,
+              border: `2px solid ${selected.has(chip) ? 'var(--bleu-ciel)' : 'var(--trait)'}`,
               background: selected.has(chip) ? 'rgba(11,95,165,0.1)' : 'var(--surface)',
-              color: selected.has(chip) ? 'var(--acier)' : 'var(--encre)',
+              color: selected.has(chip) ? 'var(--bleu-ciel)' : 'var(--encre)',
               fontSize: 15,
               minHeight: 44,
             }}
@@ -83,7 +83,7 @@ export function WorkReportChips({
         style={{
           width: '100%',
           height: 64,
-          background: 'var(--acier)',
+          background: 'var(--bleu-ciel)',
           color: '#fff',
           borderRadius: 12,
           fontSize: 18,

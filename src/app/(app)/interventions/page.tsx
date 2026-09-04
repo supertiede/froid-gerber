@@ -91,7 +91,7 @@ export default async function InterventionsPage() {
                       <span style={{
                         marginLeft: 8,
                         fontSize: 12,
-                        background: 'var(--cuivre)',
+                        background: 'var(--violet)',
                         color: '#fff',
                         padding: '2px 6px',
                         borderRadius: 4,

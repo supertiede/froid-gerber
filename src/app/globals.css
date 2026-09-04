@@ -1,17 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --fond:        #F2F5F7;
-  --surface:     #FFFFFF;
-  --trait:       #D3DDE3;
-  --encre:       #10202B;
-  --encre-douce: #4A6270;
-  --acier:       #0B5FA5;
-  --vert:        #0E6B45;
-  --ambre:       #8A5A12;
-  --cuivre:      #9A4B1F;
-  --gris-etat:   #5A6E7A;
-  --rouge:       #A32B24;
+  /* Marque — alignées sur le logo */
+  --bleu-ciel:    #00AADF;
+  --marine:       #1E2173;
+
+  /* Surfaces */
+  --fond:         #EFF6FA;
+  --surface:      #FFFFFF;
+  --trait:        #D3DDE3;
+
+  /* Texte */
+  --encre:        #1E2173;
+  --encre-douce:  #4A6270;
+
+  /* Sémantique état */
+  --vert:         #059669;
+  --ambre:        #D97706;
+  --violet:       #7C3AED;
+  --gris-etat:    #64748B;
+  --rouge:        #DC2626;
 }
 
 html, body {
@@ -37,7 +45,7 @@ button, a, [role="button"] {
 
 /* Focus visible — accessibilité clavier */
 :focus-visible {
-  outline: 3px solid var(--acier);
+  outline: 3px solid var(--bleu-ciel);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -77,4 +85,11 @@ button, a, [role="button"] {
 }
 @media (prefers-reduced-motion: reduce) {
   .mic-recording { animation: none }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

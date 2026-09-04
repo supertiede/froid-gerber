@@ -102,7 +102,7 @@ export function WorkReportForm({
         style={{
           height: 96,
           borderRadius: 12,
-          background: 'var(--acier)',
+          background: 'var(--bleu-ciel)',
           color: '#fff',
           fontSize: 20,
           fontWeight: 600,

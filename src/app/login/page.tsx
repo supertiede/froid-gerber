@@ -111,7 +111,7 @@ export default function LoginPage() {
               height: 56,
               fontSize: 17,
               fontWeight: 600,
-              background: 'var(--acier)',
+              background: 'var(--bleu-ciel)',
               color: '#fff',
               borderRadius: 12,
               marginTop: 4,

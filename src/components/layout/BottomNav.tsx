@@ -45,7 +45,7 @@ export function BottomNav() {
               justifyContent: 'center',
               gap: 2,
               textDecoration: 'none',
-              color: active ? 'var(--acier)' : 'var(--encre-douce)',
+              color: active ? 'var(--bleu-ciel)' : 'var(--encre-douce)',
               fontSize: 11,
               fontWeight: 500,
               minHeight: 64,

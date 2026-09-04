@@ -232,9 +232,9 @@ export function ClientSearchModal({ clients, onSelect, onClose }: Props) {
               textAlign: 'left',
             }}
           >
-            <span style={{ fontSize: 24, color: 'var(--acier)' }}>+</span>
+            <span style={{ fontSize: 24, color: 'var(--bleu-ciel)' }}>+</span>
             <div>
-              <div style={{ fontSize: 18, color: 'var(--acier)', fontWeight: 600 }}>
+              <div style={{ fontSize: 18, color: 'var(--bleu-ciel)', fontWeight: 600 }}>
                 {isCreating ? 'Création…' : `Ajouter « ${query.trim()} »`}
               </div>
               <div style={{ fontSize: 14, color: 'var(--encre-douce)' }}>Nouveau client</div>

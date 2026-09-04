@@ -1,0 +1,15 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - img "Froid Climatisation Gerber" [ref=f4e3]
+    - generic [ref=f4e4]:
+      - paragraph [ref=f4e5]: Connexion à votre espace
+      - generic [ref=f4e6]:
+        - generic [ref=f4e7]:
+          - generic [ref=f4e8]: Identifiant
+          - textbox "Identifiant" [ref=f4e9]:
+            - /placeholder: "ex : alexandred"
+        - generic [ref=f4e10]:
+          - generic [ref=f4e11]: Mot de passe
+          - textbox "Mot de passe" [ref=f4e12]
+        - button "SE CONNECTER" [ref=f4e13] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f4e19] [cursor=pointer]

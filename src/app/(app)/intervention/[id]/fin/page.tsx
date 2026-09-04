@@ -3,9 +3,7 @@ import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { redirect, notFound } from 'next/navigation'
 import { WorkReportForm } from '@/components/intervention/WorkReportForm'
-import { formatTime } from '@/lib/time/formatTime'
-import { diffMinutes } from '@/lib/time/diffMinutes'
-import { formatDuration } from '@/lib/time/formatDuration'
+import { InterventionTimesEditor } from '@/components/intervention/InterventionTimesEditor'
 
 export default async function FinInterventionPage({
   params,
@@ -23,21 +21,18 @@ export default async function FinInterventionPage({
 
   if (!intervention || intervention.userId !== session.user.id) notFound()
 
-  const durationMinutes = intervention.endAt
-    ? diffMinutes(intervention.startAt, intervention.endAt)
-    : null
-
   return (
     <div style={{ padding: '16px 16px 24px' }}>
-      <div style={{ marginBottom: 24 }}>
+      <div>
         <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>
           {intervention.type === 'WORKSHOP' ? 'Atelier' : intervention.client?.name}
         </h1>
-        {durationMinutes !== null && (
-          <p style={{ fontSize: 18, color: 'var(--encre-douce)', marginTop: 4 }}>
-            {formatDuration(durationMinutes)}
-            {intervention.endAt && ` · ${formatTime(intervention.startAt)} → ${formatTime(intervention.endAt)}`}
-          </p>
+        {intervention.endAt && (
+          <InterventionTimesEditor
+            interventionId={id}
+            startAt={intervention.startAt.toISOString()}
+            endAt={intervention.endAt.toISOString()}
+          />
         )}
       </div>
       <WorkReportForm interventionId={id} workReport={intervention.workReport ?? ''} />

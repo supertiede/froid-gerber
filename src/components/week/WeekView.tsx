@@ -290,7 +290,7 @@ export function WeekView({
         style={{
           margin: '24px 16px',
           padding: '16px 20px',
-          background: 'var(--acier)',
+          background: 'var(--bleu-ciel)',
           borderRadius: 12,
           display: 'flex',
           justifyContent: 'space-between',

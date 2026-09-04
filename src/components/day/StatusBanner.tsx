@@ -8,8 +8,8 @@ const CONFIG: Record<EtatJournee, { bg: string; label: string }> = {
   AU_TRAVAIL:       { bg: 'var(--vert)',        label: 'Au travail' },
   PAUSE_DEJEUNER:   { bg: 'var(--ambre)',       label: 'Pause déjeuner' },
   EN_PAUSE:         { bg: 'var(--ambre)',       label: 'En pause' },
-  EN_INTERVENTION:  { bg: 'var(--cuivre)',      label: 'En intervention' },
-  JOURNEE_TERMINEE: { bg: 'var(--acier)',       label: 'Journée terminée' },
+  EN_INTERVENTION:  { bg: 'var(--violet)',      label: 'En intervention' },
+  JOURNEE_TERMINEE: { bg: 'var(--bleu-ciel)',   label: 'Journée terminée' },
 }
 
 type Props = {

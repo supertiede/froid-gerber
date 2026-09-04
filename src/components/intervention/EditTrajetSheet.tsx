@@ -56,7 +56,7 @@ export function EditTrajetSheet({
           style={{
             width: '100%',
             height: 64,
-            background: 'var(--acier)',
+            background: 'var(--bleu-ciel)',
             color: '#fff',
             borderRadius: 12,
             fontSize: 18,

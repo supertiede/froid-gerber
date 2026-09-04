@@ -291,7 +291,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         height: 96,
         margin: '0 16px',
         borderRadius: 12,
-        background: color ?? 'var(--acier)',
+        background: color ?? 'var(--bleu-ciel)',
         color: '#fff',
         fontSize: 20,
         fontWeight: 600,
@@ -315,10 +315,10 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         height: 64,
         borderRadius: 12,
         background: 'transparent',
-        color: color ?? 'var(--acier)',
+        color: color ?? 'var(--bleu-ciel)',
         fontSize: 15,
         fontWeight: 600,
-        border: `2px solid ${color ?? 'var(--acier)'}`,
+        border: `2px solid ${color ?? 'var(--bleu-ciel)'}`,
         cursor: loading ? 'not-allowed' : 'pointer',
         opacity: loading ? 0.7 : 1,
       }}
@@ -366,7 +366,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
           <>
             {primaryButton('JE SUIS ARRIVÉ', handleClockIn, 'var(--vert)')}
             <div style={{ display: 'flex', gap: 12, padding: '0 16px' }}>
-              {secondaryButton("Démarrer une intervention", () => router.push('/intervention/nouvelle'), 'var(--cuivre)')}
+              {secondaryButton("Démarrer une intervention", () => router.push('/intervention/nouvelle'), 'var(--violet)')}
               {secondaryButton("J'ai oublié de pointer", () => router.push('/oubli'))}
             </div>
           </>
@@ -374,7 +374,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
 
         {status === 'AU_TRAVAIL' && (
           <>
-            {primaryButton("DÉMARRER UNE INTERVENTION", () => router.push('/intervention/nouvelle'), 'var(--cuivre)')}
+            {primaryButton("DÉMARRER UNE INTERVENTION", () => router.push('/intervention/nouvelle'), 'var(--violet)')}
             <div style={{ display: 'flex', gap: 12, padding: '0 16px' }}>
               {secondaryButton('Pause déjeuner', handleLunchBreak, 'var(--ambre)')}
               {secondaryButton('Faire une pause', handleShortBreak, 'var(--ambre)')}
@@ -404,7 +404,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
               } else {
                 setError((result as { ok: false; error: string }).error)
               }
-            }, 'var(--cuivre)')}
+            }, 'var(--violet)')}
             <div style={{ padding: '0 16px' }}>
               {secondaryButton('Faire une pause', handleShortBreak, 'var(--ambre)')}
             </div>

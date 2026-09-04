@@ -3,13 +3,15 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
+import { Info } from 'lucide-react'
 import { startIntervention } from '@/actions/intervention/startIntervention'
 import { getAllClients } from '@/actions/client/getAllClients'
 import { ClientSearchModal } from '@/components/intervention/ClientSearchModal'
+import { Modal } from '@/components/ui/Modal'
 
 type Client = { id: string; name: string; normalizedName: string }
 
-const TRAVEL_PRESETS = [5, 10, 15, 20, 30]
+const TRAVEL_PRESETS = [5, 10, 15, 20, 30, 45, 60, 75, 90, 120]
 
 export default function NouvelleInterventionPage() {
   const router = useRouter()
@@ -22,7 +24,7 @@ export default function NouvelleInterventionPage() {
   const [loadingClients, setLoadingClients] = useState(false)
 
   const [travel, setTravel] = useState(0)
-  const [travelCustom, setTravelCustom] = useState('')
+  const [travelInfoOpen, setTravelInfoOpen] = useState(false)
   const [error, setError] = useState('')
 
   async function openModal() {
@@ -49,7 +51,7 @@ export default function NouvelleInterventionPage() {
   function handleStart() {
     if (!selectedType) return
     setError('')
-    const travelFinal = selectedType === 'WORKSHOP' ? 0 : (travelCustom ? parseInt(travelCustom, 10) : travel)
+    const travelFinal = selectedType === 'WORKSHOP' ? 0 : travel
 
     startTransition(async () => {
       const result = await startIntervention({
@@ -106,7 +108,7 @@ export default function NouvelleInterventionPage() {
               padding: '0 16px',
               height: 64,
               borderRadius: 10,
-              border: '2px solid var(--acier)',
+              border: '2px solid var(--bleu-ciel)',
               background: 'rgba(11,95,165,0.06)',
               marginBottom: 8,
             }}>
@@ -115,7 +117,7 @@ export default function NouvelleInterventionPage() {
               </span>
               <button
                 onClick={() => { setSelectedType(null); setSelectedClient(null); openModal() }}
-                style={{ fontSize: 15, color: 'var(--acier)', background: 'none', border: 'none', minHeight: 'auto', padding: '4px 8px', fontWeight: 600, cursor: 'pointer' }}
+                style={{ fontSize: 15, color: 'var(--bleu-ciel)', background: 'none', border: 'none', minHeight: 'auto', padding: '4px 8px', fontWeight: 600, cursor: 'pointer' }}
               >
                 Changer
               </button>
@@ -147,48 +149,78 @@ export default function NouvelleInterventionPage() {
 
         {selectedType === 'CLIENT' && (
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 500, color: 'var(--encre)', marginBottom: 12 }}>
-              Temps de trajet aller
-            </h2>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 500, color: 'var(--encre)', margin: 0 }}>
+                Durée du trajet (aller)
+              </h2>
+              <button
+                onClick={() => setTravelInfoOpen(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 28,
+                  height: 28,
+                  minHeight: 'unset',
+                  borderRadius: '50%',
+                  border: '1.5px solid var(--trait)',
+                  background: 'transparent',
+                  color: 'var(--encre-douce)',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                }}
+                aria-label="Comment est calculé le temps de trajet ?"
+              >
+                <Info size={14} />
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {TRAVEL_PRESETS.map(p => (
                 <button
                   key={p}
-                  onClick={() => { setTravel(p); setTravelCustom('') }}
+                  onClick={() => setTravel(p)}
                   style={{
-                    flex: '1 1 calc(20% - 8px)',
                     height: 64,
-                    border: `2px solid ${travel === p && !travelCustom ? 'var(--acier)' : 'var(--trait)'}`,
-                    borderRadius: 8,
-                    background: travel === p && !travelCustom ? 'rgba(11,95,165,0.08)' : 'var(--surface)',
+                    border: `2px solid ${travel === p ? 'var(--bleu-ciel)' : 'var(--trait)'}`,
+                    borderRadius: 10,
+                    background: travel === p ? 'rgba(11,95,165,0.08)' : 'var(--surface)',
                     color: 'var(--encre)',
                     fontSize: 18,
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
-                  {p} min
+                  {p < 60 ? `${p} min` : `${p / 60}h`}
                 </button>
               ))}
             </div>
-            <input
-              type="number"
-              inputMode="numeric"
-              placeholder="Autre : ___ min"
-              value={travelCustom}
-              onChange={e => { setTravelCustom(e.target.value); setTravel(0) }}
-              style={{
-                width: '100%',
-                height: 56,
-                border: '1px solid var(--trait)',
+
+            <Modal
+              open={travelInfoOpen}
+              onOpenChange={setTravelInfoOpen}
+              title="Calcul du temps de trajet"
+            >
+              <p style={{ marginBottom: 12 }}>
+                Vous saisissez la durée du trajet <strong style={{ color: 'var(--encre)' }}>aller</strong> (atelier → client).
+              </p>
+              <p style={{ marginBottom: 16 }}>
+                Le temps de trajet total (aller + retour) est calculé automatiquement en multipliant cette valeur par 2, et s&apos;ajoute à la durée de l&apos;intervention.
+              </p>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 14px',
                 borderRadius: 8,
-                padding: '0 16px',
-                fontSize: 18,
-                background: 'var(--surface)',
-                color: 'var(--encre)',
-                boxSizing: 'border-box',
-              }}
-            />
+                background: 'rgba(11,95,165,0.07)',
+                border: '1px solid rgba(11,95,165,0.2)',
+                fontSize: 14,
+                color: 'var(--bleu-ciel)',
+                fontWeight: 500,
+              }}>
+                Temps total = intervention + (trajet aller × 2)
+              </div>
+            </Modal>
           </section>
         )}
 
@@ -203,7 +235,7 @@ export default function NouvelleInterventionPage() {
             width: '100%',
             height: 96,
             borderRadius: 12,
-            background: canStart ? 'var(--acier)' : 'var(--trait)',
+            background: canStart ? 'var(--bleu-ciel)' : 'var(--trait)',
             color: canStart ? '#fff' : 'var(--encre-douce)',
             fontSize: 20,
             fontWeight: 600,
