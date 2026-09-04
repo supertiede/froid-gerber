@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authClient } from '@/lib/auth-client'
-import { markPasswordChanged } from '@/actions/auth/markPasswordChanged'
+import { setNewPassword } from '@/actions/auth/setNewPassword'
 import { BrandLogo } from '@/components/BrandLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +10,6 @@ import { Label } from '@/components/ui/label'
 
 export default function ChangerMotDePassePage() {
   const router = useRouter()
-  const [actuel, setActuel] = useState('')
   const [mdp, setMdp] = useState('')
   const [confirm, setConfirm] = useState('')
   const [erreur, setErreur] = useState('')
@@ -21,32 +19,20 @@ export default function ChangerMotDePassePage() {
     e.preventDefault()
     if (mdp !== confirm) { setErreur('Les mots de passe ne correspondent pas.'); return }
     if (mdp.length < 6) { setErreur('Le mot de passe doit contenir au moins 6 caractères.'); return }
-    if (mdp === actuel) { setErreur('Le nouveau mot de passe doit être différent du mot de passe temporaire.'); return }
 
     setLoading(true)
     setErreur('')
 
-    try {
-      const result = await authClient.changePassword({
-        currentPassword: actuel,
-        newPassword: mdp,
-        revokeOtherSessions: false,
-      })
+    const result = await setNewPassword(mdp)
 
-      if (result.error) {
-        setErreur('Mot de passe temporaire incorrect.')
-        setLoading(false)
-        return
-      }
-
-      await markPasswordChanged()
-      router.push('/')
-      router.refresh()
-    } catch {
-      setErreur('Erreur lors du changement de mot de passe. Veuillez réessayer.')
-    } finally {
+    if (!result.ok) {
+      setErreur(result.error)
       setLoading(false)
+      return
     }
+
+    router.push('/')
+    router.refresh()
   }
 
   return (
@@ -82,22 +68,6 @@ export default function ChangerMotDePassePage() {
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label htmlFor="actuel" style={{ fontSize: 15, fontWeight: 500 }}>
-              Mot de passe temporaire
-            </Label>
-            <Input
-              id="actuel"
-              type="password"
-              value={actuel}
-              onChange={e => setActuel(e.target.value)}
-              required
-              aria-required="true"
-              autoComplete="current-password"
-              style={{ height: 52, fontSize: 17, padding: '0 16px' }}
-            />
-          </div>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label htmlFor="mdp" style={{ fontSize: 15, fontWeight: 500 }}>
               Nouveau mot de passe
