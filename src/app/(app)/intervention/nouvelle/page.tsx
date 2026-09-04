@@ -109,7 +109,7 @@ export default function NouvelleInterventionPage() {
               height: 64,
               borderRadius: 10,
               border: '2px solid var(--bleu-ciel)',
-              background: 'rgba(11,95,165,0.06)',
+              background: 'rgba(0,123,165,0.06)',
               marginBottom: 8,
             }}>
               <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)' }}>
@@ -183,7 +183,7 @@ export default function NouvelleInterventionPage() {
                     height: 64,
                     border: `2px solid ${travel === p ? 'var(--bleu-ciel)' : 'var(--trait)'}`,
                     borderRadius: 10,
-                    background: travel === p ? 'rgba(11,95,165,0.08)' : 'var(--surface)',
+                    background: travel === p ? 'rgba(0,123,165,0.08)' : 'var(--surface)',
                     color: 'var(--encre)',
                     fontSize: 18,
                     fontWeight: 600,
@@ -212,8 +212,8 @@ export default function NouvelleInterventionPage() {
                 gap: 8,
                 padding: '10px 14px',
                 borderRadius: 8,
-                background: 'rgba(11,95,165,0.07)',
-                border: '1px solid rgba(11,95,165,0.2)',
+                background: 'rgba(0,123,165,0.07)',
+                border: '1px solid rgba(0,123,165,0.2)',
                 fontSize: 14,
                 color: 'var(--bleu-ciel)',
                 fontWeight: 500,
