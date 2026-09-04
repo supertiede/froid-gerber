@@ -51,3 +51,30 @@ button, a, [role="button"] {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* Modal animations */
+@keyframes modal-overlay-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes modal-overlay-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes modal-content-in  { from { opacity: 0; transform: translate(-50%, -50%) scale(0.95) } to { opacity: 1; transform: translate(-50%, -50%) scale(1) } }
+@keyframes modal-content-out { from { opacity: 1; transform: translate(-50%, -50%) scale(1) } to { opacity: 0; transform: translate(-50%, -50%) scale(0.95) } }
+
+.modal-overlay[data-state="open"]  { animation: modal-overlay-in  180ms ease-out forwards }
+.modal-overlay[data-state="closed"] { animation: modal-overlay-out 150ms ease-in  forwards }
+.modal-content[data-state="open"]  { animation: modal-content-in  200ms ease-out forwards }
+.modal-content[data-state="closed"] { animation: modal-content-out 160ms ease-in  forwards }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay, .modal-content { animation: none !important }
+}
+
+/* Mic recording pulse */
+@keyframes mic-pulse {
+  0%, 100% { opacity: 1 }
+  50%       { opacity: 0.65 }
+}
+.mic-recording {
+  animation: mic-pulse 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mic-recording { animation: none }
+}
