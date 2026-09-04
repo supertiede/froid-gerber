@@ -31,7 +31,7 @@ export function FeedbackZone({ error, cancellation, onCancellationExpire }: Prop
       const elapsed = Date.now() - start
       const remaining = Math.max(0, 1 - elapsed / duration)
       setProgress(remaining * 100)
-      if (remaining === 0) {
+      if (remaining <= 0) {
         clearInterval(interval)
         expireRef.current()
       }
@@ -66,6 +66,7 @@ export function FeedbackZone({ error, cancellation, onCancellationExpire }: Prop
           }}>
             <span style={{ fontSize: 14, color: '#fff' }}>{cancellation.message}</span>
             <button
+              type="button"
               onClick={() => { void cancellation.onCancel() }}
               style={{
                 color: '#fff',
