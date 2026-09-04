@@ -95,16 +95,17 @@ export function WorkReportForm({
           </button>
         )}
 
-        {error && (
-          <p style={{ marginTop: 6, fontSize: 13, color: 'var(--rouge)', margin: '6px 0 0' }}>
-            {error === 'not-allowed'
-              ? 'Permission micro refusée'
-              : error === 'network'
-              ? 'Erreur réseau — réessayez'
-              : 'La dictée a été interrompue'}
-          </p>
-        )}
       </div>
+
+      {error && (
+        <p style={{ fontSize: 13, color: 'var(--rouge)', marginBottom: 12 }}>
+          {error === 'not-allowed'
+            ? 'Permission micro refusée'
+            : error === 'network'
+            ? 'Erreur réseau — réessayez'
+            : 'La dictée a été interrompue'}
+        </p>
+      )}
 
       <button
         onClick={handleSave}
