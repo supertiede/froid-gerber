@@ -17,7 +17,7 @@ export function WorkReportForm({
   const [isPending, startTransition] = useTransition()
   const [freeText, setFreeText] = useState(workReport)
 
-  const { isSupported, isListening, interimText, start, stop, setOnFinalResult } =
+  const { isSupported, isListening, interimText, error, start, stop, setOnFinalResult } =
     useSpeechRecognition()
 
   useEffect(() => {
@@ -93,6 +93,16 @@ export function WorkReportForm({
           >
             {isListening ? <MicOff size={20} /> : <Mic size={20} />}
           </button>
+        )}
+
+        {error && (
+          <p style={{ marginTop: 6, fontSize: 13, color: 'var(--rouge)', margin: '6px 0 0' }}>
+            {error === 'not-allowed'
+              ? 'Permission micro refusée'
+              : error === 'network'
+              ? 'Erreur réseau — réessayez'
+              : 'La dictée a été interrompue'}
+          </p>
         )}
       </div>
 

@@ -84,10 +84,6 @@ button, a, [role="button"] {
   animation: mic-pulse 1s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .mic-recording { animation: none }
-}
-
-@media (prefers-reduced-motion: reduce) {
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
