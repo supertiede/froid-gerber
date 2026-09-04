@@ -1,26 +1,42 @@
 'use client'
 
+import { MapPin, Briefcase, Coffee, Pause, Wrench, CheckCircle } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Timer } from './Timer'
+import { WorkTimer } from './WorkTimer'
 import type { EtatJournee } from '@/lib/etat-journee'
 
-const CONFIG: Record<EtatJournee, { bg: string; label: string }> = {
-  HORS_POSTE:       { bg: 'var(--gris-etat)',  label: 'Pas encore arrivé' },
-  AU_TRAVAIL:       { bg: 'var(--vert)',        label: 'Au travail' },
-  PAUSE_DEJEUNER:   { bg: 'var(--ambre)',       label: 'Pause déjeuner' },
-  EN_PAUSE:         { bg: 'var(--ambre)',       label: 'En pause' },
-  EN_INTERVENTION:  { bg: 'var(--violet)',      label: 'En intervention' },
-  JOURNEE_TERMINEE: { bg: 'var(--bleu-ciel)',   label: 'Journée terminée' },
+type Break = {
+  startAt: string
+  endAt: string | null
+}
+
+type StateConfig = {
+  bg: string
+  label: string
+  Icon: LucideIcon
+}
+
+const CONFIG: Record<EtatJournee, StateConfig> = {
+  HORS_POSTE:       { bg: 'var(--gris-etat)', label: 'Pas encore arrivé', Icon: MapPin },
+  AU_TRAVAIL:       { bg: 'var(--vert)',       label: 'Au travail',        Icon: Briefcase },
+  PAUSE_DEJEUNER:   { bg: 'var(--ambre)',      label: 'Pause déjeuner',    Icon: Coffee },
+  EN_PAUSE:         { bg: 'var(--ambre)',      label: 'En pause',          Icon: Pause },
+  EN_INTERVENTION:  { bg: 'var(--violet)',     label: 'En intervention',   Icon: Wrench },
+  JOURNEE_TERMINEE: { bg: 'var(--gris-etat)', label: 'Journée terminée',  Icon: CheckCircle },
 }
 
 type Props = {
   status: EtatJournee
   clientName?: string
   chronoStartAt: number | null
+  shiftStartAt: string | null
+  breaks: Break[]
   arrivalLabel?: string
 }
 
-export function StatusBanner({ status, clientName, chronoStartAt, arrivalLabel }: Props) {
-  const { bg, label } = CONFIG[status]
+export function StatusBanner({ status, clientName, chronoStartAt, shiftStartAt, breaks, arrivalLabel }: Props) {
+  const { bg, label, Icon } = CONFIG[status]
   const displayLabel = status === 'EN_INTERVENTION' && clientName ? clientName : label
 
   return (
@@ -29,25 +45,42 @@ export function StatusBanner({ status, clientName, chronoStartAt, arrivalLabel }
       aria-label={`Statut : ${displayLabel}`}
       style={{
         background: bg,
-        padding: '24px 16px 20px',
+        height: 240,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 8,
-        minHeight: 180,
+        justifyContent: 'center',
+        gap: 6,
+        padding: '0 16px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+        flexShrink: 0,
       }}
     >
-      <span style={{ fontSize: 28, fontWeight: 600, color: '#fff', textAlign: 'center' }}>
-        {displayLabel}
-      </span>
-      {chronoStartAt && (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Icon size={28} color="#fff" />
+        <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>{displayLabel}</span>
+      </div>
+
+      {chronoStartAt ? (
         <Timer startAt={chronoStartAt} />
-      )}
-      {arrivalLabel && (
-        <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginTop: 4 }}>
-          {arrivalLabel}
+      ) : (
+        <span style={{
+          fontSize: 56,
+          fontWeight: 600,
+          color: 'rgba(255,255,255,0.35)',
+          fontVariantNumeric: 'tabular-nums',
+          letterSpacing: '-0.02em',
+          lineHeight: 1,
+        }}>
+          –:––
         </span>
       )}
+
+      <WorkTimer shiftStartAt={shiftStartAt} breaks={breaks} />
+
+      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', minHeight: 18 }}>
+        {arrivalLabel ?? ' '}
+      </span>
     </div>
   )
 }
