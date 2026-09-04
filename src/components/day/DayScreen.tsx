@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { ReactNode, CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
@@ -105,7 +105,8 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const [cancellation, setCancellation] = useState<Cancellation | null>(null)
 
   const refresh = useCallback(() => router.refresh(), [router])
-  const openBreakRef = { current: openBreak }
+  const openBreakRef = useRef(openBreak)
+  openBreakRef.current = openBreak
 
   async function executeWithOutbox<T>(
     idempotencyKey: string,
