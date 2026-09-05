@@ -14,7 +14,6 @@ export default function OubliPage() {
   const [entryType, setEntryType] = useState<EntryType>(null)
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
-  const [breakType, setBreakType] = useState<'SHORT' | 'LUNCH'>('SHORT')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -30,7 +29,7 @@ export default function OubliPage() {
       type: entryType,
       startTime: new Date(startTime).toISOString(),
       endTime: entryType === 'BREAK' && endTime ? new Date(endTime).toISOString() : undefined,
-      breakType: entryType === 'BREAK' ? breakType : undefined,
+      breakType: entryType === 'BREAK' ? 'LUNCH' : undefined,
       idempotencyKey: uuidv4(),
     })
 
@@ -121,46 +120,6 @@ export default function OubliPage() {
                 />
               </div>
 
-              <div role="group" aria-label="Type de pause" style={{ display: 'flex', gap: 12 }}>
-                <button
-                  type="button"
-                  aria-pressed={breakType === 'SHORT'}
-                  onClick={() => setBreakType('SHORT')}
-                  style={{
-                    flex: 1,
-                    height: 56,
-                    borderRadius: 8,
-                    background: breakType === 'SHORT' ? 'var(--ambre)' : 'transparent',
-                    color: breakType === 'SHORT' ? '#fff' : 'var(--ambre)',
-                    fontSize: 15,
-                    fontWeight: 600,
-                    border: '2px solid var(--ambre)',
-                    cursor: 'pointer',
-                    touchAction: 'manipulation',
-                  }}
-                >
-                  Courte
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={breakType === 'LUNCH'}
-                  onClick={() => setBreakType('LUNCH')}
-                  style={{
-                    flex: 1,
-                    height: 56,
-                    borderRadius: 8,
-                    background: breakType === 'LUNCH' ? 'var(--ambre)' : 'transparent',
-                    color: breakType === 'LUNCH' ? '#fff' : 'var(--ambre)',
-                    fontSize: 15,
-                    fontWeight: 600,
-                    border: '2px solid var(--ambre)',
-                    cursor: 'pointer',
-                    touchAction: 'manipulation',
-                  }}
-                >
-                  Déjeuner
-                </button>
-              </div>
             </>
           )}
 

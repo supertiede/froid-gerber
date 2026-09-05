@@ -5,7 +5,7 @@ import type { ReactNode, CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import Image from 'next/image'
-import { Wrench, Coffee, Pause, Play, CheckSquare } from 'lucide-react'
+import { Wrench, Coffee, Play, CheckSquare } from 'lucide-react'
 import { StatusBanner } from './StatusBanner'
 import { DayShiftButton } from './DayShiftButton'
 import { useSnackbar } from '@/hooks/useSnackbar'
@@ -136,11 +136,6 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const handleLunchBreak = async () => {
     const key = uuidv4()
     await executeWithOutbox(key, 'startBreak', { type: 'LUNCH', idempotencyKey: key }, () => startBreak('LUNCH', key), 'PAUSE_DEJEUNER')
-  }
-
-  const handleShortBreak = async () => {
-    const key = uuidv4()
-    await executeWithOutbox(key, 'startBreak', { type: 'SHORT', idempotencyKey: key }, () => startBreak('SHORT', key), 'PAUSE_DEJEUNER')
   }
 
   const handleResumeWork = async () => {
