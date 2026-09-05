@@ -20,6 +20,7 @@
   --violet:       #7C3AED;
   --gris-etat:    #64748B;
   --rouge:        #DC2626;
+  --bleu-ciel-tint: rgba(0, 123, 165, 0.08);
 }
 
 html, body {

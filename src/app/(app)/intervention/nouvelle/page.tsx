@@ -3,8 +3,9 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
-import { Info } from 'lucide-react'
+import { ChevronLeft, Info } from 'lucide-react'
 import { startIntervention } from '@/actions/intervention/startIntervention'
+import { useSnackbar } from '@/hooks/useSnackbar'
 import { getAllClients } from '@/actions/client/getAllClients'
 import { ClientSearchModal } from '@/components/intervention/ClientSearchModal'
 import { Modal } from '@/components/ui/Modal'
@@ -25,7 +26,7 @@ export default function NouvelleInterventionPage() {
 
   const [travel, setTravel] = useState(0)
   const [travelInfoOpen, setTravelInfoOpen] = useState(false)
-  const [error, setError] = useState('')
+  const { showError, snackbarNode } = useSnackbar()
 
   async function openModal() {
     setModalOpen(true)
@@ -50,7 +51,6 @@ export default function NouvelleInterventionPage() {
 
   function handleStart() {
     if (!selectedType) return
-    setError('')
     const travelFinal = selectedType === 'WORKSHOP' ? 0 : travel
 
     startTransition(async () => {
@@ -65,7 +65,7 @@ export default function NouvelleInterventionPage() {
         router.push('/')
         router.refresh()
       } else {
-        setError(result.error ?? 'Erreur lors du démarrage.')
+        showError(result.error ?? 'Erreur lors du démarrage.')
       }
     })
   }
@@ -82,17 +82,41 @@ export default function NouvelleInterventionPage() {
         />
       )}
 
-      <div style={{ padding: '16px 16px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <header style={{
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '0 16px',
+        background: 'var(--surface)',
+        borderBottom: '1px solid var(--trait)',
+        flexShrink: 0,
+      }}>
         <button
           onClick={() => router.back()}
-          style={{ fontSize: 24, background: 'none', border: 'none', color: 'var(--encre)', minHeight: 'auto', padding: 4, cursor: 'pointer' }}
+          aria-label="Retour"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 44,
+            height: 44,
+            minHeight: 'unset',
+            borderRadius: 8,
+            background: 'none',
+            border: 'none',
+            color: 'var(--encre)',
+            cursor: 'pointer',
+            touchAction: 'manipulation',
+            flexShrink: 0,
+          }}
         >
-          ←
+          <ChevronLeft size={22} />
         </button>
-        <h1 style={{ fontSize: 22, fontWeight: 600, color: 'var(--encre)' }}>
+        <h1 style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)' }}>
           Nouvelle intervention
         </h1>
-      </div>
+      </header>
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 24 }}>
         <section>
@@ -109,15 +133,15 @@ export default function NouvelleInterventionPage() {
               height: 64,
               borderRadius: 10,
               border: '2px solid var(--bleu-ciel)',
-              background: 'rgba(0,123,165,0.06)',
+              background: 'var(--bleu-ciel-tint)',
               marginBottom: 8,
             }}>
               <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)' }}>
-                {selectedType === 'WORKSHOP' ? '🔧 Atelier' : selectedClient?.name}
+                {selectedType === 'WORKSHOP' ? 'Atelier' : selectedClient?.name}
               </span>
               <button
                 onClick={() => { setSelectedType(null); setSelectedClient(null); openModal() }}
-                style={{ fontSize: 15, color: 'var(--bleu-ciel)', background: 'none', border: 'none', minHeight: 'auto', padding: '4px 8px', fontWeight: 600, cursor: 'pointer' }}
+                style={{ fontSize: 15, color: 'var(--bleu-ciel)', background: 'none', border: 'none', minHeight: 'auto', padding: '4px 8px', fontWeight: 600, cursor: 'pointer', touchAction: 'manipulation' }}
               >
                 Changer
               </button>
@@ -137,9 +161,9 @@ export default function NouvelleInterventionPage() {
                 gap: 12,
                 cursor: 'pointer',
                 marginBottom: 8,
+                touchAction: 'manipulation',
               }}
             >
-              <span style={{ fontSize: 20, color: 'var(--encre-douce)' }}>🔍</span>
               <span style={{ fontSize: 18, color: 'var(--encre-douce)' }}>
                 {loadingClients ? 'Chargement…' : "Choisir un client ou l'atelier…"}
               </span>
@@ -183,11 +207,12 @@ export default function NouvelleInterventionPage() {
                     height: 64,
                     border: `2px solid ${travel === p ? 'var(--bleu-ciel)' : 'var(--trait)'}`,
                     borderRadius: 10,
-                    background: travel === p ? 'rgba(0,123,165,0.08)' : 'var(--surface)',
+                    background: travel === p ? 'var(--bleu-ciel-tint)' : 'var(--surface)',
                     color: 'var(--encre)',
                     fontSize: 18,
                     fontWeight: 600,
                     cursor: 'pointer',
+                    touchAction: 'manipulation',
                   }}
                 >
                   {p < 60 ? `${p} min` : `${p / 60}h`}
@@ -212,7 +237,7 @@ export default function NouvelleInterventionPage() {
                 gap: 8,
                 padding: '10px 14px',
                 borderRadius: 8,
-                background: 'rgba(0,123,165,0.07)',
+                background: 'var(--bleu-ciel-tint)',
                 border: '1px solid rgba(0,123,165,0.2)',
                 fontSize: 14,
                 color: 'var(--bleu-ciel)',
@@ -224,29 +249,32 @@ export default function NouvelleInterventionPage() {
           </section>
         )}
 
-        {error && <p style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>}
       </div>
 
       <div style={{ position: 'fixed', bottom: 80, left: 16, right: 16 }}>
         <button
           onClick={handleStart}
           disabled={!canStart || isPending}
+          aria-busy={isPending}
           style={{
             width: '100%',
-            height: 96,
-            borderRadius: 12,
+            height: 72,
+            borderRadius: 14,
             background: canStart ? 'var(--bleu-ciel)' : 'var(--trait)',
             color: canStart ? '#fff' : 'var(--encre-douce)',
-            fontSize: 20,
+            fontSize: 17,
             fontWeight: 600,
             border: 'none',
-            cursor: canStart ? 'pointer' : 'not-allowed',
+            cursor: canStart && !isPending ? 'pointer' : 'not-allowed',
+            opacity: isPending ? 0.7 : 1,
+            touchAction: 'manipulation',
             transition: 'background 200ms',
           }}
         >
-          {isPending ? 'Démarrage…' : 'DÉMARRER'}
+          {isPending ? 'Démarrage…' : 'Démarrer'}
         </button>
       </div>
+      {snackbarNode}
     </div>
   )
 }
