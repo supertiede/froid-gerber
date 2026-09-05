@@ -5,22 +5,17 @@ import type { ReactNode, CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import Image from 'next/image'
-import {
-  LogIn, Wrench, Clock, Coffee, Pause, Play,
-  LogOut, CheckSquare, CalendarRange,
-} from 'lucide-react'
+import { Wrench, Coffee, Pause, Play, CheckSquare } from 'lucide-react'
 import { StatusBanner } from './StatusBanner'
-import { FeedbackZone } from './FeedbackZone'
+import { DayShiftButton } from './DayShiftButton'
+import { useSnackbar } from '@/hooks/useSnackbar'
 import { clockIn } from '@/actions/shift/clockIn'
-import { cancelClockIn } from '@/actions/shift/cancelClockIn'
 import { startBreak } from '@/actions/shift/startBreak'
-import { cancelBreak } from '@/actions/shift/cancelBreak'
 import { resumeWork } from '@/actions/shift/resumeWork'
 import { endDay } from '@/actions/shift/endDay'
-import { cancelEndDay } from '@/actions/shift/cancelEndDay'
 import { resumeDay } from '@/actions/shift/resumeDay'
 import { endIntervention } from '@/actions/intervention/endIntervention'
-import { enqueueAction, removeAction } from '@/lib/outbox'
+import { enqueueAction } from '@/lib/outbox'
 import type { EtatJournee } from '@/lib/etat-journee'
 import { formatTime } from '@/lib/time/formatTime'
 import { formatDuration } from '@/lib/time/formatDuration'
@@ -70,11 +65,6 @@ type InterventionClient = {
   client: ClientInfo
 }
 
-type Cancellation = {
-  message: string
-  onCancel: () => Promise<void>
-}
-
 type Props = {
   status: EtatJournee
   shift: ShiftClient | null
@@ -82,12 +72,6 @@ type Props = {
   openBreak: BreakClient | null
   chronoStartAt: number | null
   userName: string
-}
-
-type SlotConfig = {
-  primary: { label: string; icon: ReactNode; color: string; onClick: () => void }
-  sec1:    { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
-  sec2:    { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
 }
 
 function vibrate() {
@@ -100,8 +84,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const router = useRouter()
   const [status, setStatus] = useState<EtatJournee>(initialStatus)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [cancellation, setCancellation] = useState<Cancellation | null>(null)
+  const { showError, snackbarNode } = useSnackbar()
 
   const refresh = useCallback(() => router.refresh(), [router])
   const openBreakRef = useRef(openBreak)
@@ -113,33 +96,20 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     payload: Record<string, unknown>,
     onlineAction: () => Promise<{ ok: true } | { ok: true; data: T } | { ok: false; error: string }>,
     optimisticStatus: EtatJournee,
-    cancellationMessage: string,
-    undoAction: () => Promise<void>,
   ) {
     if (loading) return
     vibrate()
     setLoading(true)
-    setError(null)
     setStatus(optimisticStatus)
     if (!navigator.onLine) {
       await enqueueAction({ id: idempotencyKey, type, payload, createdAt: Date.now() })
-      setCancellation({
-        message: `${cancellationMessage} (hors ligne)`,
-        onCancel: async () => {
-          setCancellation(null)
-          await removeAction(idempotencyKey)
-          setStatus(initialStatus)
-        },
-      })
       setLoading(false)
       return
     }
     const result = await onlineAction()
     if (!result.ok) {
-      setError((result as { ok: false; error: string }).error)
+      showError((result as { ok: false; error: string }).error)
       setStatus(initialStatus)
-    } else {
-      setCancellation({ message: cancellationMessage, onCancel: undoAction })
     }
     setLoading(false)
     refresh()
@@ -160,59 +130,32 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
 
   const handleClockIn = async () => {
     const key = uuidv4()
-    await executeWithOutbox(
-      key, 'clockIn', { idempotencyKey: key }, () => clockIn(key),
-      'AU_TRAVAIL',
-      `Arrivée enregistrée à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
-      async () => { if (shift?.id) await cancelClockIn(shift.id) },
-    )
+    await executeWithOutbox(key, 'clockIn', { idempotencyKey: key }, () => clockIn(key), 'AU_TRAVAIL')
   }
 
   const handleLunchBreak = async () => {
     const key = uuidv4()
-    await executeWithOutbox(
-      key, 'startBreak', { type: 'LUNCH', idempotencyKey: key }, () => startBreak('LUNCH', key),
-      'PAUSE_DEJEUNER', 'Pause déjeuner démarrée',
-      async () => { if (openBreakRef.current?.id) await cancelBreak(openBreakRef.current.id) },
-    )
+    await executeWithOutbox(key, 'startBreak', { type: 'LUNCH', idempotencyKey: key }, () => startBreak('LUNCH', key), 'PAUSE_DEJEUNER')
   }
 
   const handleShortBreak = async () => {
     const key = uuidv4()
-    await executeWithOutbox(
-      key, 'startBreak', { type: 'SHORT', idempotencyKey: key }, () => startBreak('SHORT', key),
-      'EN_PAUSE', 'Pause démarrée',
-      async () => { if (openBreakRef.current?.id) await cancelBreak(openBreakRef.current.id) },
-    )
+    await executeWithOutbox(key, 'startBreak', { type: 'SHORT', idempotencyKey: key }, () => startBreak('SHORT', key), 'EN_PAUSE')
   }
 
   const handleResumeWork = async () => {
     const key = uuidv4()
-    await executeWithOutbox(
-      key, 'resumeWork', { idempotencyKey: key }, () => resumeWork(),
-      'AU_TRAVAIL', 'Reprise du travail enregistrée',
-      async () => { refresh() },
-    )
+    await executeWithOutbox(key, 'resumeWork', { idempotencyKey: key }, () => resumeWork(), 'AU_TRAVAIL')
   }
 
   const handleEndDay = async () => {
     const key = uuidv4()
-    const shiftId = shift?.id
-    await executeWithOutbox(
-      key, 'endDay', { idempotencyKey: key }, () => endDay(),
-      'JOURNEE_TERMINEE',
-      `Journée terminée à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
-      async () => { if (shiftId) await cancelEndDay(shiftId) },
-    )
+    await executeWithOutbox(key, 'endDay', { idempotencyKey: key }, () => endDay(), 'JOURNEE_TERMINEE')
   }
 
   const handleResumeDay = async () => {
     const key = uuidv4()
-    await executeWithOutbox(
-      key, 'resumeDay', {}, () => resumeDay(),
-      'AU_TRAVAIL', 'Journée reprise',
-      async () => { refresh() },
-    )
+    await executeWithOutbox(key, 'resumeDay', {}, () => resumeDay(), 'AU_TRAVAIL')
   }
 
   const handleEndIntervention = async () => {
@@ -224,7 +167,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
     if (result.ok) {
       router.push(`/intervention/${openIntervention.id}/fin`)
     } else {
-      setError((result as { ok: false; error: string }).error)
+      showError((result as { ok: false; error: string }).error)
     }
   }
 
@@ -275,38 +218,36 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
 
   const EMPTY_SEC = { label: '', icon: null, color: 'transparent', onClick: () => {}, visible: false }
 
-  const slots: SlotConfig = (() => {
+  type SecSlot = { label: string; icon: ReactNode; color: string; onClick: () => void; visible: boolean }
+  type Slots = { primary: { label: string; icon: ReactNode; color: string; onClick: () => void }; sec1: SecSlot; sec2: SecSlot }
+
+  const slots: Slots = (() => {
     switch (status) {
       case 'HORS_POSTE':
+      case 'JOURNEE_TERMINEE':
         return {
-          primary:  { label: 'Arrivée',                    icon: <LogIn size={22} />,        color: 'var(--vert)',        onClick: handleClockIn },
-          sec1:     { label: 'Intervention directe',        icon: <Wrench size={18} />,       color: 'var(--violet)',      onClick: () => router.push('/intervention/nouvelle'), visible: true },
-          sec2:     { label: "J'ai oublié de pointer",      icon: <Clock size={18} />,        color: 'var(--encre-douce)', onClick: () => router.push('/oubli'),                  visible: true },
+          primary: { label: '', icon: null, color: 'transparent', onClick: () => {} },
+          sec1: EMPTY_SEC,
+          sec2: EMPTY_SEC,
         }
       case 'AU_TRAVAIL':
         return {
-          primary:  { label: 'Démarrer une intervention',  icon: <Wrench size={22} />,       color: 'var(--violet)',      onClick: () => router.push('/intervention/nouvelle') },
-          sec1:     { label: 'Pause déjeuner',              icon: <Coffee size={18} />,       color: 'var(--ambre)',       onClick: handleLunchBreak, visible: true },
-          sec2:     { label: 'Faire une pause',             icon: <Pause size={18} />,        color: 'var(--ambre)',       onClick: handleShortBreak, visible: true },
+          primary: { label: 'Démarrer une intervention', icon: <Wrench size={22} />, color: 'var(--violet)', onClick: () => router.push('/intervention/nouvelle') },
+          sec1: { label: 'Pause déjeuner',  icon: <Coffee size={18} />, color: 'var(--ambre)', onClick: handleLunchBreak, visible: true },
+          sec2: { label: 'Faire une pause', icon: <Pause size={18} />,  color: 'var(--ambre)', onClick: handleShortBreak, visible: true },
         }
       case 'EN_PAUSE':
       case 'PAUSE_DEJEUNER':
         return {
-          primary:  { label: 'Reprendre le travail',        icon: <Play size={22} />,         color: 'var(--vert)',        onClick: handleResumeWork },
-          sec1:     EMPTY_SEC,
-          sec2:     EMPTY_SEC,
+          primary: { label: 'Reprendre le travail', icon: <Play size={22} />, color: 'var(--vert)', onClick: handleResumeWork },
+          sec1: EMPTY_SEC,
+          sec2: EMPTY_SEC,
         }
       case 'EN_INTERVENTION':
         return {
-          primary:  { label: "Terminer l'intervention",     icon: <CheckSquare size={22} />,  color: 'var(--violet)',      onClick: handleEndIntervention },
-          sec1:     { label: 'Faire une pause',             icon: <Pause size={18} />,        color: 'var(--ambre)',       onClick: handleShortBreak, visible: true },
-          sec2:     EMPTY_SEC,
-        }
-      case 'JOURNEE_TERMINEE':
-        return {
-          primary:  { label: 'Reprendre le travail',        icon: <Play size={22} />,         color: 'var(--vert)',        onClick: handleResumeDay },
-          sec1:     EMPTY_SEC,
-          sec2:     EMPTY_SEC,
+          primary: { label: "Terminer l'intervention", icon: <CheckSquare size={22} />, color: 'var(--violet)', onClick: handleEndIntervention },
+          sec1: { label: 'Faire une pause', icon: <Pause size={18} />, color: 'var(--ambre)', onClick: handleShortBreak, visible: true },
+          sec2: EMPTY_SEC,
         }
     }
   })()
@@ -349,7 +290,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         arrivalLabel={shift ? arrivalLabel() : undefined}
       />
 
-      {/* ACTION ZONE — 152px fixe
+      {/* ACTION ZONE — visible only when day is in progress
           paddingTop(16) + primary(72) + gap(12) + secRow(52) = 152 */}
       <div style={{
         height: 152,
@@ -358,6 +299,8 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         gap: 12,
         paddingTop: 16,
         flexShrink: 0,
+        visibility: (status === 'HORS_POSTE' || status === 'JOURNEE_TERMINEE') ? 'hidden' : 'visible',
+        pointerEvents: (status === 'HORS_POSTE' || status === 'JOURNEE_TERMINEE') ? 'none' : 'auto',
       }}>
         <button
           onClick={slots.primary.onClick}
@@ -392,39 +335,17 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
       {/* SPACER — pousse le bouton Fin de journée vers le bas */}
       <div style={{ flex: 1 }} />
 
-      {/* FIN DE JOURNÉE — 88px fixe, réservé en bas */}
-      <div style={{
-        height: 88,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        flexShrink: 0,
-        visibility: status === 'AU_TRAVAIL' ? 'visible' : 'hidden',
-        pointerEvents: status === 'AU_TRAVAIL' ? 'auto' : 'none',
-      }}>
-        <button
-          onClick={handleEndDay}
-          disabled={loading || status !== 'AU_TRAVAIL'}
-          aria-busy={loading}
-          style={primaryStyle('var(--encre)')}
-        >
-          <LogOut size={22} />
-          Fin de journée
-        </button>
-      </div>
+      {/* SHIFT BUTTON — always visible, adapts to state */}
+      <DayShiftButton
+        status={status}
+        loading={loading}
+        onStart={handleClockIn}
+        onEnd={handleEndDay}
+        onResume={handleResumeDay}
+      />
 
       {/* FEEDBACK ZONE — 56px fixe (erreur ou annulation) */}
-      <FeedbackZone
-        error={error}
-        cancellation={cancellation ? {
-          message: cancellation.message,
-          onCancel: async () => {
-            setCancellation(null)
-            await cancellation.onCancel()
-          },
-        } : null}
-        onCancellationExpire={() => setCancellation(null)}
-      />
+      {snackbarNode}
 
     </div>
   )
