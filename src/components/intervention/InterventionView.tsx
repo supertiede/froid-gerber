@@ -109,6 +109,7 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
             <button
               onClick={handleDelete}
               disabled={isPending}
+              aria-busy={isPending}
               style={{
                 flex: 1,
                 height: 72,

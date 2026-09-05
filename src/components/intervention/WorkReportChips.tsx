@@ -51,7 +51,7 @@ export function WorkReportChips({
               padding: '10px 16px',
               borderRadius: 24,
               border: `2px solid ${selected.has(chip) ? 'var(--bleu-ciel)' : 'var(--trait)'}`,
-              background: selected.has(chip) ? 'rgba(0,123,165,0.1)' : 'var(--surface)',
+              background: selected.has(chip) ? 'var(--bleu-ciel-tint)' : 'var(--surface)',
               color: selected.has(chip) ? 'var(--bleu-ciel)' : 'var(--encre)',
               fontSize: 15,
               minHeight: 44,
