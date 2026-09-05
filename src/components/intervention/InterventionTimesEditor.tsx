@@ -5,18 +5,24 @@ import { useRouter } from 'next/navigation'
 import { Pencil, LogIn, LogOut, Timer, Coffee } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { updateIntervention } from '@/actions/intervention/updateIntervention'
+import { toZonedTime, fromZonedTime } from 'date-fns-tz'
 import { formatTime } from '@/lib/time/formatTime'
 import { diffMinutes } from '@/lib/time/diffMinutes'
 import { formatDuration } from '@/lib/time/formatDuration'
 
+const TZ = 'Europe/Paris'
 const HOURS = Array.from({ length: 20 }, (_, i) => i + 4) // 04 → 23
 const PAUSE_HOURS = [0, 1, 2, 3]
 const MINUTES = [0, 15, 30, 45]
 
+function nearestQuarter(minutes: number): number {
+  return MINUTES.reduce((a, b) => Math.abs(b - minutes) < Math.abs(a - minutes) ? b : a)
+}
+
 function applyTime(baseISO: string, h: number, m: number): string {
-  const result = new Date(baseISO)
-  result.setHours(h, m, 0, 0)
-  return result.toISOString()
+  const zoned = toZonedTime(new Date(baseISO), TZ)
+  zoned.setHours(h, m, 0, 0)
+  return fromZonedTime(zoned, TZ).toISOString()
 }
 
 const pencilBtn: React.CSSProperties = {
@@ -84,9 +90,9 @@ export function InterventionTimesEditor({ interventionId, startAt, endAt, pauseM
       }
       setEditing('pauseMinutes')
     } else {
-      const d = field === 'startAt' ? startDate : endDate
+      const d = toZonedTime(field === 'startAt' ? startDate : endDate, TZ)
       setPickerH(d.getHours())
-      setPickerM(d.getMinutes())
+      setPickerM(nearestQuarter(d.getMinutes()))
       setEditing(field)
     }
   }
