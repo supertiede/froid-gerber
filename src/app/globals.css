@@ -21,6 +21,7 @@
   --gris-etat:    #64748B;
   --rouge:        #DC2626;
   --bleu-ciel-tint: rgba(0, 123, 165, 0.08);
+  --bleu-ciel-border: rgba(0, 123, 165, 0.25);
 }
 
 html, body {

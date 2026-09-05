@@ -238,7 +238,7 @@ export default function NouvelleInterventionPage() {
                 padding: '10px 14px',
                 borderRadius: 8,
                 background: 'var(--bleu-ciel-tint)',
-                border: '1px solid rgba(0,123,165,0.2)',
+                border: '1px solid var(--bleu-ciel-border)',
                 fontSize: 14,
                 color: 'var(--bleu-ciel)',
                 fontWeight: 500,
