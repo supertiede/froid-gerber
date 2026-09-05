@@ -213,35 +213,67 @@ export function InterventionTimesEditor({ interventionId, startAt, endAt, pauseM
           "Modifier la pause"
         }
       >
-        <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-          <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--encre-douce)' }}>Heures</span>
-            <select
-              value={editing === 'pauseMinutes' ? pickerPauseH : pickerH}
-              onChange={e => editing === 'pauseMinutes' ? setPickerPauseH(Number(e.target.value)) : setPickerH(Number(e.target.value))}
-              style={selectStyle}
-            >
-              {(editing === 'pauseMinutes' ? PAUSE_HOURS : HOURS).map(h => (
-                <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
-              ))}
-            </select>
-          </label>
+        {editing === 'pauseMinutes' ? (
+          <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+            <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--encre-douce)' }}>Heures</span>
+              <select
+                value={pickerPauseH}
+                onChange={e => setPickerPauseH(Number(e.target.value))}
+                style={selectStyle}
+              >
+                {PAUSE_HOURS.map(h => (
+                  <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
+                ))}
+              </select>
+            </label>
 
-          <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 14, fontSize: 24, fontWeight: 700, color: 'var(--encre-douce)' }}>:</div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 14, fontSize: 24, fontWeight: 700, color: 'var(--encre-douce)' }}>:</div>
 
-          <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--encre-douce)' }}>Minutes</span>
-            <select
-              value={editing === 'pauseMinutes' ? pickerPauseM : pickerM}
-              onChange={e => editing === 'pauseMinutes' ? setPickerPauseM(Number(e.target.value)) : setPickerM(Number(e.target.value))}
-              style={selectStyle}
-            >
-              {MINUTES.map(m => (
-                <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
-              ))}
-            </select>
-          </label>
-        </div>
+            <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--encre-douce)' }}>Minutes</span>
+              <select
+                value={pickerPauseM}
+                onChange={e => setPickerPauseM(Number(e.target.value))}
+                style={selectStyle}
+              >
+                {MINUTES.map(m => (
+                  <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+            <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--encre-douce)' }}>Heures</span>
+              <select
+                value={pickerH}
+                onChange={e => setPickerH(Number(e.target.value))}
+                style={selectStyle}
+              >
+                {HOURS.map(h => (
+                  <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
+                ))}
+              </select>
+            </label>
+
+            <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 14, fontSize: 24, fontWeight: 700, color: 'var(--encre-douce)' }}>:</div>
+
+            <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--encre-douce)' }}>Minutes</span>
+              <select
+                value={pickerM}
+                onChange={e => setPickerM(Number(e.target.value))}
+                style={selectStyle}
+              >
+                {MINUTES.map(m => (
+                  <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
 
         {saveError && (
           <p style={{ fontSize: 14, color: 'var(--rouge)', marginBottom: 12, marginTop: -12 }}>
