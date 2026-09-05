@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import { manualTimestamp } from '@/actions/shift/manualTimestamp'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -60,6 +59,7 @@ export default function OubliPage() {
         fontWeight: 600,
         border: '2px solid var(--bleu-ciel)',
         cursor: 'pointer',
+        touchAction: 'manipulation',
       }}
     >
       {label}
@@ -136,6 +136,7 @@ export default function OubliPage() {
                     fontWeight: 600,
                     border: '2px solid var(--ambre)',
                     cursor: 'pointer',
+                    touchAction: 'manipulation',
                   }}
                 >
                   Courte
@@ -154,6 +155,7 @@ export default function OubliPage() {
                     fontWeight: 600,
                     border: '2px solid var(--ambre)',
                     cursor: 'pointer',
+                    touchAction: 'manipulation',
                   }}
                 >
                   Déjeuner
@@ -166,20 +168,26 @@ export default function OubliPage() {
             <p role="alert" style={{ color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
           )}
 
-          <Button
+          <button
             type="submit"
             disabled={loading}
+            aria-busy={loading}
             style={{
-              height: 64,
-              fontSize: 18,
-              fontWeight: 600,
+              width: '100%',
+              height: 72,
+              borderRadius: 14,
               background: 'var(--bleu-ciel)',
               color: '#fff',
-              borderRadius: 12,
+              fontSize: 17,
+              fontWeight: 600,
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.7 : 1,
+              touchAction: 'manipulation',
             }}
           >
-            {loading ? 'Enregistrement…' : 'ENREGISTRER'}
-          </Button>
+            {loading ? 'Enregistrement…' : 'Enregistrer'}
+          </button>
         </form>
       )}
     </div>
