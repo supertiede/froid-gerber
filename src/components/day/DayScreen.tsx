@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import type { ReactNode, CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
@@ -87,8 +87,6 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
   const { showError, snackbarNode } = useSnackbar()
 
   const refresh = useCallback(() => router.refresh(), [router])
-  const openBreakRef = useRef(openBreak)
-  openBreakRef.current = openBreak
 
   async function executeWithOutbox<T>(
     idempotencyKey: string,
@@ -243,6 +241,10 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
           sec1: { label: 'Pause déjeuner', icon: <Coffee size={18} />, color: 'var(--ambre)', onClick: handleLunchBreak, visible: true },
           sec2: EMPTY_SEC,
         }
+      default: {
+        const _: never = status
+        return { primary: { label: '', icon: null, color: 'transparent', onClick: () => {} }, sec1: EMPTY_SEC, sec2: EMPTY_SEC }
+      }
     }
   })()
 

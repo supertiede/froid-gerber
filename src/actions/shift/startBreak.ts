@@ -6,7 +6,7 @@ import { getOpenShift } from '@/lib/queries/getOpenShift'
 import { now } from '@/lib/time/now'
 import { revalidatePath } from 'next/cache'
 
-export async function startBreak(type: 'LUNCH' | 'SHORT', idempotencyKey: string) {
+export async function startBreak(type: 'LUNCH', idempotencyKey: string) {
   const session = await getSession()
   const userId = session.user.id
 

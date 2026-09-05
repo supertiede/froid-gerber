@@ -17,7 +17,7 @@ async function replayAction(type: string, payload: Record<string, unknown>): Pro
     case 'clockIn':
       return clockIn(payload.idempotencyKey as string)
     case 'startBreak':
-      return startBreak(payload.type as 'LUNCH' | 'SHORT', payload.idempotencyKey as string)
+      return startBreak('LUNCH', payload.idempotencyKey as string)
     case 'resumeWork':
       return resumeWork()
     case 'endDay':
