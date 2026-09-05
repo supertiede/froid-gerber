@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Trash2 } from 'lucide-react'
 import { deleteIntervention } from '@/actions/intervention/deleteIntervention'
+import { useSnackbar } from '@/hooks/useSnackbar'
 import { WorkReportForm } from './WorkReportForm'
 import { InterventionTimesEditor } from './InterventionTimesEditor'
 
@@ -19,13 +20,13 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [error, setError] = useState('')
+  const { showError, snackbarNode } = useSnackbar()
 
   function handleDelete() {
     startTransition(async () => {
       const result = await deleteIntervention(interventionId)
       if (result.ok) router.push('/interventions')
-      else setError(result.error ?? 'Erreur')
+      else showError(result.error ?? 'Erreur')
     })
   }
 
@@ -60,7 +61,7 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
             flexShrink: 0,
           }}
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={22} />
         </button>
         <h1 style={{ fontSize: 18, fontWeight: 600, color: 'var(--encre)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {title}
@@ -78,14 +79,11 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
         <WorkReportForm interventionId={interventionId} workReport={workReport} />
       </div>
 
-      {error && (
-        <p role="alert" style={{ padding: '8px 16px 0', color: 'var(--rouge)', fontSize: 15 }}>{error}</p>
-      )}
-
       <div style={{ padding: '16px 16px 24px', flexShrink: 0 }}>
         {!confirmDelete ? (
           <button
             onClick={() => setConfirmDelete(true)}
+            aria-label="Supprimer l'intervention"
             style={{
               width: '100%',
               height: 72,
@@ -103,7 +101,7 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
               touchAction: 'manipulation',
             }}
           >
-            <Trash2 size={20} />
+            <Trash2 size={22} />
             Supprimer l&apos;intervention
           </button>
         ) : (
@@ -148,6 +146,7 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
         )}
       </div>
 
+      {snackbarNode}
     </div>
   )
 }
