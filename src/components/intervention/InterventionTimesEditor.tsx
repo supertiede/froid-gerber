@@ -59,7 +59,7 @@ export function InterventionTimesEditor({ interventionId, startAt, endAt, pauseM
   const [editing, setEditing] = useState<'startAt' | 'endAt' | 'pauseMinutes' | null>(null)
   const [localStart, setLocalStart] = useState(startAt)
   const [localEnd, setLocalEnd] = useState(endAt)
-  const [localPause, setLocalPause] = useState(pauseMinutes)
+  const [localPause, setLocalPause] = useState(() => Number.isFinite(pauseMinutes) ? pauseMinutes : 0)
   const [saveError, setSaveError] = useState<string | null>(null)
 
   const startDate = new Date(localStart)

@@ -28,7 +28,7 @@ export default async function FinInterventionPage({
       title={title}
       startAt={intervention.startAt.toISOString()}
       endAt={intervention.endAt?.toISOString() ?? null}
-      pauseMinutes={intervention.pauseMinutes}
+      pauseMinutes={intervention.pauseMinutes ?? 0}
       workReport={intervention.workReport ?? ''}
     />
   )
