@@ -26,6 +26,7 @@ export async function updateIntervention(
       updateData[field] = new Date(newValue)
       break
     case 'travelMinutes':
+    case 'pauseMinutes':
       updateData[field] = parseInt(newValue, 10)
       break
     case 'clientId':

@@ -1,1 +1,1 @@
-export type InterventionField = 'startAt' | 'endAt' | 'travelMinutes' | 'clientId' | 'workReport' | 'type'
+export type InterventionField = 'startAt' | 'endAt' | 'travelMinutes' | 'pauseMinutes' | 'clientId' | 'workReport' | 'type'

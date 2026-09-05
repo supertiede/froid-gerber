@@ -28,10 +28,12 @@ export type AggregateIntervention = {
 
 export type InterventionAvgAggregateOutputType = {
   travelMinutes: number | null
+  pauseMinutes: number | null
 }
 
 export type InterventionSumAggregateOutputType = {
   travelMinutes: number | null
+  pauseMinutes: number | null
 }
 
 export type InterventionMinAggregateOutputType = {
@@ -42,6 +44,7 @@ export type InterventionMinAggregateOutputType = {
   startAt: Date | null
   endAt: Date | null
   travelMinutes: number | null
+  pauseMinutes: number | null
   workReport: string | null
   origin: $Enums.Origin | null
   idempotencyKey: string | null
@@ -57,6 +60,7 @@ export type InterventionMaxAggregateOutputType = {
   startAt: Date | null
   endAt: Date | null
   travelMinutes: number | null
+  pauseMinutes: number | null
   workReport: string | null
   origin: $Enums.Origin | null
   idempotencyKey: string | null
@@ -72,6 +76,7 @@ export type InterventionCountAggregateOutputType = {
   startAt: number
   endAt: number
   travelMinutes: number
+  pauseMinutes: number
   workReport: number
   origin: number
   idempotencyKey: number
@@ -83,10 +88,12 @@ export type InterventionCountAggregateOutputType = {
 
 export type InterventionAvgAggregateInputType = {
   travelMinutes?: true
+  pauseMinutes?: true
 }
 
 export type InterventionSumAggregateInputType = {
   travelMinutes?: true
+  pauseMinutes?: true
 }
 
 export type InterventionMinAggregateInputType = {
@@ -97,6 +104,7 @@ export type InterventionMinAggregateInputType = {
   startAt?: true
   endAt?: true
   travelMinutes?: true
+  pauseMinutes?: true
   workReport?: true
   origin?: true
   idempotencyKey?: true
@@ -112,6 +120,7 @@ export type InterventionMaxAggregateInputType = {
   startAt?: true
   endAt?: true
   travelMinutes?: true
+  pauseMinutes?: true
   workReport?: true
   origin?: true
   idempotencyKey?: true
@@ -127,6 +136,7 @@ export type InterventionCountAggregateInputType = {
   startAt?: true
   endAt?: true
   travelMinutes?: true
+  pauseMinutes?: true
   workReport?: true
   origin?: true
   idempotencyKey?: true
@@ -229,6 +239,7 @@ export type InterventionGroupByOutputType = {
   startAt: Date
   endAt: Date | null
   travelMinutes: number
+  pauseMinutes: number
   workReport: string | null
   origin: $Enums.Origin
   idempotencyKey: string | null
@@ -267,6 +278,7 @@ export type InterventionWhereInput = {
   startAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   endAt?: Prisma.DateTimeNullableFilter<"Intervention"> | Date | string | null
   travelMinutes?: Prisma.IntFilter<"Intervention"> | number
+  pauseMinutes?: Prisma.IntFilter<"Intervention"> | number
   workReport?: Prisma.StringNullableFilter<"Intervention"> | string | null
   origin?: Prisma.EnumOriginFilter<"Intervention"> | $Enums.Origin
   idempotencyKey?: Prisma.StringNullableFilter<"Intervention"> | string | null
@@ -284,6 +296,7 @@ export type InterventionOrderByWithRelationInput = {
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrderInput | Prisma.SortOrder
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
   workReport?: Prisma.SortOrderInput | Prisma.SortOrder
   origin?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -305,6 +318,7 @@ export type InterventionWhereUniqueInput = Prisma.AtLeast<{
   startAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   endAt?: Prisma.DateTimeNullableFilter<"Intervention"> | Date | string | null
   travelMinutes?: Prisma.IntFilter<"Intervention"> | number
+  pauseMinutes?: Prisma.IntFilter<"Intervention"> | number
   workReport?: Prisma.StringNullableFilter<"Intervention"> | string | null
   origin?: Prisma.EnumOriginFilter<"Intervention"> | $Enums.Origin
   createdAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
@@ -321,6 +335,7 @@ export type InterventionOrderByWithAggregationInput = {
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrderInput | Prisma.SortOrder
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
   workReport?: Prisma.SortOrderInput | Prisma.SortOrder
   origin?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -344,6 +359,7 @@ export type InterventionScalarWhereWithAggregatesInput = {
   startAt?: Prisma.DateTimeWithAggregatesFilter<"Intervention"> | Date | string
   endAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Intervention"> | Date | string | null
   travelMinutes?: Prisma.IntWithAggregatesFilter<"Intervention"> | number
+  pauseMinutes?: Prisma.IntWithAggregatesFilter<"Intervention"> | number
   workReport?: Prisma.StringNullableWithAggregatesFilter<"Intervention"> | string | null
   origin?: Prisma.EnumOriginWithAggregatesFilter<"Intervention"> | $Enums.Origin
   idempotencyKey?: Prisma.StringNullableWithAggregatesFilter<"Intervention"> | string | null
@@ -357,6 +373,7 @@ export type InterventionCreateInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -374,6 +391,7 @@ export type InterventionUncheckedCreateInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -387,6 +405,7 @@ export type InterventionUpdateInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -404,6 +423,7 @@ export type InterventionUncheckedUpdateInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -419,6 +439,7 @@ export type InterventionCreateManyInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -432,6 +453,7 @@ export type InterventionUpdateManyMutationInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -447,6 +469,7 @@ export type InterventionUncheckedUpdateManyInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -472,6 +495,7 @@ export type InterventionCountOrderByAggregateInput = {
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrder
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
   workReport?: Prisma.SortOrder
   origin?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
@@ -481,6 +505,7 @@ export type InterventionCountOrderByAggregateInput = {
 
 export type InterventionAvgOrderByAggregateInput = {
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
 }
 
 export type InterventionMaxOrderByAggregateInput = {
@@ -491,6 +516,7 @@ export type InterventionMaxOrderByAggregateInput = {
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrder
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
   workReport?: Prisma.SortOrder
   origin?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
@@ -506,6 +532,7 @@ export type InterventionMinOrderByAggregateInput = {
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrder
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
   workReport?: Prisma.SortOrder
   origin?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
@@ -515,6 +542,7 @@ export type InterventionMinOrderByAggregateInput = {
 
 export type InterventionSumOrderByAggregateInput = {
   travelMinutes?: Prisma.SortOrder
+  pauseMinutes?: Prisma.SortOrder
 }
 
 export type InterventionCreateNestedManyWithoutUserInput = {
@@ -619,6 +647,7 @@ export type InterventionCreateWithoutUserInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -634,6 +663,7 @@ export type InterventionUncheckedCreateWithoutUserInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -678,6 +708,7 @@ export type InterventionScalarWhereInput = {
   startAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   endAt?: Prisma.DateTimeNullableFilter<"Intervention"> | Date | string | null
   travelMinutes?: Prisma.IntFilter<"Intervention"> | number
+  pauseMinutes?: Prisma.IntFilter<"Intervention"> | number
   workReport?: Prisma.StringNullableFilter<"Intervention"> | string | null
   origin?: Prisma.EnumOriginFilter<"Intervention"> | $Enums.Origin
   idempotencyKey?: Prisma.StringNullableFilter<"Intervention"> | string | null
@@ -691,6 +722,7 @@ export type InterventionCreateWithoutClientInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -706,6 +738,7 @@ export type InterventionUncheckedCreateWithoutClientInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -746,6 +779,7 @@ export type InterventionCreateManyUserInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -759,6 +793,7 @@ export type InterventionUpdateWithoutUserInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -774,6 +809,7 @@ export type InterventionUncheckedUpdateWithoutUserInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -788,6 +824,7 @@ export type InterventionUncheckedUpdateManyWithoutUserInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -802,6 +839,7 @@ export type InterventionCreateManyClientInput = {
   startAt: Date | string
   endAt?: Date | string | null
   travelMinutes?: number
+  pauseMinutes?: number
   workReport?: string | null
   origin?: $Enums.Origin
   idempotencyKey?: string | null
@@ -815,6 +853,7 @@ export type InterventionUpdateWithoutClientInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -830,6 +869,7 @@ export type InterventionUncheckedUpdateWithoutClientInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -844,6 +884,7 @@ export type InterventionUncheckedUpdateManyWithoutClientInput = {
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   travelMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  pauseMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   workReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -861,6 +902,7 @@ export type InterventionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   startAt?: boolean
   endAt?: boolean
   travelMinutes?: boolean
+  pauseMinutes?: boolean
   workReport?: boolean
   origin?: boolean
   idempotencyKey?: boolean
@@ -878,6 +920,7 @@ export type InterventionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   startAt?: boolean
   endAt?: boolean
   travelMinutes?: boolean
+  pauseMinutes?: boolean
   workReport?: boolean
   origin?: boolean
   idempotencyKey?: boolean
@@ -895,6 +938,7 @@ export type InterventionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   startAt?: boolean
   endAt?: boolean
   travelMinutes?: boolean
+  pauseMinutes?: boolean
   workReport?: boolean
   origin?: boolean
   idempotencyKey?: boolean
@@ -912,6 +956,7 @@ export type InterventionSelectScalar = {
   startAt?: boolean
   endAt?: boolean
   travelMinutes?: boolean
+  pauseMinutes?: boolean
   workReport?: boolean
   origin?: boolean
   idempotencyKey?: boolean
@@ -919,7 +964,7 @@ export type InterventionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type InterventionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "clientId" | "startAt" | "endAt" | "travelMinutes" | "workReport" | "origin" | "idempotencyKey" | "createdAt" | "updatedAt", ExtArgs["result"]["intervention"]>
+export type InterventionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "clientId" | "startAt" | "endAt" | "travelMinutes" | "pauseMinutes" | "workReport" | "origin" | "idempotencyKey" | "createdAt" | "updatedAt", ExtArgs["result"]["intervention"]>
 export type InterventionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.userDefaultArgs<ExtArgs>
   client?: boolean | Prisma.Intervention$clientArgs<ExtArgs>
@@ -947,6 +992,7 @@ export type $InterventionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     startAt: Date
     endAt: Date | null
     travelMinutes: number
+    pauseMinutes: number
     workReport: string | null
     origin: $Enums.Origin
     idempotencyKey: string | null
@@ -1384,6 +1430,7 @@ export interface InterventionFieldRefs {
   readonly startAt: Prisma.FieldRef<"Intervention", 'DateTime'>
   readonly endAt: Prisma.FieldRef<"Intervention", 'DateTime'>
   readonly travelMinutes: Prisma.FieldRef<"Intervention", 'Int'>
+  readonly pauseMinutes: Prisma.FieldRef<"Intervention", 'Int'>
   readonly workReport: Prisma.FieldRef<"Intervention", 'String'>
   readonly origin: Prisma.FieldRef<"Intervention", 'Origin'>
   readonly idempotencyKey: Prisma.FieldRef<"Intervention", 'String'>

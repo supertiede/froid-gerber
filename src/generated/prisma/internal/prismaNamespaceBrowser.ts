@@ -193,6 +193,7 @@ export const InterventionScalarFieldEnum = {
   startAt: 'startAt',
   endAt: 'endAt',
   travelMinutes: 'travelMinutes',
+  pauseMinutes: 'pauseMinutes',
   workReport: 'workReport',
   origin: 'origin',
   idempotencyKey: 'idempotencyKey',

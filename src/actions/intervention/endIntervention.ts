@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth/getSession'
 import { now } from '@/lib/time/now'
+import { roundToQuarter } from '@/lib/time/roundToQuarter'
 import { revalidatePath } from 'next/cache'
 
 export async function endIntervention(interventionId: string) {
@@ -15,7 +16,10 @@ export async function endIntervention(interventionId: string) {
 
   await prisma.intervention.update({
     where: { id: interventionId },
-    data: { endAt: now() },
+    data: {
+      startAt: roundToQuarter(intervention.startAt),
+      endAt: roundToQuarter(now()),
+    },
   })
 
   revalidatePath('/')

@@ -147,6 +147,7 @@ model Intervention {
   startAt        DateTime
   endAt          DateTime?
   travelMinutes  Int              @default(0)
+  pauseMinutes   Int              @default(0)
   workReport     String?
   origin         Origin           @default(APP)
   idempotencyKey String?          @unique

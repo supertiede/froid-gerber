@@ -13,10 +13,11 @@ type Props = {
   title: string
   startAt: string
   endAt: string | null
+  pauseMinutes: number
   workReport: string
 }
 
-export function InterventionView({ interventionId, title, startAt, endAt, workReport }: Props) {
+export function InterventionView({ interventionId, title, startAt, endAt, pauseMinutes, workReport }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -74,6 +75,7 @@ export function InterventionView({ interventionId, title, startAt, endAt, workRe
             interventionId={interventionId}
             startAt={startAt}
             endAt={endAt}
+            pauseMinutes={pauseMinutes}
           />
         )}
         <WorkReportForm interventionId={interventionId} workReport={workReport} />
