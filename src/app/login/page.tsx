@@ -115,6 +115,7 @@ export default function LoginPage() {
               color: '#fff',
               borderRadius: 12,
               marginTop: 4,
+              touchAction: 'manipulation',
             }}
           >
             {loading ? 'Connexion…' : 'SE CONNECTER'}

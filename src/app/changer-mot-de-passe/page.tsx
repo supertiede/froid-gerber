@@ -118,6 +118,7 @@ export default function ChangerMotDePassePage() {
               color: '#fff',
               borderRadius: 12,
               marginTop: 4,
+              touchAction: 'manipulation',
             }}
           >
             {loading ? 'Enregistrement…' : 'ENREGISTRER'}

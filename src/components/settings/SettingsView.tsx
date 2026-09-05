@@ -56,6 +56,7 @@ export function SettingsView({ user }: Props) {
       <button
         onClick={handleDeconnexion}
         disabled={loading}
+        aria-busy={loading}
         style={{
           width: '100%',
           height: 64,
@@ -68,6 +69,7 @@ export function SettingsView({ user }: Props) {
           cursor: loading ? 'not-allowed' : 'pointer',
           opacity: loading ? 0.7 : 1,
           marginBottom: 32,
+          touchAction: 'manipulation',
         }}
       >
         {loading ? 'Déconnexion…' : 'Se déconnecter'}
