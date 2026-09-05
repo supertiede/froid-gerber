@@ -91,7 +91,7 @@ export function WorkReportForm({
               transition: 'background 200ms ease, border-color 200ms ease',
             }}
           >
-            {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+            {isListening ? <MicOff size={18} /> : <Mic size={18} />}
           </button>
         )}
 
@@ -110,17 +110,19 @@ export function WorkReportForm({
       <button
         onClick={handleSave}
         disabled={isPending}
+        aria-busy={isPending}
         style={{
-          height: 96,
-          borderRadius: 12,
+          height: 72,
+          borderRadius: 14,
           background: 'var(--bleu-ciel)',
           color: '#fff',
-          fontSize: 20,
+          fontSize: 17,
           fontWeight: 600,
           border: 'none',
           width: '100%',
           cursor: isPending ? 'not-allowed' : 'pointer',
           opacity: isPending ? 0.7 : 1,
+          touchAction: 'manipulation',
         }}
       >
         {isPending ? 'Enregistrement…' : 'ENREGISTRER'}
