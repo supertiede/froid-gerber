@@ -45,8 +45,7 @@ La page est une colonne flex avec des zones à hauteur fixe. Aucune zone ne redi
 type EtatJournee =
   | 'HORS_POSTE'       // pas de shift ouvert
   | 'AU_TRAVAIL'       // shift ouvert, pas de break ni intervention
-  | 'PAUSE_DEJEUNER'   // break LUNCH ouvert
-  | 'EN_PAUSE'         // break SHORT ouvert
+  | 'PAUSE_DEJEUNER'   // break ouvert
   | 'EN_INTERVENTION'  // intervention ouverte
   | 'JOURNEE_TERMINEE' // shift fermé (endAt non null)
 ```
@@ -56,10 +55,9 @@ Matrice CTA par état :
 | État            | Shift Button         | Primary Action Zone        | Secondaires           |
 |-----------------|----------------------|----------------------------|-----------------------|
 | HORS_POSTE      | "Arrivée" (vert)     | zone cachée                | —                     |
-| AU_TRAVAIL      | "Fin de journée" (encre) | "Démarrer une intervention" (violet) | Pause déjeuner + Faire une pause |
-| EN_PAUSE        | "Fin de journée" (encre) | "Reprendre le travail" (vert) | —               |
+| AU_TRAVAIL      | "Fin de journée" (encre) | "Démarrer une intervention" (violet) | Pause déjeuner |
 | PAUSE_DEJEUNER  | "Fin de journée" (encre) | "Reprendre le travail" (vert) | —               |
-| EN_INTERVENTION | "Fin de journée" (encre) | "Terminer l'intervention" (violet) | Faire une pause |
+| EN_INTERVENTION | "Fin de journée" (encre) | "Terminer l'intervention" (violet) | Pause déjeuner |
 | JOURNEE_TERMINEE | "Reprendre le travail" (vert) | zone cachée           | —                     |
 
 ---
@@ -90,7 +88,6 @@ Correspondance état → couleur StatusBanner :
 - HORS_POSTE → `--gris-etat`
 - AU_TRAVAIL → `--vert`
 - PAUSE_DEJEUNER → `--ambre`
-- EN_PAUSE → `--ambre`
 - EN_INTERVENTION → `--violet`
 - JOURNEE_TERMINEE → `--gris-etat`
 
@@ -319,7 +316,6 @@ Icônes associées aux états / actions :
 - Reprendre → `Play`
 - Intervention → `Wrench`
 - Terminer intervention → `CheckSquare`
-- Pause → `Pause`
 - Déjeuner → `Coffee`
 - Erreur → `AlertCircle`
 - Navigation bas : `CalendarDays`, `Wrench`, `CalendarRange`, `Settings`

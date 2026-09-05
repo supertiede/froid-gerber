@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, Briefcase, Coffee, Pause, Wrench, CheckCircle, LogIn, LogOut } from 'lucide-react'
+import { MapPin, Briefcase, Coffee, Wrench, CheckCircle, LogIn, LogOut } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Timer } from './Timer'
 import { WorkTimer } from './WorkTimer'
@@ -23,7 +23,6 @@ const CONFIG: Record<EtatJournee, StateConfig> = {
   HORS_POSTE:       { bg: 'var(--gris-etat)', label: 'Pas encore arrivé', Icon: MapPin },
   AU_TRAVAIL:       { bg: 'var(--vert)',       label: 'Au travail',        Icon: Briefcase },
   PAUSE_DEJEUNER:   { bg: 'var(--ambre)',      label: 'Pause déjeuner',    Icon: Coffee },
-  EN_PAUSE:         { bg: 'var(--ambre)',      label: 'En pause',          Icon: Pause },
   EN_INTERVENTION:  { bg: 'var(--violet)',     label: 'En intervention',   Icon: Wrench },
   JOURNEE_TERMINEE: { bg: 'var(--gris-etat)', label: 'Journée terminée',  Icon: CheckCircle },
 }

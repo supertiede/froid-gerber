@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   let chronoStartAt: number | null = null
   if (status === 'AU_TRAVAIL') chronoStartAt = shift!.startAt.getTime()
-  if (status === 'EN_PAUSE' || status === 'PAUSE_DEJEUNER') chronoStartAt = openBreak!.startAt.getTime()
+  if (status === 'PAUSE_DEJEUNER') chronoStartAt = openBreak!.startAt.getTime()
   if (status === 'EN_INTERVENTION') chronoStartAt = openIntervention!.startAt.getTime()
 
   return (

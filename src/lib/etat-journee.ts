@@ -2,7 +2,6 @@ export type EtatJournee =
   | 'HORS_POSTE'
   | 'AU_TRAVAIL'
   | 'PAUSE_DEJEUNER'
-  | 'EN_PAUSE'
   | 'EN_INTERVENTION'
   | 'JOURNEE_TERMINEE'
 
@@ -23,8 +22,7 @@ export function calculerEtat(
   if (shift.endAt) return 'JOURNEE_TERMINEE'
 
   const openBreak = shift.breaks.find(b => !b.endAt) ?? null
-  if (openBreak?.type === 'LUNCH') return 'PAUSE_DEJEUNER'
-  if (openBreak?.type === 'SHORT') return 'EN_PAUSE'
+  if (openBreak) return 'PAUSE_DEJEUNER'
   if (openIntervention && !openIntervention.endAt) return 'EN_INTERVENTION'
   return 'AU_TRAVAIL'
 }

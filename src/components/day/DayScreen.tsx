@@ -140,7 +140,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
 
   const handleShortBreak = async () => {
     const key = uuidv4()
-    await executeWithOutbox(key, 'startBreak', { type: 'SHORT', idempotencyKey: key }, () => startBreak('SHORT', key), 'EN_PAUSE')
+    await executeWithOutbox(key, 'startBreak', { type: 'SHORT', idempotencyKey: key }, () => startBreak('SHORT', key), 'PAUSE_DEJEUNER')
   }
 
   const handleResumeWork = async () => {
@@ -234,9 +234,8 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
         return {
           primary: { label: 'Démarrer une intervention', icon: <Wrench size={22} />, color: 'var(--violet)', onClick: () => router.push('/intervention/nouvelle') },
           sec1: { label: 'Pause déjeuner',  icon: <Coffee size={18} />, color: 'var(--ambre)', onClick: handleLunchBreak, visible: true },
-          sec2: { label: 'Faire une pause', icon: <Pause size={18} />,  color: 'var(--ambre)', onClick: handleShortBreak, visible: true },
+          sec2: EMPTY_SEC,
         }
-      case 'EN_PAUSE':
       case 'PAUSE_DEJEUNER':
         return {
           primary: { label: 'Reprendre le travail', icon: <Play size={22} />, color: 'var(--vert)', onClick: handleResumeWork },
@@ -246,7 +245,7 @@ export function DayScreen({ status: initialStatus, shift, openIntervention, open
       case 'EN_INTERVENTION':
         return {
           primary: { label: "Terminer l'intervention", icon: <CheckSquare size={22} />, color: 'var(--violet)', onClick: handleEndIntervention },
-          sec1: { label: 'Faire une pause', icon: <Pause size={18} />, color: 'var(--ambre)', onClick: handleShortBreak, visible: true },
+          sec1: { label: 'Pause déjeuner', icon: <Coffee size={18} />, color: 'var(--ambre)', onClick: handleLunchBreak, visible: true },
           sec2: EMPTY_SEC,
         }
     }
